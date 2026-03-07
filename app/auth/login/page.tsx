@@ -39,21 +39,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] p-4 relative overflow-hidden font-poppins">
-      {/* Mesh Gradients - Exact 1:1 Replication */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#3B82F6]/10 blur-[130px] rounded-full -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#2563EB]/10 blur-[130px] rounded-full translate-x-1/2 translate-y-1/2" />
-
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-[#EFF6FF] via-white to-[#DBEAFE] p-4 relative overflow-hidden font-sans">
       <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="w-full max-w-[450px] z-10"
       >
-        <Card className="border-none shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] bg-white/80 backdrop-blur-[24px] rounded-[2rem] overflow-hidden">
-          <CardContent className="p-10 md:p-12 text-center">
+        <Card className="border border-blue-100 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden relative">
+          {/* Subtle inside gradient overlay to match original depth */}
+          <div className="absolute inset-0 bg-linear-to-br from-blue-500/5 to-blue-600/5 pointer-events-none" />
+          
+          <CardContent className="p-10 md:p-12 text-center relative z-10">
             <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-[#2563EB] rounded-full flex items-center justify-center shadow-lg shadow-blue-200">
+              <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-200">
                 <User className="w-8 h-8 text-white" />
               </div>
             </div>
@@ -72,7 +71,7 @@ export default function LoginPage() {
                     placeholder="email@student.sch.id"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-[#3B82F6]/50 rounded-xl text-base transition-all"
+                    className="w-full pl-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-xl text-base transition-all"
                     required
                   />
                 </div>
@@ -88,7 +87,7 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-[#3B82F6]/50 rounded-xl text-base transition-all"
+                    className="w-full pl-12 pr-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-xl text-base transition-all"
                     required
                   />
                   <button
@@ -109,7 +108,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-14 text-[16px] font-semibold bg-linear-to-r from-[#3B82F6] to-[#2563EB] text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] rounded-xl"
+                className="w-full h-14 text-[16px] font-semibold bg-linear-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] rounded-xl"
                 disabled={loading}
               >
                 {loading ? (
@@ -124,7 +123,7 @@ export default function LoginPage() {
             </form>
             
             <p className="mt-8 text-sm text-[#4B5563]">
-              Don&apos;t have an account? <span className="text-[#2563EB] font-semibold cursor-pointer hover:underline">Sign up</span>
+              Don&apos;t have an account? <span className="text-blue-600 font-semibold cursor-pointer hover:underline">Sign up</span>
             </p>
           </CardContent>
         </Card>
