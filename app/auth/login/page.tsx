@@ -40,26 +40,26 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] p-4 relative overflow-hidden font-poppins">
-      {/* Mesh Gradients matching exactly */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/20 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-600/10 blur-[100px] rounded-full translate-x-1/2 translate-y-1/2" />
+      {/* Mesh Gradients - Exact 1:1 Replication */}
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#3B82F6]/10 blur-[130px] rounded-full -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#2563EB]/10 blur-[130px] rounded-full translate-x-1/2 translate-y-1/2" />
 
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
         className="w-full max-w-[450px] z-10"
       >
-        <Card className="border-none shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] bg-white/80 backdrop-blur-xl rounded-[2rem] overflow-hidden">
-          <CardContent className="p-8 md:p-12 text-center">
+        <Card className="border-none shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] bg-white/80 backdrop-blur-[24px] rounded-[2rem] overflow-hidden">
+          <CardContent className="p-10 md:p-12 text-center">
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 bg-[#2563EB] rounded-full flex items-center justify-center shadow-lg shadow-blue-200">
                 <User className="w-8 h-8 text-white" />
               </div>
             </div>
             
-            <h1 className="text-3xl font-extrabold text-slate-900 mb-2 leading-tight">Welcome Back</h1>
-            <p className="text-slate-500 mb-10">Sign in to your account</p>
+            <h1 className="text-[30px] font-extrabold text-[#111827] mb-2 leading-tight tracking-tight">Welcome Back</h1>
+            <p className="text-[#4B5563] mb-10 text-[14px]">Sign in to your account</p>
 
             <form onSubmit={handleLogin} className="space-y-6 text-left">
               <div className="space-y-2">
@@ -72,7 +72,7 @@ export default function LoginPage() {
                     placeholder="email@student.sch.id"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-xl text-base transition-all"
+                    className="w-full pl-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-[#3B82F6]/50 rounded-xl text-base transition-all"
                     required
                   />
                 </div>
@@ -88,7 +88,7 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-xl text-base transition-all"
+                    className="w-full pl-12 pr-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-[#3B82F6]/50 rounded-xl text-base transition-all"
                     required
                   />
                   <button
@@ -109,7 +109,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-14 text-base font-semibold bg-linear-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] rounded-xl"
+                className="w-full h-14 text-[16px] font-semibold bg-linear-to-r from-[#3B82F6] to-[#2563EB] text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] rounded-xl"
                 disabled={loading}
               >
                 {loading ? (
@@ -123,15 +123,15 @@ export default function LoginPage() {
               </Button>
             </form>
             
-            <p className="mt-8 text-sm text-slate-600">
-              Don&apos;t have an account? <span className="text-blue-600 font-semibold cursor-pointer hover:underline">Sign up</span>
+            <p className="mt-8 text-sm text-[#4B5563]">
+              Don&apos;t have an account? <span className="text-[#2563EB] font-semibold cursor-pointer hover:underline">Sign up</span>
             </p>
           </CardContent>
         </Card>
 
-        <div className="mt-10 w-full text-center px-8">
-          <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
-            By signing in, you agree to our <Link href="/terms" className="text-slate-600 font-medium cursor-pointer hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-slate-600 font-medium cursor-pointer hover:underline">Privacy Policy</Link>
+        <div className="mt-8 w-full text-center px-8">
+          <p className="text-[14px] text-gray-500 max-w-xs mx-auto leading-relaxed font-normal">
+            By signing in, you agree to our <Link href="/terms" className="text-blue-600 font-medium cursor-pointer hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-blue-600 font-medium cursor-pointer hover:underline">Privacy Policy</Link>
           </p>
         </div>
       </motion.div>
