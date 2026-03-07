@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { authService } from '@/services/authService'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import { User, Lock, Mail, Loader2, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
@@ -108,7 +109,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-14 text-base font-semibold bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] rounded-xl"
+                className="w-full h-14 text-base font-semibold bg-linear-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] rounded-xl"
                 disabled={loading}
               >
                 {loading ? (
@@ -127,13 +128,13 @@ export default function LoginPage() {
             </p>
           </CardContent>
         </Card>
-      </motion.div>
 
-      <div className="absolute bottom-10 w-full text-center px-8 z-10">
-        <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
-          By signing in, you agree to our <span className="text-slate-600 font-medium cursor-pointer hover:underline">Terms of Service</span> and <span className="text-slate-600 font-medium cursor-pointer hover:underline">Privacy Policy</span>
-        </p>
-      </div>
+        <div className="mt-10 w-full text-center px-8">
+          <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+            By signing in, you agree to our <Link href="/terms" className="text-slate-600 font-medium cursor-pointer hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-slate-600 font-medium cursor-pointer hover:underline">Privacy Policy</Link>
+          </p>
+        </div>
+      </motion.div>
     </div>
   )
 }
