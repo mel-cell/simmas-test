@@ -2,17 +2,17 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { authService } from '@/services/authService'
 import { motion } from 'framer-motion'
-import { GraduationCap, Lock, Mail, Loader2 } from 'lucide-react'
+import { User, Lock, Mail, Loader2, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -38,98 +38,102 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-cyan-500 via-blue-600 to-indigo-700 p-4 relative overflow-hidden">
-      {/* Decorative Circles */}
-      <div className="absolute top-[-10%] left-[-10%] w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl" />
+    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] p-4 relative overflow-hidden font-poppins">
+      {/* Mesh Gradients matching exactly */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/20 blur-[120px] rounded-full -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-600/10 blur-[100px] rounded-full translate-x-1/2 translate-y-1/2" />
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md z-10"
+        className="w-full max-w-[450px] z-10"
       >
-        <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-sm">
-          <CardHeader className="space-y-1 text-center pb-2">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 bg-blue-600 rounded-2xl shadow-lg ring-4 ring-blue-100">
-                <GraduationCap className="w-10 h-10 text-white" />
+        <Card className="border-none shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] bg-white/80 backdrop-blur-xl rounded-[2rem] overflow-hidden">
+          <CardContent className="p-8 md:p-12 text-center">
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 bg-[#2563EB] rounded-full flex items-center justify-center shadow-lg shadow-blue-200">
+                <User className="w-8 h-8 text-white" />
               </div>
             </div>
-            <CardTitle className="text-3xl font-extrabold tracking-tight text-slate-900">
-              SIMMAS
-            </CardTitle>
-            <CardDescription className="text-slate-500 font-medium">
-              Sistem Informasi Manajemen Magang Siswa
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <form onSubmit={handleLogin} className="space-y-4">
+            
+            <h1 className="text-3xl font-extrabold text-slate-900 mb-2 leading-tight">Welcome Back</h1>
+            <p className="text-slate-500 mb-10">Sign in to your account</p>
+
+            <form onSubmit={handleLogin} className="space-y-6 text-left">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-slate-700">Email Address</Label>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 ml-1">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="nama@email.com"
+                    placeholder="email@student.sch.id"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl"
+                    className="w-full pl-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-xl text-base transition-all"
                     required
                   />
                 </div>
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="password" title='Password' className="text-sm font-semibold text-slate-700">Password</Label>
+                <label htmlFor="password" title="Password" className="block text-sm font-medium text-slate-700 ml-1">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                   <Input
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl"
+                    className="w-full pl-12 pr-12 h-[52px] border-gray-200 bg-white/70 focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-xl text-base transition-all"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
               </div>
 
               {error && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-sm font-medium text-red-500 bg-red-50 p-3 rounded-lg border border-red-100 text-center"
-                >
+                <div className="text-sm font-medium text-red-500 bg-red-50 p-4 rounded-xl border border-red-100 text-center">
                   {error}
-                </motion.p>
+                </div>
               )}
 
               <Button
                 type="submit"
-                className="w-full h-11 text-base font-bold bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-[0.98] rounded-xl"
+                className="w-full h-14 text-base font-semibold bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:scale-[1.01] active:scale-[0.98] rounded-xl"
                 disabled={loading}
               >
                 {loading ? (
                   <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Memproses...
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Signing in...
                   </div>
                 ) : (
-                  'Masuk ke Dashboard'
+                  'Sign In'
                 )}
               </Button>
             </form>
             
-            <div className="mt-8 text-center border-t border-slate-100 pt-6">
-              <p className="text-xs text-slate-400 font-medium uppercase tracking-widest">
-                © 2026 Admin SIMMAS - SMK 
-              </p>
-            </div>
+            <p className="mt-8 text-sm text-slate-600">
+              Don&apos;t have an account? <span className="text-blue-600 font-semibold cursor-pointer hover:underline">Sign up</span>
+            </p>
           </CardContent>
         </Card>
       </motion.div>
+
+      <div className="absolute bottom-10 w-full text-center px-8 z-10">
+        <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+          By signing in, you agree to our <span className="text-slate-600 font-medium cursor-pointer hover:underline">Terms of Service</span> and <span className="text-slate-600 font-medium cursor-pointer hover:underline">Privacy Policy</span>
+        </p>
+      </div>
     </div>
   )
 }
