@@ -1,0 +1,26 @@
+[
+  {
+    "nama_perusahaan": "PT. Teknologi Nusantara",
+    "alamat": "Jl. Jend. Sudirman No. 12, Jakarta",
+    "penanggung_jawab": "Budi Setiawan",
+    "email": "hrd@teknus.com",
+    "no_telp": "021-5551234",
+    "kuota_maksimal": 5
+  },
+  {
+    "nama_perusahaan": "CV. Digital Kreativa",
+    "alamat": "Jl. Diponegoro No. 45, Surabaya",
+    "penanggung_jawab": "Siti Aminah",
+    "email": "contact@kreativa.id",
+    "no_telp": "031-777888",
+    "kuota_maksimal": 3
+  },
+  {
+    "nama_perusahaan": "Sentra Solusi IT",
+    "alamat": "Komp. Perkantoran Hijau Blok A, Bandung",
+    "penanggung_jawab": "Andi Wijaya",
+    "email": "admin@sentrasolusi.com",
+    "no_telp": "022-999333",
+    "kuota_maksimal": 4
+  }
+]

@@ -1,0 +1,41 @@
+[
+  {
+    "email": "admin@gmail.com",
+    "password": "password123",
+    "full_name": "Admin Pro",
+    "role": "ADMIN",
+    "nomor_induk": "ADM001"
+  },
+  {
+    "email": "suryanto@teacher.com",
+    "password": "password123",
+    "full_name": "Suryanto, S.Pd",
+    "role": "GURU",
+    "nomor_induk": "197501012000031001"
+  },
+  {
+    "email": "kartika@teacher.com",
+    "password": "password123",
+    "full_name": "Kartika Sari, S.Kom",
+    "role": "GURU",
+    "nomor_induk": "198002052005012002"
+  },
+  {
+    "email": "ahmad.rizki@student.sch.id",
+    "password": "password123",
+    "full_name": "Ahmad Rizki Ramadhan",
+    "role": "SISWA",
+    "nomor_induk": "2021001",
+    "kelas": "XII - RPL",
+    "jurusan": "Rekayasa Perangkat Lunak"
+  },
+  {
+    "email": "siti.nur@student.sch.id",
+    "password": "password123",
+    "full_name": "Siti Nurhaliza",
+    "role": "SISWA",
+    "nomor_induk": "2021002",
+    "kelas": "XII - RPL",
+    "jurusan": "Rekayasa Perangkat Lunak"
+  }
+]
