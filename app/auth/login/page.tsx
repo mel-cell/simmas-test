@@ -29,15 +29,16 @@ export default function LoginPage() {
       else if (profile?.role === 'GURU') router.push('/guru')
       else router.push('/siswa')
       
-    } catch (err: any) {
-      setError(err.message || 'Gagal login. Periksa email dan password Anda.')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal login. Periksa email dan password Anda.'
+      setError(message)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-cyan-500 via-blue-600 to-indigo-700 p-4 relative overflow-hidden">
       {/* Decorative Circles */}
       <div className="absolute top-[-10%] left-[-10%] w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl" />

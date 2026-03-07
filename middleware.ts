@@ -1,16 +1,62 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove(name: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+        },
+      },
+    }
+  );
 
-  const url = req.nextUrl.clone()
+  const { data: { session } } = await supabase.auth.getSession();
+
+  const url = request.nextUrl.clone();
 
   // 1. Jika TIDAK ada session dan mencoba akses halaman terproteksi
   if (!session && (
@@ -18,27 +64,26 @@ export async function middleware(req: NextRequest) {
     url.pathname.startsWith('/guru') || 
     url.pathname.startsWith('/siswa')
   )) {
-    url.pathname = '/auth/login'
-    return NextResponse.redirect(url)
+    url.pathname = '/auth/login';
+    return NextResponse.redirect(url);
   }
 
   // 2. Jika SUDAH ada session dan mencoba ke halaman login/auth
   if (session && url.pathname.startsWith('/auth')) {
-    // Ambil profile untuk tahu redirect ke mana
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', session.user.id)
-      .single()
+      .single();
 
-    if (profile?.role === 'ADMIN') url.pathname = '/admin'
-    else if (profile?.role === 'GURU') url.pathname = '/guru'
-    else url.pathname = '/siswa'
+    if (profile?.role === 'ADMIN') url.pathname = '/admin';
+    else if (profile?.role === 'GURU') url.pathname = '/guru';
+    else url.pathname = '/siswa';
     
-    return NextResponse.redirect(url)
+    return NextResponse.redirect(url);
   }
 
-  return res
+  return response;
 }
 
 export const config = {
