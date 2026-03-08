@@ -11,7 +11,23 @@ export type RecentMagang = {
   dudi: string
   startDate: string
   endDate: string
-  status: 'Aktif' | 'Selesai' | 'Non-Aktif'
+  status: 'Aktif' | 'Selesai' | 'Non-Aktif' | string
+}
+
+export type RecentLogbook = {
+  id: string
+  kegiatan: string
+  tanggal: string
+  kendala: string | null
+  status: 'pending' | 'Disetujui' | 'Ditolak' | string
+}
+
+export type ActiveDudi = {
+  id: string
+  namaPerusahaan: string
+  alamat: string
+  noTelp: string
+  jumlahSiswa: number
 }
 
 export type SiswaData = {

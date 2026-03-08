@@ -76,10 +76,16 @@ export async function middleware(request: NextRequest) {
       .eq('id', session.user.id)
       .single();
 
-    if (profile?.role === 'ADMIN') url.pathname = '/admin';
+    if (profile?.role === 'ADMIN') url.pathname = '/admin/dashboard';
     else if (profile?.role === 'GURU') url.pathname = '/guru';
     else url.pathname = '/siswa';
     
+    return NextResponse.redirect(url);
+  }
+
+  // 3. Tambahkan redirect auto dari /admin ke /admin/dashboard
+  if (session && url.pathname === '/admin') {
+    url.pathname = '/admin/dashboard';
     return NextResponse.redirect(url);
   }
 
