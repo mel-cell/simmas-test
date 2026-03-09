@@ -1,4 +1,4 @@
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi } from '@/types/admin'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData } from '@/types/admin'
 
 // Konfigurasi dasar fetch
 const fetcher = async <T>(url: string, options?: RequestInit): Promise<T> => {
@@ -24,12 +24,37 @@ export type DashboardDataResponse = {
   activeDudis: ActiveDudi[]
 }
 
+export type StudentDataResponse = {
+  stats: {
+    total: number
+    sedangMagang: number
+    selesaiMagang: number
+    belumAdaPembimbing: number
+  }
+  students: SiswaData[]
+}
+
+export type TeacherDataResponse = {
+  stats: {
+    total: number
+    aktif: number
+    totalBimbingan: number
+    rataRataSiswa: number
+  }
+  teachers: GuruData[]
+}
+
 // Sentralisasi semua panggilan API (Client-Side)
 export const api = {
   admin: {
     getDashboard: () => fetcher<DashboardDataResponse>('/api/admin/dashboard'),
-    // Nanti bisa ditambahkan endpoint lain di sini:
-    // getGurus: () => fetcher('/api/admin/gurus'),
-    // getSiswa: () => fetcher('/api/admin/siswa'),
+    getStudents: (params?: { query?: string, status?: string, kelas?: string }) => {
+      const searchParams = new URLSearchParams(params as Record<string, string>).toString()
+      return fetcher<StudentDataResponse>(`/api/admin/siswa?${searchParams}`)
+    },
+    getTeachers: (params?: { query?: string, status?: string }) => {
+      const searchParams = new URLSearchParams(params as Record<string, string>).toString()
+      return fetcher<TeacherDataResponse>(`/api/admin/guru?${searchParams}`)
+    },
   },
 }

@@ -5,6 +5,27 @@ export type AdminStats = {
   logbookHariIni: number
 }
 
+export type StudentStats = {
+  total: number
+  sedangMagang: number
+  selesaiMagang: number
+  belumAdaPembimbing: number
+}
+
+export type TeacherStats = {
+  total: number
+  aktif: number
+  totalBimbingan: number
+  rataRataSiswa: number
+}
+
+export type DudiStats = {
+  total: number
+  aktif: number
+  tidakAktif: number
+  totalSiswaMagang: number
+}
+
 export type RecentMagang = {
   id: string
   namaSiswa: string
@@ -26,28 +47,33 @@ export type ActiveDudi = {
   id: string
   namaPerusahaan: string
   alamat: string
+  email: string
   noTelp: string
+  penanggungJawab: string
   jumlahSiswa: number
+  status: boolean
 }
 
 export type SiswaData = {
+  id: string
   nis: string
   nama: string
   kelas: string
   jurusan: string
   email: string
   nohp: string
-  status: 'magang' | 'selesai' | 'aktif' | 'non-aktif'
+  status: 'magang' | 'selesai' | 'aktif' | 'non-aktif' | string
   pembimbing: string
   dudi: string
 }
 
 export type GuruData = {
+  id: string
   nip: string
   nama: string
   mataPelajaran: string
   email: string
   nohp: string
   totalSiswa: number
-  status: 'aktif' | 'non-aktif'
+  status: 'aktif' | 'non-aktif' | string
 }
