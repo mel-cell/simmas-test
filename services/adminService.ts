@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, StudentStats, SiswaData, TeacherStats, GuruData } from '@/types/admin'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, StudentStats, SiswaData, TeacherStats, GuruData, DudiStats } from '@/types/admin'
 
 export const adminService = {
   getDashboardStats: async (): Promise<AdminStats> => {
@@ -99,7 +99,10 @@ export const adminService = {
         id, 
         nama_perusahaan, 
         alamat, 
+        email,
         no_telp,
+        penanggung_jawab,
+        is_active,
         magang(count)
       `)
       .eq('is_active', true)
@@ -111,14 +114,20 @@ export const adminService = {
       id: string;
       nama_perusahaan: string;
       alamat: string;
+      email: string | null;
       no_telp: string | null;
+      penanggung_jawab: string | null;
       magang: { count: number }[];
+      is_active: boolean;
     }) => ({
       id: item.id,
       namaPerusahaan: item.nama_perusahaan,
       alamat: item.alamat,
+      email: item.email || '-',
       noTelp: item.no_telp || '-',
-      jumlahSiswa: item.magang[0]?.count || 0
+      penanggungJawab: item.penanggung_jawab || '-',
+      jumlahSiswa: item.magang[0]?.count || 0,
+      status: item.is_active
     }))
   },
 
@@ -151,8 +160,8 @@ export const adminService = {
       .from('magang')
       .select('siswa_id')
 
-    const hasMagang = new Set(magangSiswaIds?.map(m => m.siswa_id) || [])
-    const belumAdaPembimbing = (allSiswaIds?.filter(s => !hasMagang.has(s.id)) || []).length
+    const hasMagang = new Set((magangSiswaIds as { siswa_id: string }[])?.map(m => m.siswa_id) || [])
+    const belumAdaPembimbing = ((allSiswaIds as { id: string }[])?.filter(s => !hasMagang.has(s.id)) || []).length
 
     return {
       total: total || 0,
@@ -296,6 +305,83 @@ export const adminService = {
       nohp: g.no_telp || '-',
       totalSiswa: g.magang_count && g.magang_count.length > 0 ? g.magang_count[0].count : 0,
       status: g.status || 'aktif'
+    }))
+  },
+
+  getDudiStats: async (): Promise<DudiStats> => {
+    // 1. Total DUDI
+    const { count: total } = await supabase
+      .from('dudi')
+      .select('*', { count: 'exact', head: true })
+
+    // 2. DUDI Aktif
+    const { count: aktif } = await supabase
+      .from('dudi')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true)
+
+    // 3. DUDI Tidak Aktif
+    const tidakAktif = (total || 0) - (aktif || 0)
+
+    // 4. Total Siswa Magang (count all active students in magang)
+    const { count: totalSiswaMagang } = await supabase
+      .from('magang')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'aktif')
+
+    return {
+      total: total || 0,
+      aktif: aktif || 0,
+      tidakAktif,
+      totalSiswaMagang: totalSiswaMagang || 0
+    }
+  },
+
+  getAllDudi: async (filters?: { query?: string, status?: string }): Promise<ActiveDudi[]> => {
+    let query = supabase
+      .from('dudi')
+      .select(`
+        id,
+        nama_perusahaan,
+        alamat,
+        email,
+        no_telp,
+        penanggung_jawab,
+        is_active,
+        magang_count:magang(count)
+      `)
+
+    if (filters?.query) {
+      query = query.or(`nama_perusahaan.ilike.%${filters.query}%,penanggung_jawab.ilike.%${filters.query}%`)
+    }
+
+    if (filters?.status && filters.status !== 'semua') {
+      const isActive = filters.status === 'aktif'
+      query = query.eq('is_active', isActive)
+    }
+
+    const { data, error } = await query.order('nama_perusahaan')
+
+    if (error || !data) return []
+
+    return data.map((d: {
+      id: string;
+      nama_perusahaan: string;
+      alamat: string;
+      email: string | null;
+      no_telp: string | null;
+      penanggung_jawab: string | null;
+      is_active: boolean;
+      magang_count: { count: number }[];
+    }) => ({
+      id: d.id,
+      namaPerusahaan: d.nama_perusahaan,
+      alamat: d.alamat,
+      email: d.email || '-',
+      noTelp: d.no_telp || '-',
+      penanggungJawab: d.penanggung_jawab || '-',
+      jumlahSiswa: d.magang_count && d.magang_count.length > 0 ? d.magang_count[0].count : 0,
+      status: d.is_active
     }))
   }
 }

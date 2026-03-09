@@ -44,6 +44,16 @@ export type TeacherDataResponse = {
   teachers: GuruData[]
 }
 
+export type DudiDataResponse = {
+  stats: {
+    total: number
+    aktif: number
+    tidakAktif: number
+    totalSiswaMagang: number
+  }
+  dudi: ActiveDudi[]
+}
+
 // Sentralisasi semua panggilan API (Client-Side)
 export const api = {
   admin: {
@@ -55,6 +65,10 @@ export const api = {
     getTeachers: (params?: { query?: string, status?: string }) => {
       const searchParams = new URLSearchParams(params as Record<string, string>).toString()
       return fetcher<TeacherDataResponse>(`/api/admin/guru?${searchParams}`)
+    },
+    getDudis: (params?: { query?: string, status?: string }) => {
+      const searchParams = new URLSearchParams(params as Record<string, string>).toString()
+      return fetcher<DudiDataResponse>(`/api/admin/dudi?${searchParams}`)
     },
   },
 }

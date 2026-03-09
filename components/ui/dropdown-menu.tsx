@@ -28,7 +28,7 @@ function DropdownMenuTrigger({
       {
         className: cn("outline-none", className),
         "data-slot": "dropdown-menu-trigger",
-      },
+      } as any,
       props
     ),
     render,
