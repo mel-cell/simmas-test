@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SIMMAS - Login",
+  title: "SIMMAS - Sistem Manajemen Magang Siswa",
   description: "Sistem Informasi Manajemen Magang Siswa",
 };
 
