@@ -1,4 +1,4 @@
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings } from '@/types/admin'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings, SiswaInput } from '@/types/admin'
 
 // Konfigurasi dasar fetch
 const fetcher = async <T>(url: string, options?: RequestInit): Promise<T> => {
@@ -112,6 +112,30 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
       })
+    },
+    createStudent: (student: SiswaInput) => {
+      return fetcher<{ success: boolean }>('/api/admin/siswa', {
+        method: 'POST',
+        body: JSON.stringify(student)
+      })
+    },
+    updateStudent: (id: string, student: Partial<SiswaInput>) => {
+      return fetcher<{ success: boolean }>('/api/admin/siswa', {
+        method: 'PATCH',
+        body: JSON.stringify({ id, ...student })
+      })
+    },
+    deleteStudent: (id: string) => {
+      return fetcher<{ success: boolean }>('/api/admin/siswa', {
+        method: 'DELETE',
+        body: JSON.stringify({ id })
+      })
+    },
+    getTeacherOptions: () => {
+      return fetcher<{ id: string, nama: string }[]>('/api/admin/guru/options')
+    },
+    getDudiOptions: () => {
+      return fetcher<{ id: string, name: string }[]>('/api/admin/dudi/options')
     },
   },
 }

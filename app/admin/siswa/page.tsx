@@ -14,10 +14,13 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { StudentStats, SiswaData } from '@/types/admin'
 import { api } from '@/lib/api'
 import { StatCard } from '@/components/admin/StatCard'
+import { Skeleton } from '@/components/ui/skeleton'
+import { SiswaModal } from '@/components/admin/siswa/SiswaModal'
+import { DeleteConfirmModal } from '@/components/admin/siswa/DeleteConfirmModal'
 
 export default function ManajemenSiswa() {
   const [stats, setStats] = useState<StudentStats | null>(null)
@@ -27,28 +30,67 @@ export default function ManajemenSiswa() {
   const [statusFilter, setStatusFilter] = useState('semua')
   const [kelasFilter, setKelasFilter] = useState('semua')
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        setLoading(true)
-        const data = await api.admin.getStudents({
-          query: searchQuery,
-          status: statusFilter,
-          kelas: kelasFilter
-        })
-        setStats(data.stats)
-        setStudents(data.students)
-      } catch (error) {
-        console.error("Failed to load student data:", error)
-      } finally {
-        setLoading(false)
-      }
+  // Modal State
+  const [isSiswaModalOpen, setIsSiswaModalOpen] = useState(false)
+  const [currentSiswa, setCurrentSiswa] = useState<SiswaData | null>(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [siswaToDelete, setSiswaToDelete] = useState<SiswaData | null>(null)
+  const [deleting, setDeleting] = useState(false)
+
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await api.admin.getStudents({
+        query: searchQuery,
+        status: statusFilter,
+        kelas: kelasFilter
+      })
+      setStats(data.stats)
+      setStudents(data.students)
+    } catch (error) {
+      console.error("Failed to load student data:", error)
+    } finally {
+      setLoading(false)
     }
-    loadData()
   }, [searchQuery, statusFilter, kelasFilter])
 
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  const handleAdd = () => {
+    setCurrentSiswa(null)
+    setIsSiswaModalOpen(true)
+  }
+
+  const handleEdit = (siswa: SiswaData) => {
+    setCurrentSiswa(siswa)
+    setIsSiswaModalOpen(true)
+  }
+
+  const handleDeleteClick = (siswa: SiswaData) => {
+    setSiswaToDelete(siswa)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!siswaToDelete) return
+    try {
+      setDeleting(true)
+      const res = await api.admin.deleteStudent(siswaToDelete.id)
+      if (res.success) {
+        setIsDeleteModalOpen(false)
+        loadData()
+      }
+    } catch (error) {
+      console.error('Failed to delete student:', error)
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   return (
-    <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
+    <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12 text-slate-800">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-[28px] font-bold text-slate-800 tracking-tight">Manajemen Siswa</h2>
@@ -59,6 +101,7 @@ export default function ManajemenSiswa() {
       {/* Stats Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <StatCard 
+          loading={loading && !stats}
           title="Total Siswa" 
           value={stats?.total || 0} 
           description="Seluruh siswa terdaftar" 
@@ -66,13 +109,15 @@ export default function ManajemenSiswa() {
           color="text-[#00A3B8]"
         />
         <StatCard 
+          loading={loading && !stats}
           title="Sedang Magang" 
           value={stats?.sedangMagang || 0} 
           description="Siswa di lokasi DUDI" 
           icon={Clock} 
-          color="text-[#00A3B8]"
+          color="text-[#F59E0B]"
         />
         <StatCard 
+          loading={loading && !stats}
           title="Selesai Magang" 
           value={stats?.selesaiMagang || 0} 
           description="Sudah menyelesaikan PKL" 
@@ -80,6 +125,7 @@ export default function ManajemenSiswa() {
           color="text-[#22C55E]"
         />
         <StatCard 
+          loading={loading && !stats}
           title="Belum Ada Pembimbing" 
           value={stats?.belumAdaPembimbing || 0} 
           description="Perlu penempatan segera" 
@@ -89,17 +135,20 @@ export default function ManajemenSiswa() {
       </div>
 
       {/* Table Section */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-none overflow-hidden">
+      <div className="bg-white rounded-[24px] border border-slate-100 shadow-none overflow-hidden">
         <div className="p-6 lg:p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center">
               <Users className="w-5 h-5 text-slate-400" />
             </div>
             <h3 className="text-[18px] font-bold text-slate-800">Data Siswa</h3>
           </div>
           
           <div className="flex flex-wrap items-center gap-3">
-            <button className="h-11 px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[14px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-none">
+            <button 
+              onClick={handleAdd}
+              className="h-11 px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[14px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-lg shadow-cyan-500/20 active:scale-95"
+            >
               <Plus className="w-4 h-4" />
               Tambah Siswa
             </button>
@@ -113,7 +162,7 @@ export default function ManajemenSiswa() {
             <input 
               type="text"
               placeholder="Cari siswa..."
-              className="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 focus:border-[#00BCD4] transition-all"
+              className="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -122,7 +171,7 @@ export default function ManajemenSiswa() {
           <select 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 min-w-[150px]"
+            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 min-w-[150px] appearance-none"
           >
             <option value="semua">Semua Status</option>
             <option value="aktif">Aktif</option>
@@ -133,7 +182,7 @@ export default function ManajemenSiswa() {
           <select 
             value={kelasFilter}
             onChange={(e) => setKelasFilter(e.target.value)}
-            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 min-w-[150px]"
+            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 min-w-[150px] appearance-none"
           >
             <option value="semua">Semua Kelas</option>
             <option value="X">Kelas X</option>
@@ -146,32 +195,67 @@ export default function ManajemenSiswa() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-white">
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-400 uppercase tracking-wider">NIS</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-400 uppercase tracking-wider">Nama</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-400 uppercase tracking-wider">Kelas/Jurusan</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-400 uppercase tracking-wider">Kontak</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-400 uppercase tracking-wider text-center">Status</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-400 uppercase tracking-wider">Pembimbing</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-400 uppercase tracking-wider text-right">Aksi</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">NIS</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Nama</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Kelas / Jurusan</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Kontak</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px] text-center">Status</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Pembimbing</th>
+                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 bg-white">
               {loading ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-slate-400 font-medium">Memuat data siswa...</td>
-                </tr>
+                Array(5).fill(0).map((_, i) => (
+                  <tr key={i}>
+                    <td className="px-6 py-5"><Skeleton className="h-4 w-16" /></td>
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="w-8 h-8 rounded-full" />
+                        <Skeleton className="h-4 w-40" />
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-3 w-32" />
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="space-y-2">
+                        <Skeleton className="h-3 w-40" />
+                        <Skeleton className="h-3 w-32" />
+                      </div>
+                    </td>
+                    <td className="px-6 py-5"><div className="flex justify-center"><Skeleton className="h-6 w-20 rounded" /></div></td>
+                    <td className="px-6 py-5">
+                      <div className="space-y-2">
+                        <Skeleton className="h-3 w-48" />
+                        <Skeleton className="h-3 w-40" />
+                      </div>
+                    </td>
+                    <td className="px-6 py-5"><div className="flex justify-end gap-2"><Skeleton className="w-8 h-8 rounded-lg" /><Skeleton className="w-8 h-8 rounded-lg" /></div></td>
+                  </tr>
+                ))
               ) : students.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada data siswa ditemukan.</td>
+                  <td colSpan={7} className="px-6 py-20 text-center text-slate-400 font-medium bg-slate-50/20">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
+                        <Users className="w-8 h-8 text-slate-300" />
+                      </div>
+                      <span className="text-[14px] font-bold text-slate-400">Tidak ada data siswa ditemukan.</span>
+                    </div>
+                  </td>
                 </tr>
               ) : students.map((siswa) => (
-                <tr key={siswa.id} className="hover:bg-slate-50/50 transition-colors group">
+                <tr key={siswa.id} className="hover:bg-slate-50/30 transition-colors group">
                   <td className="px-6 py-5">
-                    <span className="text-[14px] font-bold text-slate-700">{siswa.nis}</span>
+                    <span className="text-[13px] font-bold text-slate-700 font-mono tracking-tight">{siswa.nis}</span>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#00BCD4]/10 flex items-center justify-center">
+                      <div className="w-9 h-9 rounded-full bg-[#00BCD4]/10 flex items-center justify-center border border-[#00BCD4]/20 group-hover:scale-110 transition-transform">
                         <UserCheck className="w-4 h-4 text-[#00BCD4]" />
                       </div>
                       <span className="text-[14px] font-bold text-slate-800">{siswa.nama}</span>
@@ -179,45 +263,58 @@ export default function ManajemenSiswa() {
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex flex-col">
-                      <span className="text-[14px] font-semibold text-slate-700">{siswa.kelas}</span>
-                      <span className="text-[12px] text-slate-400 font-medium">{siswa.jurusan}</span>
+                      <span className="text-[14px] font-bold text-slate-700">{siswa.kelas}</span>
+                      <span className="text-[12px] text-slate-400 font-medium tracking-tight italic">{siswa.jurusan}</span>
                     </div>
                   </td>
                   <td className="px-6 py-5">
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 text-[12px] text-slate-500 font-medium">
-                        <Mail className="w-3.5 h-3.5 text-slate-300" />
+                    <div className="flex flex-col gap-1.5 min-w-[200px]">
+                      <div className="flex items-center gap-2 text-[12px] text-slate-500 font-bold">
+                        <Mail className="w-3.5 h-3.5 text-blue-400" />
                         {siswa.email}
                       </div>
-                      <div className="flex items-center gap-2 text-[12px] text-slate-500 font-medium">
-                        <Phone className="w-3.5 h-3.5 text-slate-300" />
+                      <div className="flex items-center gap-2 text-[12px] text-slate-500 font-bold">
+                        <Phone className="w-3.5 h-3.5 text-emerald-400" />
                         {siswa.nohp}
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex justify-center">
-                      <span className={`px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider leading-none shadow-sm ${
-                        siswa.status === 'magang' ? 'bg-[#E0F2FE] text-[#0369A1]' :
-                        siswa.status === 'selesai' ? 'bg-[#FCE7F3] text-[#BE185D]' :
-                        'bg-[#DCFCE7] text-[#15803D]'
+                      <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider leading-none shadow-sm border ${
+                        siswa.status === 'magang' ? 'bg-[#E0F2FE] text-[#0369A1] border-[#BAE6FD]' :
+                        siswa.status === 'selesai' ? 'bg-[#DCFCE7] text-[#15803D] border-[#BBF7D0]' :
+                        siswa.status === 'aktif' ? 'bg-[#F0FDF4]/50 text-[#15803D] border-[#BBF7D0]' :
+                        'bg-slate-100 text-slate-600 border-slate-200'
                       }`}>
                         {siswa.status}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-5">
-                    <div className="flex flex-col">
-                      <span className="text-[13px] font-bold text-slate-700">Guru: {siswa.pembimbing}</span>
-                      <span className="text-[12px] text-slate-400 font-medium">DUDI: {siswa.dudi}</span>
+                    <div className="flex flex-col gap-1.5 max-w-[220px]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[12px] font-bold text-slate-700 line-clamp-1">Guru {siswa.pembimbing && siswa.pembimbing !== '-' ? `#${siswa.pembimbing}` : '#--'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-slate-500 font-bold line-clamp-1">{siswa.dudi && siswa.dudi !== '-' ? siswa.dudi : 'DUDI #--'}</span>
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-5 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="w-8 h-8 rounded-lg flex items-center justify-center text-blue-500 hover:bg-blue-50 transition-colors">
+                      <button 
+                        onClick={() => handleEdit(siswa)}
+                        className="w-9 h-9 rounded-xl flex items-center justify-center text-blue-500 hover:bg-blue-50 transition-all active:scale-90 border border-transparent hover:border-blue-100" 
+                        title="Edit"
+                      >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button className="w-8 h-8 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors">
+                      <button 
+                        onClick={() => handleDeleteClick(siswa)}
+                        className="w-9 h-9 rounded-xl flex items-center justify-center text-red-500 hover:bg-red-50 transition-all active:scale-90 border border-transparent hover:border-red-100" 
+                        title="Hapus"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -228,32 +325,49 @@ export default function ManajemenSiswa() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="px-6 lg:px-8 py-5 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
-          <div className="flex items-center gap-2">
-            <span className="text-[13px] text-slate-500 font-medium">Tampilkan</span>
-            <select className="h-8 px-2 bg-white border border-slate-200 rounded-lg text-[13px] font-medium focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/10">
+        {/* Pagination placeholder */}
+        <div className="px-6 lg:px-8 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/20">
+          <div className="flex items-center gap-3">
+            <span className="text-[13px] text-slate-500 font-bold">Tampilkan</span>
+            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none">
               <option>10</option>
               <option>25</option>
               <option>50</option>
             </select>
-            <span className="text-[13px] text-slate-500 font-medium">data per halaman</span>
+            <span className="text-[13px] text-slate-500 font-bold">data</span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm">
-              <ChevronLeft className="w-4 h-4" />
+          <div className="flex items-center gap-4">
+            <button className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm active:scale-95 disabled:opacity-30" disabled>
+              <ChevronLeft className="w-5 h-5" />
             </button>
-            <div className="flex items-center">
-              <span className="text-[13px] font-medium text-slate-800">Halaman 1</span>
-              <span className="mx-2 text-[13px] text-slate-400 font-medium">dari 1</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[14px] font-black text-slate-800">Halaman 1</span>
+              <span className="text-[14px] text-slate-400 font-bold">dari 1</span>
             </div>
-            <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm">
-              <ChevronRight className="w-4 h-4" />
+            <button className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm active:scale-95 disabled:opacity-30" disabled>
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <SiswaModal 
+        isOpen={isSiswaModalOpen}
+        onClose={() => setIsSiswaModalOpen(false)}
+        onSuccess={loadData}
+        siswa={currentSiswa}
+      />
+
+      <DeleteConfirmModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Konfirmasi Hapus"
+        message={`Yakin ingin menghapus siswa ${siswaToDelete?.nama}? Aksi ini tidak dapat dibatalkan.`}
+        loading={deleting}
+      />
     </div>
   )
 }

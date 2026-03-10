@@ -68,7 +68,7 @@ export function AdminHeader() {
         {/* User Profile Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2 cursor-pointer group border-none bg-transparent outline-none p-1 hover:bg-slate-50 rounded-xl transition-all">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#00BCD4] rounded-xl flex items-center justify-center text-white shrink-0 shadow-none transition-all group-hover:scale-105">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#00BCD4] rounded-full flex items-center justify-center text-white shrink-0 shadow-none transition-all group-hover:scale-105">
               <UserCircle className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div className="text-start hidden lg:block">

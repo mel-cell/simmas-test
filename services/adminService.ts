@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, StudentStats, SiswaData, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings } from '@/types/admin'
+import { createBrowserClient } from '@supabase/ssr'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings } from '@/types/admin'
 
 export const adminService = {
   getDashboardStats: async (): Promise<AdminStats> => {
@@ -136,106 +137,8 @@ export const adminService = {
     }))
   },
 
-  getStudentStats: async (): Promise<StudentStats> => {
-    // 1. Total Siswa
-    const { count: total } = await supabase
-      .from('profiles')
-      .select('*', { count: 'exact', head: true })
-      .eq('role', 'SISWA')
-
-    // 2. Sedang Magang
-    const { count: sedangMagang } = await supabase
-      .from('magang')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'aktif')
-
-    // 3. Selesai Magang
-    const { count: selesaiMagang } = await supabase
-      .from('magang')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'selesai')
-
-    // 4. Belum Ada Pembimbing (Siswa yang belum ada di tabel magang)
-    const { data: allSiswaIds } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('role', 'SISWA')
-    
-    const { data: magangSiswaIds } = await supabase
-      .from('magang')
-      .select('siswa_id')
-
-    const hasMagang = new Set((magangSiswaIds as { siswa_id: string }[])?.map(m => m.siswa_id) || [])
-    const belumAdaPembimbing = ((allSiswaIds as { id: string }[])?.filter(s => !hasMagang.has(s.id)) || []).length
-
-    return {
-      total: total || 0,
-      sedangMagang: sedangMagang || 0,
-      selesaiMagang: selesaiMagang || 0,
-      belumAdaPembimbing: belumAdaPembimbing || 0,
-    }
-  },
-
-  getAllSiswa: async (filters?: { query?: string, status?: string, kelas?: string }): Promise<SiswaData[]> => {
-    let query = supabase
-      .from('profiles')
-      .select(`
-        id,
-        nomor_induk,
-        full_name,
-        kelas,
-        jurusan,
-        email,
-        no_telp,
-        status,
-        magang (
-          id,
-          status,
-          guru:guru_id (full_name),
-          dudi:dudi_id (nama_perusahaan)
-        )
-      `)
-      .eq('role', 'SISWA')
-
-    if (filters?.query) {
-      query = query.or(`full_name.ilike.%${filters.query}%,nomor_induk.ilike.%${filters.query}%`)
-    }
-    
-    if (filters?.status && filters.status !== 'semua') {
-      query = query.eq('status', filters.status)
-    }
-
-    if (filters?.kelas && filters.kelas !== 'semua') {
-      query = query.eq('kelas', filters.kelas)
-    }
-
-    const { data, error } = await query.order('full_name')
-
-    if (error || !data) return []
-
-    return data.map((s) => {
-      const magangData = s.magang && Array.isArray(s.magang) ? s.magang[0] : null
-      const activeMagang = magangData as unknown as { 
-        status: string, 
-        guru: { full_name: string }, 
-        dudi: { nama_perusahaan: string } 
-      } | null
-      return {
-        id: s.id,
-        nis: s.nomor_induk || '-',
-        nama: s.full_name,
-        kelas: s.kelas || '-',
-        jurusan: s.jurusan || '-',
-        email: s.email,
-        nohp: s.no_telp || '-',
-        status: activeMagang ? activeMagang.status : 'aktif',
-        pembimbing: activeMagang?.guru?.full_name || '-',
-        dudi: activeMagang?.dudi?.nama_perusahaan || '-'
-      }
-    })
-  },
-
   getTeacherStats: async (): Promise<TeacherStats> => {
+
     // 1. Total Guru
     const { count: total } = await supabase
       .from('profiles')
@@ -658,5 +561,20 @@ export const adminService = {
       .getPublicUrl(filePath)
 
     return data.publicUrl
+  },
+
+  getTeacherOptions: async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .eq('role', 'GURU')
+    return data?.map(g => ({ id: g.id, nama: g.full_name })) || []
+  },
+
+  getDudiOptions: async () => {
+    const { data } = await supabase
+      .from('dudi')
+      .select('id, nama_perusahaan')
+    return data?.map(d => ({ id: d.id, name: d.nama_perusahaan })) || []
   }
 }

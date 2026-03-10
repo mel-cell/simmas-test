@@ -177,3 +177,89 @@ BEGIN
     VALUES (new_admin_id, 'Admin Pro', 'admin@gmail.com', 'ADMIN', 'ADM001');
   END IF;
 END $$;
+
+-- 13. TRIGGERS UNTUK AUTO-UPDATE "updated_at"
+-- Trigger ditambahkan dengan aman di bagian akhir (menggunakan DROP IF EXISTS)
+DROP TRIGGER IF EXISTS update_sekolah_settings_modtime ON sekolah_settings;
+CREATE TRIGGER update_sekolah_settings_modtime BEFORE UPDATE ON sekolah_settings FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+DROP TRIGGER IF EXISTS update_profiles_modtime ON profiles;
+CREATE TRIGGER update_profiles_modtime BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+DROP TRIGGER IF EXISTS update_dudi_modtime ON dudi;
+CREATE TRIGGER update_dudi_modtime BEFORE UPDATE ON dudi FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+DROP TRIGGER IF EXISTS update_magang_modtime ON magang;
+CREATE TRIGGER update_magang_modtime BEFORE UPDATE ON magang FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+DROP TRIGGER IF EXISTS update_logbooks_modtime ON logbooks;
+CREATE TRIGGER update_logbooks_modtime BEFORE UPDATE ON logbooks FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+DROP TRIGGER IF EXISTS update_announcements_modtime ON announcements;
+CREATE TRIGGER update_announcements_modtime BEFORE UPDATE ON announcements FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+-- 14. FUNCTION RPC UNTUK MEMBUAT USER BYPASS RATE LIMIT
+-- Karena API signUp() sering kena block rate limit Supabase (Email send limit),
+-- kita buat fungsi RPC agar bisa di-call langsung dari Next.js backend!
+CREATE OR REPLACE FUNCTION create_siswa_bypassing_auth(
+  p_email text,
+  p_password text,
+  p_nama text,
+  p_nis text,
+  p_nohp text,
+  p_kelas text,
+  p_jurusan text,
+  p_alamat text,
+  p_dudi_id UUID,
+  p_guru_id UUID,
+  p_status text
+) RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER -- Bisa dipanggil oleh Anon Key tapi diexecute sebagai admin DB
+AS $$
+DECLARE
+  new_user_id UUID := gen_random_uuid();
+  encrypted_pw text;
+BEGIN
+  -- Cek apakah email sudah ada
+  IF EXISTS (SELECT 1 FROM auth.users WHERE email = p_email) THEN
+    RAISE EXCEPTION 'Email sudah digunakan';
+  END IF;
+
+  -- Bikin password hash (sama kayak supabase auth internal)
+  encrypted_pw := crypt(p_password, gen_salt('bf'));
+
+  -- 1. Insert ke auth.users (Tabel Sistem)
+  INSERT INTO auth.users (
+    instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
+    raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at
+  )
+  VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    new_user_id,
+    'authenticated', 'authenticated',
+    p_email,
+    encrypted_pw,
+    NOW(),
+    '{"provider":"email","providers":["email"]}',
+    json_build_object('full_name', p_nama, 'role', 'SISWA')::jsonb,
+    false, NOW(), NOW()
+  );
+
+  -- 2. Insert ke Profiles tabel buatan kita
+  INSERT INTO public.profiles (
+    id, full_name, email, role, nomor_induk, no_telp, kelas, jurusan, alamat, status
+  )
+  VALUES (
+    new_user_id, p_nama, p_email, 'SISWA', p_nis, p_nohp, p_kelas, p_jurusan, p_alamat, p_status
+  );
+
+  -- 3. Insert ke Magang (kalau dikirim dudi/guru nya)
+  IF p_dudi_id IS NOT NULL OR p_guru_id IS NOT NULL THEN
+    INSERT INTO public.magang (siswa_id, dudi_id, guru_id, status)
+    VALUES (new_user_id, p_dudi_id, p_guru_id, 'aktif');
+  END IF;
+
+  RETURN new_user_id;
+END;
+$$;

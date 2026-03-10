@@ -73,6 +73,9 @@ export type SiswaData = {
   status: 'magang' | 'selesai' | 'aktif' | 'non-aktif' | string
   pembimbing: string
   dudi: string
+  alamat?: string
+  pembimbingId?: string | null
+  dudiId?: string | null
 }
 
 export type GuruData = {
@@ -124,4 +127,17 @@ export type SchoolSettings = {
   logoUrl: string
   headerSuratUrl: string
   updatedAt: string
+}
+
+export interface SiswaInput {
+  nis: string
+  nama: string
+  kelas: string
+  jurusan: string
+  email: string
+  nohp: string
+  status: string
+  alamat?: string
+  guru_id?: string | null
+  dudi_id?: string | null
 }

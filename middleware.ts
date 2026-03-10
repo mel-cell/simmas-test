@@ -54,39 +54,71 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const url = request.nextUrl.clone();
 
-  // 1. Jika TIDAK ada session dan mencoba akses halaman terproteksi
-  if (!session && (
-    url.pathname.startsWith('/admin') || 
-    url.pathname.startsWith('/guru') || 
-    url.pathname.startsWith('/siswa')
-  )) {
+  const isRootRoute = url.pathname === '/';
+  const isAuthRoute = url.pathname.startsWith('/auth');
+  const isAdminRoute = url.pathname.startsWith('/admin');
+  const isGuruRoute = url.pathname.startsWith('/guru');
+  const isSiswaRoute = url.pathname.startsWith('/siswa');
+  const isProtectedRoute = isAdminRoute || isGuruRoute || isSiswaRoute;
+
+  // 1. Jika TIDAK ada session dan mencoba akses halaman terproteksi atau root ('/')
+  if (!user && (isProtectedRoute || isRootRoute)) {
     url.pathname = '/auth/login';
     return NextResponse.redirect(url);
   }
 
-  // 2. Jika SUDAH ada session dan mencoba ke halaman login/auth
-  if (session && url.pathname.startsWith('/auth')) {
+  // 2. Jika SUDAH ada session
+  if (user) {
+    // Ambil data profile untuk cek role
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single();
 
-    if (profile?.role === 'ADMIN') url.pathname = '/admin/dashboard';
-    else if (profile?.role === 'GURU') url.pathname = '/guru';
-    else url.pathname = '/siswa';
-    
-    return NextResponse.redirect(url);
-  }
+    const role = profile?.role;
 
-  // 3. Tambahkan redirect auto dari /admin ke /admin/dashboard
-  if (session && url.pathname === '/admin') {
-    url.pathname = '/admin/dashboard';
-    return NextResponse.redirect(url);
+    // Tentukan dashboard url berdasarkan role
+    let dashboardUrl = '/siswa';
+    if (role === 'ADMIN') dashboardUrl = '/admin/dashboard';
+    else if (role === 'GURU') dashboardUrl = '/guru';
+
+    // A. Jika mencoba akses root atau auth saat sudah login, arahkan ke dashboard
+    if (isRootRoute || isAuthRoute) {
+      url.pathname = dashboardUrl;
+      return NextResponse.redirect(url);
+    }
+
+    // B. Mencegah akses lintas role (Proteksi Role)
+    if (isAdminRoute && role !== 'ADMIN') {
+      url.pathname = dashboardUrl;
+      return NextResponse.redirect(url);
+    }
+    
+    if (isGuruRoute && role !== 'GURU') {
+      url.pathname = dashboardUrl;
+      return NextResponse.redirect(url);
+    }
+    
+    // Asumsi selain ADMIN dan GURU adalah SISWA (jadi role "SISWA" bisa akses /siswa)
+    if (isSiswaRoute && role === 'ADMIN') {
+      url.pathname = dashboardUrl;
+      return NextResponse.redirect(url);
+    }
+    if (isSiswaRoute && role === 'GURU') {
+      url.pathname = dashboardUrl;
+      return NextResponse.redirect(url);
+    }
+
+    // C. Tambahkan redirect auto dari /admin ke /admin/dashboard
+    if (url.pathname === '/admin') {
+      url.pathname = '/admin/dashboard';
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
