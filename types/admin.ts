@@ -110,3 +110,18 @@ export type ActivityStats = {
   updated: number
   deleted: number
 }
+
+export type SchoolSettings = {
+  id: number
+  npsn: string
+  namaSekolah: string
+  alamatSekolah: string
+  telepon: string
+  email: string
+  website: string
+  kepalaSekolah: string
+  nipKepalaSekolah: string
+  logoUrl: string
+  headerSuratUrl: string
+  updatedAt: string
+}

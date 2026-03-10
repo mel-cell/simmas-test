@@ -1,4 +1,4 @@
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData, InternshipStats, UserProfileData, ActivityLog, ActivityStats } from '@/types/admin'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings } from '@/types/admin'
 
 // Konfigurasi dasar fetch
 const fetcher = async <T>(url: string, options?: RequestInit): Promise<T> => {
@@ -68,6 +68,10 @@ export type ActivityLogDataResponse = {
   logs: ActivityLog[]
 }
 
+export type SchoolSettingsDataResponse = {
+  settings: SchoolSettings | null
+}
+
 // Sentralisasi semua panggilan API (Client-Side)
 export const api = {
   admin: {
@@ -98,6 +102,16 @@ export const api = {
     },
     clearLogs: () => {
       return fetcher<{ success: boolean }>('/api/admin/logs', { method: 'DELETE' })
+    },
+    getSettings: () => {
+      return fetcher<SchoolSettingsDataResponse>('/api/admin/settings')
+    },
+    updateSettings: (settings: Partial<SchoolSettings>) => {
+      return fetcher<{ success: boolean }>('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      })
     },
   },
 }

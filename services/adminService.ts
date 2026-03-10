@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, StudentStats, SiswaData, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData, ActivityLog, ActivityStats } from '@/types/admin'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, StudentStats, SiswaData, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings } from '@/types/admin'
 
 export const adminService = {
   getDashboardStats: async (): Promise<AdminStats> => {
@@ -591,5 +591,72 @@ export const adminService = {
   clearLogs: async (): Promise<boolean> => {
     const { error } = await supabase.from('activity_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000') // Deleting all rows
     return !error
+  },
+
+  getSchoolSettings: async (): Promise<SchoolSettings | null> => {
+    const { data, error } = await supabase
+      .from('sekolah_settings')
+      .select('*')
+      .eq('id', 1)
+      .single()
+
+    if (error || !data) return null
+
+    return {
+      id: data.id,
+      npsn: data.npsn || '',
+      namaSekolah: data.nama_sekolah || '',
+      alamatSekolah: data.alamat_sekolah || '',
+      telepon: data.telepon || '',
+      email: data.email || '',
+      website: data.website || '',
+      kepalaSekolah: data.kepala_sekolah || '',
+      nipKepalaSekolah: data.nip_kepala_sekolah || '',
+      logoUrl: data.logo_url || '',
+      headerSuratUrl: data.header_surat_url || '',
+      updatedAt: data.updated_at
+    }
+  },
+
+  updateSchoolSettings: async (settings: Partial<SchoolSettings>): Promise<boolean> => {
+    const updateData: Record<string, string | number | boolean | null | undefined> = {}
+    if (settings.npsn !== undefined) updateData.npsn = settings.npsn
+    if (settings.namaSekolah !== undefined) updateData.nama_sekolah = settings.namaSekolah
+    if (settings.alamatSekolah !== undefined) updateData.alamat_sekolah = settings.alamatSekolah
+    if (settings.telepon !== undefined) updateData.telepon = settings.telepon
+    if (settings.email !== undefined) updateData.email = settings.email
+    if (settings.website !== undefined) updateData.website = settings.website
+    if (settings.kepalaSekolah !== undefined) updateData.kepala_sekolah = settings.kepalaSekolah
+    if (settings.nipKepalaSekolah !== undefined) updateData.nip_kepala_sekolah = settings.nipKepalaSekolah
+    if (settings.logoUrl !== undefined) updateData.logo_url = settings.logoUrl
+    if (settings.headerSuratUrl !== undefined) updateData.header_surat_url = settings.headerSuratUrl
+
+    const { error } = await supabase
+      .from('sekolah_settings')
+      .update(updateData)
+      .eq('id', 1)
+
+    return !error
+  },
+
+  uploadFile: async (file: File, bucket: string): Promise<string | null> => {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Math.random()}.${fileExt}`
+    const filePath = `settings/${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file)
+
+    if (uploadError) {
+      console.error('Error uploading file:', uploadError)
+      return null
+    }
+
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(filePath)
+
+    return data.publicUrl
   }
 }
