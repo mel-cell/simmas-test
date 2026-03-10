@@ -221,7 +221,7 @@ export default function ManajemenDudi() {
         <div className="px-6 lg:px-8 py-5 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/20">
           <div className="flex items-center gap-2">
             <span className="text-[13px] text-slate-500 font-medium">Tampilkan</span>
-            <select className="h-8 px-2 bg-white border border-slate-200 rounded-lg text-[13px] font-bold focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/10">
+            <select className="h-8 px-2 bg-white border border-slate-200 rounded-lg text-[13px] font-medium focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/10">
               <option>10</option>
               <option>25</option>
               <option>50</option>
@@ -234,7 +234,7 @@ export default function ManajemenDudi() {
               <ChevronLeft className="w-4 h-4" />
             </button>
             <div className="flex items-center">
-              <span className="text-[13px] font-bold text-slate-800">Halaman 1</span>
+              <span className="text-[13px] font-medium text-slate-800">Halaman 1</span>
               <span className="mx-2 text-[13px] text-slate-400 font-medium">dari 1</span>
             </div>
             <button className="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm">

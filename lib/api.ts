@@ -1,4 +1,4 @@
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData } from '@/types/admin'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData, InternshipStats, UserProfileData } from '@/types/admin'
 
 // Konfigurasi dasar fetch
 const fetcher = async <T>(url: string, options?: RequestInit): Promise<T> => {
@@ -54,6 +54,15 @@ export type DudiDataResponse = {
   dudi: ActiveDudi[]
 }
 
+export type InternshipDataResponse = {
+  stats: InternshipStats
+  internships: RecentMagang[]
+}
+
+export type UserDataResponse = {
+  users: UserProfileData[]
+}
+
 // Sentralisasi semua panggilan API (Client-Side)
 export const api = {
   admin: {
@@ -69,6 +78,14 @@ export const api = {
     getDudis: (params?: { query?: string, status?: string }) => {
       const searchParams = new URLSearchParams(params as Record<string, string>).toString()
       return fetcher<DudiDataResponse>(`/api/admin/dudi?${searchParams}`)
+    },
+    getInternships: (params?: { query?: string, status?: string }) => {
+      const searchParams = new URLSearchParams(params as Record<string, string>).toString()
+      return fetcher<InternshipDataResponse>(`/api/admin/magang?${searchParams}`)
+    },
+    getUsers: (params?: { query?: string, role?: string }) => {
+      const searchParams = new URLSearchParams(params as Record<string, string>).toString()
+      return fetcher<UserDataResponse>(`/api/admin/users?${searchParams}`)
     },
   },
 }

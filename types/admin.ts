@@ -26,13 +26,21 @@ export type DudiStats = {
   totalSiswaMagang: number
 }
 
+export type InternshipStats = {
+  total: number
+  aktif: number
+  selesai: number
+  dibatalkan: number
+}
+
 export type RecentMagang = {
   id: string
   namaSiswa: string
   dudi: string
+  pembimbing: string
   startDate: string
   endDate: string
-  status: 'Aktif' | 'Selesai' | 'Non-Aktif' | string
+  status: 'aktif' | 'selesai' | 'dibatalkan' | string
 }
 
 export type RecentLogbook = {
@@ -76,4 +84,13 @@ export type GuruData = {
   nohp: string
   totalSiswa: number
   status: 'aktif' | 'non-aktif' | string
+}
+
+export type UserProfileData = {
+  id: string
+  fullName: string
+  email: string
+  role: 'ADMIN' | 'GURU' | 'SISWA' | string
+  isVerified: boolean
+  createdAt: string
 }

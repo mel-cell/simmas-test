@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, StudentStats, SiswaData, TeacherStats, GuruData, DudiStats } from '@/types/admin'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, StudentStats, SiswaData, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData } from '@/types/admin'
 
 export const adminService = {
   getDashboardStats: async (): Promise<AdminStats> => {
@@ -39,33 +39,38 @@ export const adminService = {
         tgl_mulai, 
         tgl_selesai, 
         status,
-        profiles(full_name),
-        dudi(nama_perusahaan)
+        siswa:siswa_id(full_name),
+        guru:guru_id(full_name),
+        dudi:dudi_id(nama_perusahaan)
       `)
       .order('created_at', { ascending: false })
       .limit(5)
 
     if (error || !data) return []
 
-    return data.map((item: { 
-      id: string; 
-      tgl_mulai: string; 
-      tgl_selesai: string; 
-      status: string; 
-      profiles: { full_name: string } | { full_name: string }[] | null; 
-      dudi: { nama_perusahaan: string } | { nama_perusahaan: string }[] | null;
-    }) => ({
-      id: item.id,
-      namaSiswa: Array.isArray(item.profiles) 
-        ? item.profiles[0]?.full_name || 'Tidak diketahui'
-        : item.profiles?.full_name || 'Tidak diketahui',
-      dudi: Array.isArray(item.dudi) 
-        ? item.dudi[0]?.nama_perusahaan || 'Tidak diketahui'
-        : item.dudi?.nama_perusahaan || 'Tidak diketahui',
-      startDate: item.tgl_mulai,
-      endDate: item.tgl_selesai,
-      status: item.status === 'aktif' ? 'Aktif' : 'Menunggu',
-    }))
+    return data.map((item: {
+      id: string;
+      tgl_mulai: string | null;
+      tgl_selesai: string | null;
+      status: string | null;
+      siswa: { full_name: string }[] | { full_name: string } | null;
+      guru: { full_name: string }[] | { full_name: string } | null;
+      dudi: { nama_perusahaan: string }[] | { nama_perusahaan: string } | null;
+    }) => {
+      const siswa = Array.isArray(item.siswa) ? item.siswa[0] : item.siswa;
+      const guru = Array.isArray(item.guru) ? item.guru[0] : item.guru;
+      const dudi = Array.isArray(item.dudi) ? item.dudi[0] : item.dudi;
+      
+      return {
+        id: item.id,
+        namaSiswa: siswa?.full_name || 'Tidak diketahui',
+        dudi: dudi?.nama_perusahaan || 'Tidak diketahui',
+        pembimbing: guru?.full_name || 'Belum ditugaskan',
+        startDate: item.tgl_mulai || '-',
+        endDate: item.tgl_selesai || '-',
+        status: item.status || 'menunggu',
+      };
+    })
   },
 
   getRecentLogbooks: async (): Promise<RecentLogbook[]> => {
@@ -382,6 +387,135 @@ export const adminService = {
       penanggungJawab: d.penanggung_jawab || '-',
       jumlahSiswa: d.magang_count && d.magang_count.length > 0 ? d.magang_count[0].count : 0,
       status: d.is_active
+    }))
+  },
+
+  getInternshipStats: async (): Promise<InternshipStats> => {
+    // 1. Total Magang
+    const { count: total } = await supabase
+      .from('magang')
+      .select('*', { count: 'exact', head: true })
+
+    // 2. Sedang Aktif
+    const { count: aktif } = await supabase
+      .from('magang')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'aktif')
+
+    // 3. Selesai
+    const { count: selesai } = await supabase
+      .from('magang')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'selesai')
+
+    // 4. Dibatalkan
+    const { count: dibatalkan } = await supabase
+      .from('magang')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'dibatalkan')
+
+    return {
+      total: total || 0,
+      aktif: aktif || 0,
+      selesai: selesai || 0,
+      dibatalkan: dibatalkan || 0
+    }
+  },
+
+  getAllMagang: async (filters?: { query?: string, status?: string }): Promise<RecentMagang[]> => {
+    let query = supabase
+      .from('magang')
+      .select(`
+        id,
+        status,
+        tgl_mulai,
+        tgl_selesai,
+        siswa:siswa_id (full_name),
+        guru:guru_id (full_name),
+        dudi:dudi_id (nama_perusahaan)
+      `)
+
+    if (filters?.status && filters.status !== 'semua') {
+      query = query.eq('status', filters.status)
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false })
+
+    if (error || !data) return []
+
+    // Filter results locally if there is a query string (for joined fields)
+    let results: RecentMagang[] = data.map((m: {
+      id: string;
+      status: string | null;
+      tgl_mulai: string | null;
+      tgl_selesai: string | null;
+      siswa: { full_name: string }[] | { full_name: string } | null;
+      guru: { full_name: string }[] | { full_name: string } | null;
+      dudi: { nama_perusahaan: string }[] | { nama_perusahaan: string } | null;
+    }) => {
+      const siswa = Array.isArray(m.siswa) ? m.siswa[0] : m.siswa;
+      const guru = Array.isArray(m.guru) ? m.guru[0] : m.guru;
+      const dudi = Array.isArray(m.dudi) ? m.dudi[0] : m.dudi;
+
+      return {
+        id: m.id,
+        namaSiswa: siswa?.full_name || 'Tidak diketahui',
+        dudi: dudi?.nama_perusahaan || 'Tidak diketahui',
+        pembimbing: guru?.full_name || 'Belum ditugaskan',
+        startDate: m.tgl_mulai || '-',
+        endDate: m.tgl_selesai || '-',
+        status: m.status || 'menunggu'
+      };
+    })
+
+    if (filters?.query) {
+      const q = filters.query.toLowerCase()
+      results = results.filter((r: RecentMagang) => 
+        r.namaSiswa.toLowerCase().includes(q) || 
+        r.dudi.toLowerCase().includes(q) || 
+        r.pembimbing.toLowerCase().includes(q)
+      )
+    }
+
+    return results
+  },
+
+  getAllUsers: async (filters?: { query?: string, role?: string }): Promise<UserProfileData[]> => {
+    let query = supabase
+      .from('profiles')
+      .select(`
+        id,
+        full_name,
+        email,
+        role,
+        created_at
+      `)
+
+    if (filters?.query) {
+      query = query.or(`full_name.ilike.%${filters.query}%,email.ilike.%${filters.query}%`)
+    }
+
+    if (filters?.role && filters.role !== 'semua') {
+      query = query.eq('role', filters.role.toUpperCase())
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false })
+
+    if (error || !data) return []
+
+    return data.map((u: {
+      id: string;
+      full_name: string;
+      email: string;
+      role: string;
+      created_at: string;
+    }) => ({
+      id: u.id,
+      fullName: u.full_name,
+      email: u.email,
+      role: u.role,
+      isVerified: true, // Assuming default true for now as in the screenshot mockups
+      createdAt: u.created_at
     }))
   }
 }
