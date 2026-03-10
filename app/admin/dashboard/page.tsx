@@ -13,7 +13,10 @@ import { format } from 'date-fns'
 import { api } from '@/lib/api'
 import { StatCard } from '@/components/admin/StatCard'
 
+import { useSchoolSettings } from '@/components/providers/SchoolSettingsProvider'
+
 export default function AdminDashboard() {
+  const { settings, loading: settingsLoading } = useSchoolSettings()
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [recent, setRecent] = useState<RecentMagang[]>([])
   const [recentLogbooks, setRecentLogbooks] = useState<RecentLogbook[]>([])
@@ -44,7 +47,9 @@ export default function AdminDashboard() {
     <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div>
         <h2 className="text-[28px] font-bold text-slate-800 tracking-tight">Dashboard</h2>
-        <p className="text-[14px] text-slate-500 mt-1 font-medium">Selamat datang di sistem pelaporan magang siswa SMK Negeri 1 Surabaya</p>
+        <p className="text-[14px] text-slate-500 mt-1 font-medium">
+          Selamat datang di sistem pelaporan magang siswa {settingsLoading ? '...' : (settings?.namaSekolah || 'SMK Negeri 6 Malang')}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -84,7 +89,7 @@ export default function AdminDashboard() {
         <div className="flex-1 space-y-6">
           
           {/* Magang Terbaru */}
-          <div className="bg-white border-0 rounded-2xl p-6 lg:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+          <div className="bg-white border border-slate-100 rounded-2xl p-6 lg:p-8 shadow-none">
             <div className="flex items-center gap-3 mb-6">
               <GraduationCap className="w-5 h-5 text-[#00A3B8]" />
               <h3 className="text-[16px] font-bold text-slate-800">Magang Terbaru</h3>
@@ -122,7 +127,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Logbook Terbaru Dummy Section */}
-          <div className="bg-white border-0 rounded-2xl p-6 lg:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+          <div className="bg-white border border-slate-100 rounded-2xl p-6 lg:p-8 shadow-none">
             <div className="flex items-center gap-3 mb-6">
               <BookOpen className="w-5 h-5 text-[#65A30D]" />
               <h3 className="text-[16px] font-bold text-slate-800">Logbook Terbaru</h3>
@@ -168,7 +173,7 @@ export default function AdminDashboard() {
 
         {/* Konten Kanan: DUDI Aktif */}
         <div className="w-full xl:w-[350px] shrink-0">
-          <div className="bg-white border-0 rounded-2xl p-6 lg:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)] sticky top-28">
+          <div className="bg-white border border-slate-100 rounded-2xl p-6 lg:p-8 shadow-none sticky top-28">
             <div className="flex items-center gap-3 mb-6">
               <Building2 className="w-5 h-5 text-[#EA580C]" />
               <h3 className="text-[16px] font-bold text-slate-800">DUDI Aktif</h3>

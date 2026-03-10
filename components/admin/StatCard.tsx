@@ -10,7 +10,7 @@ interface StatCardProps {
 
 export function StatCard({ title, value, description, icon: Icon, color }: StatCardProps) {
   return (
-    <div className="bg-white border-0 shadow-[0_4px_24px_rgba(0,0,0,0.02)] rounded-2xl p-6 lg:p-8 flex flex-col justify-between">
+    <div className="bg-white border border-slate-100 shadow-none rounded-2xl p-6 lg:p-8 flex flex-col justify-between">
       <div className="flex justify-between items-start mb-6">
         <p className="text-[14px] font-semibold text-slate-700">{title}</p>
         <Icon className={`w-[22px] h-[22px] ${color}`} />

@@ -24,8 +24,11 @@ import { useState, useEffect, useRef } from 'react'
 import { SchoolSettings } from '@/types/admin'
 import { api } from '@/lib/api'
 import { adminService } from '@/services/adminService'
+import { useSchoolSettings } from '@/components/providers/SchoolSettingsProvider'
+import Image from 'next/image'
 
 export default function PengaturanSekolah() {
+  const { refreshSettings } = useSchoolSettings()
   const [settings, setSettings] = useState<SchoolSettings | null>(null)
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
@@ -79,8 +82,10 @@ export default function PengaturanSekolah() {
       setSaving(true)
       const success = await api.admin.updateSettings(formData)
       if (success) {
-        setSettings({ ...settings, ...formData } as SchoolSettings)
+        const newSettings = { ...settings, ...formData } as SchoolSettings
+        setSettings(newSettings)
         setEditing(false)
+        await refreshSettings() // Refresh global state (sidebar & header)
         setMessage({ type: 'success', text: 'Pengaturan berhasil diperbarui' })
         setTimeout(() => setMessage(null), 3000)
       } else {
@@ -93,14 +98,17 @@ export default function PengaturanSekolah() {
     }
   }
 
-  if (loading) return <div className="p-10 text-center text-slate-400 font-medium">Memuat pengaturan...</div>
+  if (loading) return <div className="p-10 text-center text-slate-400 font-medium tracking-tight flex items-center justify-center gap-3">
+    <RefreshCw className="w-5 h-5 animate-spin" />
+    Memuat pengaturan...
+  </div>
 
   return (
     <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-[28px] font-bold text-slate-800 tracking-tight">Pengaturan Sekolah</h2>
-          <p className="text-[14px] text-slate-500 mt-1 font-medium">Konfigurasi identitas instansi dan tampilan sistem</p>
+          <p className="text-[14px] text-slate-500 mt-1 font-medium italic">Konfigurasi identitas instansi dan tampilan sistem secara global</p>
         </div>
       </div>
 
@@ -108,7 +116,7 @@ export default function PengaturanSekolah() {
         <div className={`p-4 rounded-xl border flex items-center gap-3 animate-in fade-in zoom-in duration-300 ${
           message.type === 'success' ? 'bg-green-50 border-green-100 text-green-700' : 'bg-red-50 border-red-100 text-red-700'
         }`}>
-          {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <Info className="w-5 h-5" />}
+          {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <Info className="w-5 h-5 shrink-0" />}
           <span className="text-[14px] font-bold">{message.text}</span>
         </div>
       )}
@@ -117,7 +125,7 @@ export default function PengaturanSekolah() {
         
         {/* Left Column: Form */}
         <div className="xl:col-span-2 space-y-6">
-          <div className="bg-white rounded-3xl border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-none overflow-hidden">
             <div className="p-6 lg:p-8 border-b border-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-[#00BCD4]/10 flex items-center justify-center">
@@ -128,8 +136,8 @@ export default function PengaturanSekolah() {
               
               {!editing ? (
                 <button 
-                  onClick={() => setEditing(true)}
-                  className="px-5 py-2.5 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-[#00acc1] transition-all shadow-md shadow-[#00BCD4]/20"
+                   onClick={() => setEditing(true)}
+                  className="px-5 py-2.5 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-none"
                 >
                   <Edit className="w-4 h-4" />
                   Edit
@@ -146,7 +154,7 @@ export default function PengaturanSekolah() {
                   <button 
                     onClick={handleSave}
                     disabled={saving}
-                    className="px-5 py-2.5 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-[#00acc1] transition-all shadow-md shadow-[#00BCD4]/20 disabled:opacity-50"
+                    className="px-5 py-2.5 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-none disabled:opacity-50"
                   >
                     {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     Simpan
@@ -164,7 +172,7 @@ export default function PengaturanSekolah() {
                 <div className="flex items-start gap-6">
                   <div className="w-24 h-24 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden group relative transition-all hover:border-[#00BCD4]/50">
                     {formData.logoUrl ? (
-                      <img src={formData.logoUrl} alt="Logo" className="w-full h-full object-contain p-2" />
+                      <Image src={formData.logoUrl} alt="Logo" fill className="object-contain p-2" />
                     ) : (
                       <span className="text-[10px] font-bold text-slate-400">LOGO</span>
                     )}
@@ -176,14 +184,14 @@ export default function PengaturanSekolah() {
                   </div>
                   {editing && (
                     <div className="flex-1 space-y-3">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 font-sans font-bold italic">
                         <button 
                           onClick={() => fileInputRef.current?.click()}
                           disabled={uploading}
                           className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[13px] font-bold text-slate-700 flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
                         >
                           <Upload className="w-4 h-4 text-[#00BCD4]" />
-                          Pilih File dari Lokal
+                          Pilih Logo Lokal
                         </button>
                         <input 
                           type="file" 
@@ -196,15 +204,75 @@ export default function PengaturanSekolah() {
                       <div className="space-y-1">
                         <input 
                           type="text" 
-                          placeholder="Atau masukkan Link Logo URL (https://...)" 
+                          placeholder="Link Logo URL (https://...)" 
                           className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 transition-all"
                           value={formData.logoUrl || ''}
                           onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
                         />
-                        <p className="text-[11px] text-slate-400 font-medium italic">Gunakan file PNG transparan untuk hasil terbaik di dashboard.</p>
+                        <p className="text-[11px] text-slate-400 font-medium italic">Gunakan file PNG transparan untuk hasil terbaik.</p>
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Header Surat Section */}
+              <div>
+                <label className="text-[13px] font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <FileText className="w-3.5 h-3.5" /> Kop Surat (Header Dokumen)
+                </label>
+                <div className="flex flex-col gap-4">
+                  <div className="w-full h-32 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden relative group transition-all hover:border-[#00BCD4]/50">
+                    {formData.headerSuratUrl ? (
+                      <Image src={formData.headerSuratUrl} alt="Kop Surat" fill className="object-contain" />
+                    ) : (
+                      <div className="text-center">
+                        <Printer className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                        <span className="text-[10px] font-bold text-slate-400">PRATINJAU KOP SURAT</span>
+                      </div>
+                    )}
+                    {uploading && (
+                      <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                        <RefreshCw className="w-5 h-5 text-[#00BCD4] animate-spin" />
+                      </div>
+                    )}
+                  </div>
+                  {editing && (
+                    <div className="flex flex-col md:flex-row gap-3">
+                      <button 
+                        onClick={() => {
+                          const input = document.createElement('input')
+                          input.type = 'file'
+                          input.accept = 'image/*'
+                          input.onchange = async (e) => {
+                            const file = (e.target as HTMLInputElement).files?.[0]
+                            if (!file) return
+                            try {
+                              setUploading(true)
+                              const url = await adminService.uploadFile(file, 'logos')
+                              if (url) setFormData({ ...formData, headerSuratUrl: url })
+                            } finally {
+                              setUploading(false)
+                            }
+                          }
+                          input.click()
+                        }}
+                        disabled={uploading}
+                        className="h-11 px-5 bg-white border border-slate-200 rounded-xl text-[13px] font-bold text-slate-700 flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
+                      >
+                        <Upload className="w-4 h-4 text-green-500" />
+                        Upload Kop Surat
+                      </button>
+                      <input 
+                        type="text" 
+                        placeholder="Link Kop Surat URL (https://...)" 
+                        className="flex-1 h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 transition-all"
+                        value={formData.headerSuratUrl || ''}
+                        onChange={(e) => setFormData({ ...formData, headerSuratUrl: e.target.value })}
+                      />
+                    </div>
+                  )}
+                  <p className="text-[11px] text-slate-400 font-medium italic">Kop surat akan digunakan secara otomatis pada cetak sertifikat dan laporan.</p>
                 </div>
               </div>
 
@@ -275,7 +343,7 @@ export default function PengaturanSekolah() {
                   />
                 </div>
 
-                <div>
+                <div className="md:col-span-1">
                   <label className="text-[13px] font-bold text-slate-600 mb-2 flex items-center gap-2">
                     <User className="w-3.5 h-3.5 text-[#00BCD4]" /> Kepala Sekolah
                   </label>
@@ -285,6 +353,20 @@ export default function PengaturanSekolah() {
                     className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[14px] font-medium text-slate-800 disabled:bg-slate-50/50"
                     value={formData.kepalaSekolah || ''}
                     onChange={(e) => setFormData({ ...formData, kepalaSekolah: e.target.value })}
+                  />
+                </div>
+
+                <div className="md:col-span-1">
+                  <label className="text-[13px] font-bold text-slate-600 mb-2 flex items-center gap-2">
+                    <Hash className="w-3.5 h-3.5 text-[#00BCD4]" /> NIP Kepala Sekolah
+                  </label>
+                  <input 
+                    disabled={!editing}
+                    type="text" 
+                    placeholder="Contoh: 1980..."
+                    className="w-full h-11 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[14px] font-medium text-slate-800 disabled:bg-slate-50/50"
+                    value={formData.nipKepalaSekolah || ''}
+                    onChange={(e) => setFormData({ ...formData, nipKepalaSekolah: e.target.value })}
                   />
                 </div>
 
@@ -314,7 +396,7 @@ export default function PengaturanSekolah() {
         {/* Right Column: Previews & Info */}
         <div className="space-y-6">
           {/* Header Preview Title Card */}
-          <div className="bg-white rounded-3xl border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6">
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-none p-6">
             <label className="text-[15px] font-bold text-slate-800 flex items-center gap-2 mb-1">
               <RefreshCw className="w-4 h-4 text-[#00BCD4]" /> Preview Tampilan
             </label>
@@ -322,13 +404,13 @@ export default function PengaturanSekolah() {
           </div>
 
           {/* Dashboard Header Preview Card */}
-          <div className="bg-white rounded-3xl border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 space-y-4">
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-none p-6 space-y-4">
             <label className="text-[12px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
               <Layout className="w-3.5 h-3.5 text-blue-400" /> Dashboard Header
             </label>
             <div className="p-4 bg-[#F8FAFC] rounded-2xl border border-slate-100 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center p-2 shrink-0">
-                <img src={formData.logoUrl || '/logo-placeholder.png'} alt="Logo" className="w-full h-full object-contain" />
+              <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center p-2 shrink-0 relative">
+                <Image src={formData.logoUrl || '/logo-placeholder.png'} alt="Logo" fill className="object-contain p-1" />
               </div>
               <div>
                 <h4 className="text-[14px] font-bold text-slate-800 leading-none">{formData.namaSekolah || 'Nama Sekolah'}</h4>
@@ -338,13 +420,13 @@ export default function PengaturanSekolah() {
           </div>
 
           {/* Document Header Preview Card */}
-          <div className="bg-white rounded-3xl border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 space-y-4">
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-none p-6 space-y-4">
             <label className="text-[12px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
               <FileText className="w-3.5 h-3.5 text-green-400" /> Header Rapor/Sertifikat
             </label>
             <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center text-center relative overflow-hidden">
-              <div className="w-12 h-12 mb-3 bg-slate-50 rounded-xl p-2 flex items-center justify-center">
-                <img src={formData.logoUrl || '/logo-placeholder.png'} alt="Logo" className="w-full h-full object-contain" />
+              <div className="w-12 h-12 mb-3 bg-slate-50 rounded-xl p-2 flex items-center justify-center relative">
+                <Image src={formData.logoUrl || '/logo-placeholder.png'} alt="Logo" fill className="object-contain p-1" />
               </div>
               <h4 className="text-[15px] font-extrabold text-slate-900 tracking-tight leading-none uppercase">{formData.namaSekolah || 'NAMA SEKOLAH'}</h4>
               <p className="text-[9px] text-slate-500 mt-2 leading-relaxed font-medium max-w-[200px]">
@@ -358,14 +440,14 @@ export default function PengaturanSekolah() {
           </div>
 
           {/* Print Footer Preview Card */}
-          <div className="bg-white rounded-3xl border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 space-y-4">
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-none p-6 space-y-4">
             <label className="text-[12px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
               <Printer className="w-3.5 h-3.5 text-purple-400" /> Dokumen Cetak
             </label>
             <div className="p-5 bg-[#F8FAFC] rounded-2xl border border-slate-100">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-white p-2 flex items-center justify-center border border-slate-100 shadow-sm">
-                  <img src={formData.logoUrl || '/logo-placeholder.png'} alt="Logo" className="w-full h-full object-contain" />
+                <div className="w-10 h-10 rounded-lg bg-white p-2 flex items-center justify-center border border-slate-100 shadow-sm relative">
+                  <Image src={formData.logoUrl || '/logo-placeholder.png'} alt="Logo" fill className="object-contain p-1" />
                 </div>
                 <div>
                   <h4 className="text-[13px] font-bold text-slate-800 leading-none">{formData.namaSekolah}</h4>

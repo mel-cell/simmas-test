@@ -65,7 +65,7 @@ export default function ManajemenUser() {
       </div>
 
       {/* Table Section */}
-      <div className="bg-white rounded-2xl border-0 shadow-[0_4px_24px_rgba(0,0,0,0.02)] overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-none overflow-hidden">
         <div className="p-6 lg:p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
@@ -75,7 +75,7 @@ export default function ManajemenUser() {
           </div>
           
           <div className="flex flex-wrap items-center gap-3">
-            <button className="h-11 px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[14px] flex items-center gap-2 hover:bg-[#00acc1] transition-all shadow-md shadow-[#00BCD4]/20">
+            <button className="h-11 px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[14px] flex items-center gap-2 hover:bg-[#00acc1] transition-all shadow-none border border-[#00BCD4]/10">
               <Plus className="w-4 h-4" />
               Tambah User
             </button>

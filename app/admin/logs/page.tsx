@@ -115,7 +115,7 @@ export default function ActivityLogs() {
       </div>
 
       {/* Filter Section */}
-      <div className="bg-white rounded-2xl border-0 shadow-[0_4px_24px_rgba(0,0,0,0.02)] p-6 lg:p-8">
+      <div className="bg-white rounded-2xl border shadow-none border border-slate-100 p-6 lg:p-8">
         <label className="flex items-center gap-2 text-[15px] font-bold text-slate-800 mb-5">
           <Filter className="w-4 h-4 text-[#00BCD4]" />
           Filters
@@ -166,7 +166,7 @@ export default function ActivityLogs() {
       </div>
 
       {/* Timeline Section */}
-      <div className="bg-white rounded-2xl border-0 shadow-[0_4px_24px_rgba(0,0,0,0.02)] overflow-hidden">
+      <div className="bg-white rounded-2xl border shadow-none border border-slate-100 overflow-hidden">
         <div className="p-6 lg:p-8 border-b border-slate-50 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
