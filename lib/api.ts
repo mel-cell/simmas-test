@@ -1,4 +1,4 @@
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData, InternshipStats, UserProfileData } from '@/types/admin'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData, InternshipStats, UserProfileData, ActivityLog, ActivityStats } from '@/types/admin'
 
 // Konfigurasi dasar fetch
 const fetcher = async <T>(url: string, options?: RequestInit): Promise<T> => {
@@ -63,6 +63,11 @@ export type UserDataResponse = {
   users: UserProfileData[]
 }
 
+export type ActivityLogDataResponse = {
+  stats: ActivityStats
+  logs: ActivityLog[]
+}
+
 // Sentralisasi semua panggilan API (Client-Side)
 export const api = {
   admin: {
@@ -86,6 +91,13 @@ export const api = {
     getUsers: (params?: { query?: string, role?: string }) => {
       const searchParams = new URLSearchParams(params as Record<string, string>).toString()
       return fetcher<UserDataResponse>(`/api/admin/users?${searchParams}`)
+    },
+    getLogs: (params?: { query?: string, action?: string, entity?: string }) => {
+      const searchParams = new URLSearchParams(params as Record<string, string>).toString()
+      return fetcher<ActivityLogDataResponse>(`/api/admin/logs?${searchParams}`)
+    },
+    clearLogs: () => {
+      return fetcher<{ success: boolean }>('/api/admin/logs', { method: 'DELETE' })
     },
   },
 }

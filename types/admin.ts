@@ -94,3 +94,19 @@ export type UserProfileData = {
   isVerified: boolean
   createdAt: string
 }
+
+export type ActivityLog = {
+  id: string
+  userName: string
+  action: string
+  entityType: string
+  details: string
+  createdAt: string
+}
+
+export type ActivityStats = {
+  total: number
+  created: number
+  updated: number
+  deleted: number
+}

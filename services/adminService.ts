@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, StudentStats, SiswaData, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData } from '@/types/admin'
+import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, StudentStats, SiswaData, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData, ActivityLog, ActivityStats } from '@/types/admin'
 
 export const adminService = {
   getDashboardStats: async (): Promise<AdminStats> => {
@@ -517,5 +517,79 @@ export const adminService = {
       isVerified: true, // Assuming default true for now as in the screenshot mockups
       createdAt: u.created_at
     }))
+  },
+
+  getActivityStats: async (): Promise<ActivityStats> => {
+    const { count: total } = await supabase.from('activity_logs').select('*', { count: 'exact', head: true })
+    const { count: created } = await supabase.from('activity_logs').select('*', { count: 'exact', head: true }).ilike('action', '%create%')
+    const { count: updated } = await supabase.from('activity_logs').select('*', { count: 'exact', head: true }).ilike('action', '%update%')
+    const { count: deleted } = await supabase.from('activity_logs').select('*', { count: 'exact', head: true }).ilike('action', '%delete%')
+
+    return {
+      total: total || 0,
+      created: created || 0,
+      updated: updated || 0,
+      deleted: deleted || 0
+    }
+  },
+
+  getAllLogs: async (filters?: { query?: string, action?: string, entity?: string }): Promise<ActivityLog[]> => {
+    let query = supabase
+      .from('activity_logs')
+      .select(`
+        id,
+        action,
+        entity_type,
+        details,
+        created_at,
+        profiles (full_name)
+      `)
+
+    if (filters?.action && filters.action !== 'all') {
+      query = query.ilike('action', `%${filters.action}%`)
+    }
+
+    if (filters?.entity && filters.entity !== 'all') {
+      query = query.eq('entity_type', filters.entity)
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false })
+
+    if (error || !data) return []
+
+    let results: ActivityLog[] = (data as {
+      id: string;
+      action: string;
+      entity_type: string | null;
+      details: unknown;
+      created_at: string;
+      profiles: { full_name: string }[] | { full_name: string } | null;
+    }[]).map((l) => {
+      const profile = Array.isArray(l.profiles) ? l.profiles[0] : l.profiles;
+      return {
+        id: l.id,
+        userName: profile?.full_name || 'System',
+        action: l.action,
+        entityType: l.entity_type || '-',
+        details: typeof l.details === 'object' ? JSON.stringify(l.details) : String(l.details || '-'),
+        createdAt: l.created_at
+      }
+    })
+
+    if (filters?.query) {
+      const q = filters.query.toLowerCase()
+      results = results.filter((r: ActivityLog) => 
+        r.userName.toLowerCase().includes(q) || 
+        r.action.toLowerCase().includes(q) || 
+        r.details.toLowerCase().includes(q)
+      )
+    }
+
+    return results
+  },
+
+  clearLogs: async (): Promise<boolean> => {
+    const { error } = await supabase.from('activity_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000') // Deleting all rows
+    return !error
   }
 }
