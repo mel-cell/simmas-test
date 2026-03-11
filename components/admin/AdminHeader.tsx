@@ -9,19 +9,42 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { supabase } from '@/lib/supabase'
+import { authService } from '@/services/authService'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { useSchoolSettings } from '@/components/providers/SchoolSettingsProvider'
 
 export function AdminHeader() {
   const { toggleSidebar } = useSidebar()
   const router = useRouter()
+  const [profile, setProfile] = useState<{ full_name: string, role: string } | null>(null)
+
+  useEffect(() => {
+    async function fetchProfile() {
+      const data = await authService.getProfile()
+      if (data) {
+        setProfile({
+          full_name: data.profile?.full_name || 'Admin',
+          role: data.profile?.role || 'Admin'
+        })
+      }
+    }
+    fetchProfile()
+  }, [])
+
   const { settings, loading } = useSchoolSettings()
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push('/auth/login')
+    try {
+      await authService.signOut()
+      router.push('/auth/login')
+    } catch (e) {
+      console.error(e)
+    }
   }
+
+  const userName = profile?.full_name || 'Memuat...'
+  const userRole = profile?.role || ''
 
   return (
     <header className="h-[90px] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 bg-white border-b border-slate-100 shadow-none max-w-full">
@@ -72,14 +95,14 @@ export function AdminHeader() {
               <UserCircle className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div className="text-start hidden lg:block">
-              <p className="text-[13px] sm:text-[14px] font-bold text-[#1e293b] leading-tight">Admin Sistem</p>
-              <p className="text-[11px] sm:text-[12px] text-slate-500 font-medium">Admin</p>
+              <p className="text-[13px] sm:text-[14px] font-bold text-[#1e293b] leading-tight">{userName}</p>
+              <p className="text-[11px] sm:text-[12px] text-slate-500 font-medium capitalize">{userRole.toLowerCase()}</p>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px] sm:w-[220px] rounded-2xl p-0 overflow-hidden shadow-xl border border-slate-100 mt-2 bg-white z-100">
             <div className="px-6 py-5 bg-white border-b border-slate-50">
-              <p className="text-[16px] font-bold text-[#1e293b] leading-tight">Admin Sistem</p>
-              <p className="text-[14px] text-slate-500 font-medium mt-1">Admin</p>
+              <p className="text-[16px] font-bold text-[#1e293b] leading-tight">{userName}</p>
+              <p className="text-[14px] text-slate-500 font-medium mt-1 capitalize">{userRole.toLowerCase()}</p>
             </div>
             <div className="p-1.5">
               <DropdownMenuItem 

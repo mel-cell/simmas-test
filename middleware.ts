@@ -83,9 +83,9 @@ export async function middleware(request: NextRequest) {
     const role = profile?.role;
 
     // Tentukan dashboard url berdasarkan role
-    let dashboardUrl = '/siswa';
+    let dashboardUrl = '/siswa/dashboard';
     if (role === 'ADMIN') dashboardUrl = '/admin/dashboard';
-    else if (role === 'GURU') dashboardUrl = '/guru';
+    else if (role === 'GURU') dashboardUrl = '/guru/dashboard';
 
     // A. Jika mencoba akses root atau auth saat sudah login, arahkan ke dashboard
     if (isRootRoute || isAuthRoute) {
