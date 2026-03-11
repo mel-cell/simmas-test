@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Menu, UserCircle, LogOut, Loader2 } from 'lucide-react'
+import { Bell, Menu, LogOut, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/components/ui/sidebar'
 import {

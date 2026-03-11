@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase'
-import { createBrowserClient } from '@supabase/ssr'
 import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings } from '@/types/admin'
 
 export const adminService = {

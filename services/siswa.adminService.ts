@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase'
-import { createClient } from '@supabase/supabase-js'
 import { StudentStats, SiswaData, SiswaInput } from '@/types/admin'
 
 export const siswaAdminService = {
@@ -120,7 +119,7 @@ export const siswaAdminService = {
       // We will use an RPC function to bypass auth directly inside the database
       const dummyPassword = data.nis + '!Simmas123'
       
-      const { data: result, error } = await supabase.rpc('create_siswa_bypassing_auth', {
+      const { error } = await supabase.rpc('create_siswa_bypassing_auth', {
         p_email: data.email,
         p_password: dummyPassword,
         p_nama: data.nama,
