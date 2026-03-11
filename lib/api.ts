@@ -131,6 +131,24 @@ export const api = {
         body: JSON.stringify({ id })
       })
     },
+    createTeacher: (teacher: Partial<GuruData> & { nip: string, nama: string, email: string }) => {
+      return fetcher<{ success: boolean }>('/api/admin/guru', {
+        method: 'POST',
+        body: JSON.stringify(teacher)
+      })
+    },
+    updateTeacher: (id: string, teacher: Partial<GuruData>) => {
+      return fetcher<{ success: boolean }>('/api/admin/guru', {
+        method: 'PATCH',
+        body: JSON.stringify({ id, ...teacher })
+      })
+    },
+    deleteTeacher: (id: string) => {
+      return fetcher<{ success: boolean }>('/api/admin/guru', {
+        method: 'DELETE',
+        body: JSON.stringify({ id })
+      })
+    },
     getTeacherOptions: () => {
       return fetcher<{ id: string, nama: string }[]>('/api/admin/guru/options')
     },

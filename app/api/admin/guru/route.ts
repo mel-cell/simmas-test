@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { adminService } from '@/services/adminService'
+import { guruAdminService } from '@/services/guru.adminService'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -8,8 +8,8 @@ export async function GET(request: Request) {
 
   try {
     const [stats, teachers] = await Promise.all([
-      adminService.getTeacherStats(),
-      adminService.getAllGuru({ query, status })
+      guruAdminService.getTeacherStats(),
+      guruAdminService.getAllGuru({ query, status })
     ])
 
     return NextResponse.json({
@@ -22,5 +22,40 @@ export async function GET(request: Request) {
       { error: 'Gagal mengambil data guru' },
       { status: 500 }
     )
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+    const success = await guruAdminService.createGuru(body)
+    return NextResponse.json({ success })
+  } catch (error) {
+    console.error('Error creating guru:', error)
+    return NextResponse.json({ error: 'Gagal membuat data guru' }, { status: 500 })
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json()
+    const { id, ...data } = body
+    const success = await guruAdminService.updateGuru(id, data)
+    return NextResponse.json({ success })
+  } catch (error) {
+    console.error('Error updating guru:', error)
+    return NextResponse.json({ error: 'Gagal memperbarui data guru' }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json()
+    const { id } = body
+    const success = await guruAdminService.deleteGuru(id)
+    return NextResponse.json({ success })
+  } catch (error) {
+    console.error('Error deleting guru:', error)
+    return NextResponse.json({ error: 'Gagal menghapus data guru' }, { status: 500 })
   }
 }

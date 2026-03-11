@@ -237,3 +237,56 @@ EXCEPTION
     RAISE EXCEPTION 'Gagal membuat user: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.create_guru_bypassing_auth(
+  p_email text,
+  p_password text,
+  p_nama text,
+  p_nip text,
+  p_nohp text,
+  p_mata_pelajaran text,
+  p_alamat text,
+  p_status text
+) RETURNS uuid AS $$
+DECLARE
+  new_user_id uuid;
+  encrypted_pw text;
+BEGIN
+  -- Enkripsi password untuk auth.users
+  encrypted_pw := crypt(p_password, gen_salt('bf'));
+  new_user_id := gen_random_uuid();
+
+  -- Insert ke tabel internal auth.users
+  INSERT INTO auth.users (
+    instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
+    last_sign_in_at, raw_app_meta_data, raw_user_meta_data, 
+    created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token
+  ) VALUES (
+    '00000000-0000-0000-0000-000000000000', new_user_id, 'authenticated', 'authenticated', p_email, encrypted_pw, now(), 
+    now(), '{"provider":"email","providers":["email"]}', 
+    '{}', now(), now(), '', '', '', ''
+  );
+
+  -- Insert ke auth.identities
+  INSERT INTO auth.identities (
+    id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at
+  ) VALUES (
+    gen_random_uuid(), new_user_id, format('{"sub":"%s","email":"%s"}', new_user_id::text, p_email)::jsonb, 
+    'email', new_user_id, now(), now(), now()
+  );
+
+  -- Insert ke public.profiles
+  INSERT INTO public.profiles (
+    id, full_name, email, role, nomor_induk, jurusan, no_telp, alamat, status
+  ) VALUES (
+    new_user_id, p_nama, p_email, 'GURU', p_nip, p_mata_pelajaran, p_nohp, p_alamat, p_status
+  );
+
+  RETURN new_user_id;
+
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE EXCEPTION 'Gagal membuat user guru: %', SQLERRM;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

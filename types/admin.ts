@@ -141,3 +141,13 @@ export interface SiswaInput {
   guru_id?: string | null
   dudi_id?: string | null
 }
+
+export interface GuruInput {
+  nip: string
+  nama: string
+  mataPelajaran: string
+  email: string
+  nohp: string
+  status: string
+  alamat?: string
+}
