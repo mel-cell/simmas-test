@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { StudentStats, SiswaData, SiswaInput } from '@/types/admin'
+import { logActivity } from './activityLogger'
 
 export const siswaAdminService = {
   getStudentStats: async (): Promise<StudentStats> => {
@@ -119,7 +120,7 @@ export const siswaAdminService = {
       // We will use an RPC function to bypass auth directly inside the database
       const dummyPassword = data.nis + '!Simmas123'
       
-      const { error } = await supabase.rpc('create_siswa_bypassing_auth', {
+      const { data: newUserId, error } = await supabase.rpc('create_siswa_bypassing_auth', {
         p_email: data.email,
         p_password: dummyPassword,
         p_nama: data.nama,
@@ -138,6 +139,7 @@ export const siswaAdminService = {
         return false
       }
 
+      await logActivity('Create', 'Siswa', newUserId as string, data)
       return true
     } catch (error) {
       console.error('Error in createSiswa:', error)
@@ -194,6 +196,7 @@ export const siswaAdminService = {
       }
     }
 
+    await logActivity('Update', 'Siswa', id, data)
     return true
   },
 
@@ -206,6 +209,10 @@ export const siswaAdminService = {
       .from('profiles')
       .delete()
       .eq('id', id)
+
+    if (!error) {
+      await logActivity('Delete', 'Siswa', id, { id })
+    }
 
     return !error
   }

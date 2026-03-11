@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings } from '@/types/admin'
+import { logActivity } from './activityLogger'
 
 export const adminService = {
   getDashboardStats: async (): Promise<AdminStats> => {
@@ -435,7 +436,7 @@ export const adminService = {
     }
   },
 
-  getAllLogs: async (filters?: { query?: string, action?: string, entity?: string }): Promise<ActivityLog[]> => {
+  getAllLogs: async (filters?: { query?: string, action?: string, entity?: string, limit?: number }): Promise<ActivityLog[]> => {
     let query = supabase
       .from('activity_logs')
       .select(`
@@ -453,6 +454,10 @@ export const adminService = {
 
     if (filters?.entity && filters.entity !== 'all') {
       query = query.eq('entity_type', filters.entity)
+    }
+
+    if (filters?.limit) {
+      query = query.limit(filters.limit)
     }
 
     const { data, error } = await query.order('created_at', { ascending: false })
@@ -473,18 +478,21 @@ export const adminService = {
         userName: profile?.full_name || 'System',
         action: l.action,
         entityType: l.entity_type || '-',
-        details: typeof l.details === 'object' ? JSON.stringify(l.details) : String(l.details || '-'),
+        details: l.details || '-',
         createdAt: l.created_at
       }
     })
 
     if (filters?.query) {
       const q = filters.query.toLowerCase()
-      results = results.filter((r: ActivityLog) => 
-        r.userName.toLowerCase().includes(q) || 
-        r.action.toLowerCase().includes(q) || 
-        r.details.toLowerCase().includes(q)
-      )
+      results = results.filter((r: ActivityLog) => {
+        const detailsStr = typeof r.details === 'object' ? JSON.stringify(r.details).toLowerCase() : String(r.details).toLowerCase()
+        return (
+          r.userName.toLowerCase().includes(q) || 
+          r.action.toLowerCase().includes(q) || 
+          detailsStr.includes(q)
+        )
+      })
     }
 
     return results
@@ -537,6 +545,10 @@ export const adminService = {
       .from('sekolah_settings')
       .update(updateData)
       .eq('id', 1)
+
+    if (!error) {
+      await logActivity('Update', 'Pengaturan', '1', updateData)
+    }
 
     return !error
   },

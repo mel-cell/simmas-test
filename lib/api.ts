@@ -96,6 +96,28 @@ export const api = {
       const searchParams = new URLSearchParams(params as Record<string, string>).toString()
       return fetcher<UserDataResponse>(`/api/admin/users?${searchParams}`)
     },
+
+    // pengguna
+    createUser: (user: Record<string, unknown>) => {
+      return fetcher<{ success: boolean }>('/api/admin/users', {
+        method: 'POST',
+        body: JSON.stringify(user)
+      })
+    },
+    updateUser: (id: string, user: Record<string, unknown>) => {
+      return fetcher<{ success: boolean }>('/api/admin/users', {
+        method: 'PATCH',
+        body: JSON.stringify({ id, ...user })
+      })
+    },
+    deleteUser: (id: string) => {
+      return fetcher<{ success: boolean }>('/api/admin/users', {
+        method: 'DELETE',
+        body: JSON.stringify({ id })
+      })
+    },
+
+    // logs
     getLogs: (params?: { query?: string, action?: string, entity?: string }) => {
       const searchParams = new URLSearchParams(params as Record<string, string>).toString()
       return fetcher<ActivityLogDataResponse>(`/api/admin/logs?${searchParams}`)

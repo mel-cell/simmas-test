@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { InternshipStats, RecentMagang, MagangInput } from '@/types/admin'
+import { logActivity } from './activityLogger'
 
 export const magangAdminService = {
   getInternshipStats: async (): Promise<InternshipStats> => {
@@ -108,7 +109,7 @@ export const magangAdminService = {
     // Optional guru
     const guru_id = data.guru_id === '' ? null : data.guru_id;
 
-    const { error } = await supabase
+    const { data: newMagang, error } = await supabase
       .from('magang')
       .insert({
         siswa_id: data.siswa_id,
@@ -118,12 +119,15 @@ export const magangAdminService = {
         tgl_selesai: data.tgl_selesai,
         status: data.status || 'menunggu'
       })
+      .select('id')
+      .single()
 
     if (error) {
       console.error('Error creating magang:', error)
       return false
     }
 
+    await logActivity('Create', 'Magang', newMagang?.id, data)
     return true
   },
 
@@ -145,6 +149,8 @@ export const magangAdminService = {
       console.error('Error updating magang:', error)
       return false
     }
+    
+    await logActivity('Update', 'Magang', id, updateData)
     return true
   },
 
@@ -158,6 +164,8 @@ export const magangAdminService = {
       console.error('Error deleting magang:', error)
       return false
     }
+    
+    await logActivity('Delete', 'Magang', id, { id })
     return true
   },
   

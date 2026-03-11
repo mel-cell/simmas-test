@@ -109,7 +109,7 @@ export type ActivityLog = {
   userName: string
   action: string
   entityType: string
-  details: string
+  details: any
   createdAt: string
 }
 
@@ -174,5 +174,13 @@ export interface MagangInput {
   tgl_mulai: string
   tgl_selesai: string
   status: string
+}
+
+export interface UserInput {
+  fullName: string
+  email: string
+  role: string
+  password?: string
+  isVerified: boolean
 }
 

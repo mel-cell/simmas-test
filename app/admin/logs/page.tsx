@@ -62,9 +62,9 @@ export default function ActivityLogs() {
 
   const getActionColor = (action: string) => {
     const act = action.toLowerCase()
-    if (act.includes('create') || act.includes('tambah')) return 'bg-green-50 text-green-600 border-green-100'
-    if (act.includes('update') || act.includes('edit') || act.includes('ubah')) return 'bg-blue-50 text-blue-600 border-blue-100'
-    if (act.includes('delete') || act.includes('hapus')) return 'bg-red-50 text-red-600 border-red-100'
+    if (act.includes('create') || act.includes('tambah') || act.includes('add')) return 'bg-green-50 text-green-600 border-green-100'
+    if (act.includes('update') || act.includes('edit') || act.includes('ubah') || act.includes('patch')) return 'bg-blue-50 text-blue-600 border-blue-100'
+    if (act.includes('delete') || act.includes('hapus') || act.includes('remove')) return 'bg-red-50 text-red-600 border-red-100'
     return 'bg-slate-50 text-slate-600 border-slate-100'
   }
 
@@ -160,11 +160,12 @@ export default function ActivityLogs() {
               className="w-full h-11 px-4 bg-slate-50 border-0 rounded-xl text-[13px] sm:text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 appearance-none cursor-pointer"
             >
               <option value="all">Semua Entitas</option>
-              <option value="SISWA">Pihak Siswa</option>
-              <option value="GURU">Pihak Guru</option>
-              <option value="DUDI">Pihak Industri</option>
-              <option value="MAGANG">Data Magang</option>
-              <option value="LOGBOOK">Catatan Logbook</option>
+              <option value="SISWA">Siswa</option>
+              <option value="GURU">Guru</option>
+              <option value="DUDI">DUDI / Industri</option>
+              <option value="MAGANG">Magang</option>
+              <option value="PENGGUNA">Pengguna</option>
+              <option value="PENGATURAN">Pengaturan</option>
             </select>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
@@ -246,9 +247,20 @@ export default function ActivityLogs() {
                         </div>
                       </div>
                       
-                      <p className="text-[13px] text-slate-600 leading-relaxed font-medium italic border-l-2 border-slate-200 pl-3 py-1">
-                        &quot;{log.details}&quot;
-                      </p>
+                      <div className="text-[13px] text-slate-600 leading-relaxed font-medium border-l-4 border-[#00BCD4]/20 pl-4 py-2 bg-white/50 rounded-r-xl">
+                        {typeof log.details === 'object' ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
+                            {Object.entries(log.details).map(([key, value]) => (
+                              <div key={key} className="flex items-start gap-2 border-b border-slate-100 last:border-0 py-1">
+                                <span className="text-[11px] font-extrabold text-[#94A3B8] uppercase tracking-wider min-w-[80px] pt-0.5">{key}:</span>
+                                <span className="text-slate-700 break-all">{String(value)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="italic">&quot;{log.details}&quot;</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

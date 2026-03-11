@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { DudiStats, ActiveDudi, DudiInput } from '@/types/admin'
+import { logActivity } from './activityLogger'
 
 export const dudiAdminService = {
   getDudiStats: async (): Promise<DudiStats> => {
@@ -85,7 +86,7 @@ export const dudiAdminService = {
 
   createDudi: async (data: DudiInput): Promise<boolean> => {
     try {
-      const { error } = await supabase
+      const { data: newDudi, error } = await supabase
         .from('dudi')
         .insert({
           nama_perusahaan: data.namaPerusahaan,
@@ -95,12 +96,15 @@ export const dudiAdminService = {
           no_telp: data.noTelp,
           is_active: data.status
         })
+        .select('id')
+        .single()
 
       if (error) {
         console.error('Error creating DUDI:', error)
         return false
       }
 
+      await logActivity('Create', 'DUDI', newDudi?.id, data)
       return true
     } catch (error) {
       console.error('Error in createDudi:', error)
@@ -127,6 +131,8 @@ export const dudiAdminService = {
         console.error('Error updating DUDI:', error)
         return false
       }
+      
+      await logActivity('Update', 'DUDI', id, updateData)
       return true
     } catch (error) {
       console.error('Error in updateDudi:', error)
@@ -150,6 +156,8 @@ export const dudiAdminService = {
         console.error('Error deleting DUDI:', error)
         return false
       }
+      
+      await logActivity('Delete', 'DUDI', id, { id })
       return true
     } catch(error) {
       console.error('Error in deleteDudi:', error)

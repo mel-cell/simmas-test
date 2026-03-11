@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { TeacherStats, GuruData, GuruInput } from '@/types/admin'
+import { logActivity } from './activityLogger'
 
 export const guruAdminService = {
   getTeacherStats: async (): Promise<TeacherStats> => {
@@ -91,7 +92,7 @@ export const guruAdminService = {
     try {
       const dummyPassword = data.nip + '!SimmasG123'
       
-      const { error } = await supabase.rpc('create_guru_bypassing_auth', {
+      const { data: newUserId, error } = await supabase.rpc('create_guru_bypassing_auth', {
         p_email: data.email,
         p_password: dummyPassword,
         p_nama: data.nama,
@@ -107,6 +108,7 @@ export const guruAdminService = {
         return false
       }
 
+      await logActivity('Create', 'Guru', newUserId as string, data)
       return true
     } catch (error) {
       console.error('Error in createGuru:', error)
@@ -133,6 +135,8 @@ export const guruAdminService = {
       console.error('Error updating profile:', pError)
       return false
     }
+    
+    await logActivity('Update', 'Guru', id, data)
     return true
   },
 
@@ -145,6 +149,10 @@ export const guruAdminService = {
       .delete()
       .eq('id', id)
       .eq('role', 'GURU')
+
+    if (!error) {
+      await logActivity('Delete', 'Guru', id, { id })
+    }
 
     return !error
   }
