@@ -35,12 +35,18 @@ export type InternshipStats = {
 
 export type RecentMagang = {
   id: string
+  // IDs for editing
+  siswa_id?: string
+  dudi_id?: string
+  guru_id?: string | null
+  
+  // Display names
   namaSiswa: string
   dudi: string
   pembimbing: string
   startDate: string
   endDate: string
-  status: 'aktif' | 'selesai' | 'dibatalkan' | string
+  status: 'aktif' | 'selesai' | 'dibatalkan' | 'menunggu' | string
 }
 
 export type RecentLogbook = {
@@ -151,3 +157,22 @@ export interface GuruInput {
   status: string
   alamat?: string
 }
+
+export interface DudiInput {
+  namaPerusahaan: string
+  alamat: string
+  penanggungJawab: string
+  email: string
+  noTelp: string
+  status: boolean
+}
+
+export interface MagangInput {
+  siswa_id: string
+  guru_id?: string | null
+  dudi_id: string
+  tgl_mulai: string
+  tgl_selesai: string
+  status: string
+}
+

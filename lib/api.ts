@@ -149,11 +149,54 @@ export const api = {
         body: JSON.stringify({ id })
       })
     },
+
+    // dudi
+    createDudi: (dudi: Partial<ActiveDudi> & { namaPerusahaan: string, alamat: string }) => {
+      return fetcher<{ success: boolean }>('/api/admin/dudi', {
+        method: 'POST',
+        body: JSON.stringify(dudi)
+      })
+    },
+    updateDudi: (id: string, dudi: Partial<ActiveDudi>) => {
+      return fetcher<{ success: boolean }>('/api/admin/dudi', {
+        method: 'PATCH',
+        body: JSON.stringify({ id, ...dudi })
+      })
+    },
+    deleteDudi: (id: string) => {
+      return fetcher<{ success: boolean }>('/api/admin/dudi', {
+        method: 'DELETE',
+        body: JSON.stringify({ id })
+      })
+    },
     getTeacherOptions: () => {
       return fetcher<{ id: string, nama: string }[]>('/api/admin/guru/options')
     },
     getDudiOptions: () => {
       return fetcher<{ id: string, name: string }[]>('/api/admin/dudi/options')
+    },
+
+    // siswa
+    getSiswaOptions: () => {
+      return fetcher<{ id: string, nama: string }[]>('/api/admin/siswa/options')
+    },
+    createInternship: (internship: Record<string, unknown>) => {
+      return fetcher<{ success: boolean }>('/api/admin/magang', {
+        method: 'POST',
+        body: JSON.stringify(internship)
+      })
+    },
+    updateInternship: (id: string, internship: Record<string, unknown>) => {
+      return fetcher<{ success: boolean }>('/api/admin/magang', {
+        method: 'PATCH',
+        body: JSON.stringify({ id, ...internship })
+      })
+    },
+    deleteInternship: (id: string) => {
+      return fetcher<{ success: boolean }>('/api/admin/magang', {
+        method: 'DELETE',
+        body: JSON.stringify({ id })
+      })
     },
   },
 }
