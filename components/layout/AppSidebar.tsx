@@ -24,7 +24,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
 } from '@/components/ui/sidebar'
-import { useEffect, useState } from 'react'
 
 const adminNavItems = [
   { title: 'Dashboard', subtitle: 'Ringkasan sistem', url: '/admin/dashboard', icon: LayoutDashboard },

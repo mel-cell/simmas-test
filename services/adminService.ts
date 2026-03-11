@@ -179,7 +179,7 @@ export const adminService = {
         email,
         no_telp,
         status,
-        magang_count:magang(count)
+        magang_count:magang!magang_guru_id_fkey(count)
       `)
       .eq('role', 'GURU')
 

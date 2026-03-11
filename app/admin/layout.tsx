@@ -12,9 +12,9 @@ export default function AdminLayout({
     <SidebarProvider style={{ "--sidebar-width": "17.5rem" } as React.CSSProperties}>
       <TooltipProvider>
         <AppSidebar />
-        <SidebarInset className="bg-[#F8FAFC] flex-1">
+        <SidebarInset className="bg-[#F8FAFC] flex-1 overflow-hidden">
           <AppHeader />
-          <main className="flex-1 overflow-y-auto p-4 md:p-8 w-full max-w-[1600px] mx-auto">
+          <main className="flex-1 overflow-y-auto p-6 md:p-8 w-full">
             {children}
           </main>
         </SidebarInset>

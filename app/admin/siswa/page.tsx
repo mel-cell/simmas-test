@@ -292,12 +292,30 @@ export default function ManajemenSiswa() {
                     </div>
                   </td>
                   <td className="px-6 py-5">
-                    <div className="flex flex-col gap-1.5 max-w-[220px]">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[12px] font-bold text-slate-700 line-clamp-1">Guru {siswa.pembimbing && siswa.pembimbing !== '-' ? `#${siswa.pembimbing}` : '#--'}</span>
+                    <div className="flex flex-col gap-2 max-w-[220px]">
+                      <div className="flex items-center">
+                        {siswa.pembimbing && siswa.pembimbing !== '-' ? (
+                          <span className="text-[12px] font-bold text-slate-700 line-clamp-1 flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></div>
+                            {siswa.pembimbing}
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 text-[10px] font-bold border border-rose-100 uppercase tracking-wider w-fit">
+                            Belum Ada Guru
+                          </span>
+                        )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-slate-500 font-bold line-clamp-1">{siswa.dudi && siswa.dudi !== '-' ? siswa.dudi : 'DUDI #--'}</span>
+                      <div className="flex items-center">
+                        {siswa.dudi && siswa.dudi !== '-' ? (
+                          <span className="text-[11px] text-slate-500 font-bold line-clamp-1 flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0"></div>
+                            {siswa.dudi}
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold border border-slate-200 uppercase tracking-wider w-fit">
+                            Belum Ada DUDI
+                          </span>
+                        )}
                       </div>
                     </div>
                   </td>

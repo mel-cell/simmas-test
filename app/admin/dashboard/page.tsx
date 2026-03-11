@@ -6,14 +6,17 @@ import {
   GraduationCap, 
   BookOpen,
   CalendarDays,
+  ArrowRight
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi } from '@/types/admin'
 import { format } from 'date-fns'
+import { id } from 'date-fns/locale'
 import { api } from '@/lib/api'
 import { StatCard } from '@/components/admin/StatCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSchoolSettings } from '@/components/providers/SchoolSettingsProvider'
+import Link from 'next/link'
 
 export default function AdminDashboard() {
   const { settings, loading: settingsLoading } = useSchoolSettings()
@@ -42,241 +45,262 @@ export default function AdminDashboard() {
   }, [])
 
   return (
-    <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-[24px] sm:text-[28px] font-bold text-slate-800 tracking-tight">Dashboard</h2>
-        <div className="flex items-center gap-2">
-          <p className="text-[13px] sm:text-[14px] text-slate-500 font-medium">
-            Selamat datang di sistem pelaporan magang siswa
-          </p>
-          {settingsLoading ? <Skeleton className="h-4 w-32" /> : (
-            <span className="text-[13px] sm:text-[14px] font-bold text-[#00A3B8]">
-              {settings?.namaSekolah || 'SMK Negeri 1 Surabaya'}
-            </span>
-          )}
+    <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12 font-sans">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-[28px] font-extrabold text-[#0F172A] tracking-tight">Dashboard</h2>
+          <div className="flex items-center gap-2">
+            <p className="text-[14px] text-[#64748B] font-medium">
+              Ringkasan aktivitas sistem magang — {settingsLoading ? <Skeleton className="h-4 w-32 inline-block align-middle" /> : <span>{settings?.namaSekolah || 'SMK Negeri 1 Surabaya'}</span>}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E2E8F0] shadow-sm hover:border-[#BFDBFE] transition-colors rounded-[14px]">
+          <CalendarDays className="w-4 h-4 text-[#94A3B8]" />
+          <span className="text-[13px] font-medium text-[#475569]">
+            {format(new Date(), "EEEE, dd MMMM yyyy", { locale: id })}
+          </span>
         </div>
       </div>
 
+      {/* Stats Cards Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <StatCard 
           loading={loading}
           title="Total Siswa" 
           value={stats?.totalSiswa || 0} 
-          description="Seluruh siswa terdaftar" 
+          description="Seluruh siswa terdaftar dalam sistem" 
           icon={Users} 
-          color="text-[#00A3B8]"
         />
         <StatCard 
           loading={loading}
-          title="DUDI Partner" 
+          title="Perusahaan Mitra" 
           value={stats?.totalDudi || 0} 
-          description="Perusahaan mitra" 
+          description="DUDI aktif yang bermitra" 
           icon={Building2} 
-          color="text-[#00A3B8]"
         />
         <StatCard 
           loading={loading}
           title="Siswa Magang" 
           value={stats?.siswaMagang || 0} 
-          description="Sedang aktif magang" 
+          description="Sedang aktif menjalani magang" 
           icon={GraduationCap} 
-          color="text-[#00A3B8]"
         />
         <StatCard 
           loading={loading}
           title="Logbook Hari Ini" 
           value={stats?.logbookHariIni || 0} 
-          description="Laporan masuk hari ini" 
+          description="Laporan yang masuk hari ini" 
           icon={BookOpen} 
-          color="text-[#00A3B8]"
         />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        
-        {/* Konten Kiri (2/3 width on desktop) */}
+        {/* Left Column (2/3 width) */}
         <div className="xl:col-span-2 space-y-6">
           
-          {/* Magang Terbaru */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 lg:p-8 shadow-none">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-cyan-50 flex items-center justify-center">
-                <GraduationCap className="w-4 h-4 text-[#00A3B8]" />
+          {/* Magang Terbaru Table */}
+          <div className="bg-white border border-[#E2E8F0] hover:border-[#BFDBFE] hover:shadow-md transition-all duration-300 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#EFF6FF] border border-[#DBEAFE] flex items-center justify-center">
+                  <GraduationCap className="w-5 h-5 text-[#2563EB]" />
+                </div>
+                <div>
+                  <h3 className="text-[15px] font-bold text-[#0F172A]">Magang Terbaru</h3>
+                  <p className="text-[12px] text-[#64748B] font-medium mt-0.5">Penempatan magang terakhir</p>
+                </div>
               </div>
-              <h3 className="text-[16px] font-bold text-slate-800">Magang Terbaru</h3>
+              <Link href="/admin/magang" className="text-[13px] font-bold text-[#2563EB] hover:text-[#1E40AF] flex items-center gap-1 group">
+                Lihat Semua <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
 
-            <div className="space-y-4">
-              {loading ? (
-                Array(3).fill(0).map((_, i) => (
-                  <div key={i} className="p-4 rounded-xl border border-slate-50 bg-slate-50/30 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <Skeleton className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-32 sm:w-48" />
-                        <Skeleton className="h-3 w-24 sm:w-32" />
-                      </div>
-                    </div>
-                    <Skeleton className="h-5 w-16 rounded" />
-                  </div>
-                ))
-              ) : (
-                <>
-                  {recent.map((item, idx) => (
-                    <div key={idx} className="p-4 lg:p-5 rounded-xl border border-slate-100 bg-[#FAFAFA] flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#00A3B8]/20 transition-all group">
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 mt-1 sm:w-12 sm:h-12 bg-[#00A3B8] rounded-xl flex items-center justify-center shrink-0 shadow-none transition-transform group-hover:scale-105">
-                          <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                        </div>
-                        <div className="flex flex-col gap-1.5 min-w-0">
-                          <h4 className="font-bold text-slate-800 text-[14px] sm:text-[15px] truncate">{item.namaSiswa}</h4>
-                          <p className="text-[13px] text-slate-600 font-medium truncate">{item.dudi}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <CalendarDays className="w-3.5 h-3.5 text-slate-400" />
-                            <span className="text-[11px] sm:text-[12px] text-slate-500 font-medium tracking-wide">
-                              {format(new Date(item.startDate), 'dd MMM yyyy')} - {format(new Date(item.endDate), 'dd MMM yyyy')}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[#E2E8F0]">
+                    <th className="pb-3 text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">Siswa</th>
+                    <th className="pb-3 text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">Perusahaan</th>
+                    <th className="pb-3 text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">Periode</th>
+                    <th className="pb-3 text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#F1F5F9]">
+                  {loading ? (
+                    Array(3).fill(0).map((_, i) => (
+                      <tr key={i}>
+                        <td className="py-4 pr-4"><Skeleton className="h-4 w-32" /></td>
+                        <td className="py-4 pr-4"><Skeleton className="h-4 w-40" /></td>
+                        <td className="py-4 pr-4"><Skeleton className="h-4 w-28" /></td>
+                        <td className="py-4 text-center"><Skeleton className="h-6 w-16 mx-auto rounded-full" /></td>
+                      </tr>
+                    ))
+                  ) : recent.length > 0 ? (
+                    recent.map((item, idx) => (
+                      <tr key={idx} className="hover:bg-[#F8FAFC] transition-colors group">
+                        <td className="py-4 pr-4">
+                          <span className="text-[14px] font-bold text-[#0F172A]">{item.namaSiswa}</span>
+                        </td>
+                        <td className="py-4 pr-4">
+                          <span className="text-[13px] font-medium text-[#64748B] group-hover:text-[#0F172A] transition-colors">{item.dudi}</span>
+                        </td>
+                        <td className="py-4 pr-4">
+                          <div className="flex items-center gap-2">
+                            <CalendarDays className="w-4 h-4 text-[#94A3B8]" />
+                            <span className="text-[12px] font-medium text-[#64748B]">
+                              {format(new Date(item.startDate), 'dd MMM')} - {format(new Date(item.endDate), 'dd MMM yyyy')}
                             </span>
                           </div>
-                        </div>
-                      </div>
-                      <div className="px-3 py-1 bg-[#EEFDF3] text-[#166534] rounded-[4px] text-[11px] font-bold w-fit uppercase tracking-wider shrink-0">
-                        Aktif
-                      </div>
-                    </div>
-                  ))}
-                  {recent.length === 0 && (
-                    <div className="text-[13px] font-medium text-slate-400 italic py-8 text-center bg-slate-50/30 rounded-2xl border border-dashed border-slate-200">
-                      Belum ada data magang terbaru.
-                    </div>
+                        </td>
+                        <td className="py-4 text-center">
+                          <span className="inline-flex px-3 py-1 bg-[#EFF6FF] text-[#2563EB] border border-[#DBEAFE] rounded-full text-[11px] font-bold tracking-wide">
+                            Aktif
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-[13px] font-medium text-[#94A3B8] italic bg-[#F8FAFC] rounded-xl mt-4 border border-dashed border-[#E2E8F0]">
+                        Belum ada data magang terbaru.
+                      </td>
+                    </tr>
                   )}
-                </>
-              )}
+                </tbody>
+              </table>
             </div>
           </div>
 
-          {/* Logbook Terbaru */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 lg:p-8 shadow-none">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-[#65A30D]" />
+          {/* Logbook Terbaru List */}
+          <div className="bg-white border border-[#E2E8F0] hover:border-[#BFDBFE] hover:shadow-md transition-all duration-300 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#EFF6FF] border border-[#DBEAFE] flex items-center justify-center">
+                  <BookOpen className="w-5 h-5 text-[#2563EB]" />
+                </div>
+                <div>
+                  <h3 className="text-[15px] font-bold text-[#0F172A]">Logbook Terbaru</h3>
+                  <p className="text-[12px] text-[#64748B] font-medium mt-0.5">Catatan aktivitas siswa</p>
+                </div>
               </div>
-              <h3 className="text-[16px] font-bold text-slate-800">Logbook Terbaru</h3>
+              <Link href="/admin/logs" className="text-[13px] font-bold text-[#2563EB] hover:text-[#1E40AF] flex items-center gap-1 group">
+                Lihat Semua <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
-            
-            <div className="space-y-4">
+
+            <div className="space-y-6 pt-2">
               {loading ? (
                 Array(3).fill(0).map((_, i) => (
-                  <div key={i} className="p-4 rounded-xl border border-slate-50 bg-slate-50/30 flex flex-col gap-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-4">
-                        <Skeleton className="w-10 h-10 rounded-xl" />
-                        <div className="space-y-2">
-                          <Skeleton className="h-4 w-40 sm:w-60" />
-                          <Skeleton className="h-3 w-20" />
-                        </div>
-                      </div>
-                      <Skeleton className="h-5 w-20 rounded" />
+                  <div key={i} className="flex items-start gap-4">
+                    <Skeleton className="w-3 h-3 rounded-full mt-1.5 shrink-0" />
+                    <div className="flex-1 space-y-2">
+                       <Skeleton className="h-4 w-3/4" />
+                       <Skeleton className="h-3 w-32" />
                     </div>
                   </div>
                 ))
-              ) : (
-                <>
-                  {recentLogbooks.map((log) => (
-                    <div key={log.id} className="p-4 lg:p-5 rounded-xl border border-slate-100 bg-[#FAFAFA] flex flex-col gap-3 hover:border-[#65A30D]/20 transition-all group">
-                       <div className="flex items-start justify-between gap-4">
-                         <div className="flex items-start gap-4 min-w-0">
-                           <div className="w-10 h-10 bg-[#65A30D] rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
-                             <BookOpen className="w-5 h-5 text-white" />
-                           </div>
-                           <div className="flex flex-col gap-1.5 min-w-0">
-                             <h4 className="font-bold text-slate-800 text-[14px] line-clamp-2 leading-tight">{log.kegiatan}</h4>
-                             <div className="flex items-center gap-2 mt-0.5">
-                               <CalendarDays className="w-3.5 h-3.5 text-slate-400" />
-                               <span className="text-[12px] text-slate-500 font-medium">{format(new Date(log.tanggal), 'dd MMM yyyy')}</span>
+              ) : recentLogbooks.length > 0 ? (
+                recentLogbooks.map((log) => {
+                  let badgeStyle = "bg-[#EFF6FF] text-[#2563EB] border-[#DBEAFE]"
+                  if (log.status === 'Disetujui') {
+                    badgeStyle = "bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]"
+                  } else if (log.status === 'Ditolak') {
+                    badgeStyle = "bg-[#FEF2F2] text-[#DC2626] border-[#FECACA]"
+                  }
+                  
+                  return (
+                    <div key={log.id} className="flex items-start gap-4 group/log">
+                       <div className="mt-1.5 w-2.5 h-2.5 rounded-full bg-[#3B82F6] shrink-0 outline outline-4 outline-[#EFF6FF] group-hover/log:outline-[#DBEAFE] transition-all" />
+                       <div className="flex flex-col flex-1 gap-1">
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                             <h4 className="text-[14px] font-bold text-[#0F172A] leading-snug group-hover/log:text-[#2563EB] transition-colors max-w-[85%]">{log.kegiatan}</h4>
+                             <span className={`px-2.5 py-1 rounded-full border text-[10px] font-bold tracking-wider shrink-0 w-fit ${badgeStyle}`}>
+                               {log.status === 'pending' ? 'Menunggu' : log.status}
+                             </span>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                             <CalendarDays className="w-3.5 h-3.5 text-[#94A3B8]" />
+                             <p className="text-[12px] font-medium text-[#94A3B8]">
+                               {format(new Date(log.tanggal), 'eee, dd MMM yyyy', { locale: id })}
+                             </p>
+                          </div>
+                          {log.kendala && (
+                             <div className="mt-2 px-3 py-2 bg-[#FFFBEB] border border-[#FEF3C7] rounded-lg w-fit">
+                               <p className="text-[12px] text-[#D97706] font-medium leading-relaxed">
+                                 <span className="font-bold opacity-70">Kendala:</span> {log.kendala}
+                               </p>
                              </div>
-                             {log.kendala && (
-                               <div className="mt-1.5 p-2 bg-amber-50/50 rounded-lg border border-amber-100/50">
-                                 <p className="text-[11px] sm:text-[12px] italic text-[#B45309] font-medium leading-relaxed">
-                                   <span className="font-bold not-italic mr-1 text-[10px] uppercase">Kendala:</span> 
-                                   {log.kendala}
-                                 </p>
-                               </div>
-                             )}
-                           </div>
-                         </div>
-                         <div className={`px-3 py-1 rounded-[4px] text-[10px] font-bold uppercase tracking-wider shrink-0 ${
-                           log.status === 'Disetujui' ? 'bg-[#ECFCCB] text-[#4D7C0F]' :
-                           log.status === 'pending' ? 'bg-[#FFFBEB] text-[#D97706]' :
-                           'bg-[#FCE7F3] text-[#BE185D]'
-                         }`}>
-                           {log.status === 'pending' ? 'Pending' : log.status}
-                         </div>
+                          )}
                        </div>
                     </div>
-                  ))}
-                  {recentLogbooks.length === 0 && (
-                    <div className="text-[13px] font-medium text-slate-400 italic py-8 text-center bg-slate-50/30 rounded-2xl border border-dashed border-slate-200">
-                      Belum ada laporan logbook terbaru.
-                    </div>
-                  )}
-                </>
+                  )
+                })
+              ) : (
+                <div className="text-[13px] font-medium text-[#94A3B8] italic py-8 text-center bg-[#F8FAFC] rounded-xl border border-dashed border-[#E2E8F0]">
+                  Belum ada laporan logbook terbaru.
+                </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Konten Kanan: DUDI Aktif (1/3 width on desktop) */}
+        {/* Right Column (1/3 width) - DUDI Aktif */}
         <div className="xl:col-span-1">
-          <div className="bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 lg:p-8 shadow-none h-fit xl:sticky xl:top-28">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
-                <Building2 className="w-4 h-4 text-[#EA580C]" />
+          <div className="bg-white border border-[#E2E8F0] hover:border-[#BFDBFE] hover:shadow-md transition-all duration-300 rounded-2xl p-6 shadow-sm h-fit xl:sticky xl:top-28">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#EFF6FF] border border-[#DBEAFE] flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-[#2563EB]" />
+                </div>
+                <div>
+                  <h3 className="text-[15px] font-bold text-[#0F172A]">DUDI Aktif</h3>
+                  <p className="text-[12px] text-[#64748B] font-medium mt-0.5">Mitra perusahaan</p>
+                </div>
               </div>
-              <h3 className="text-[16px] font-bold text-slate-800">DUDI Aktif</h3>
+              <Link href="/admin/dudi" className="text-[13px] font-bold text-[#2563EB] hover:text-[#1E40AF] flex items-center gap-1 group">
+                Semua <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
             </div>
             
-            <div className="space-y-6">
+            <div className="space-y-4">
               {loading ? (
                 Array(4).fill(0).map((_, i) => (
-                  <div key={i} className="space-y-3">
+                  <div key={i} className="space-y-3 pb-3 border-b border-[#F1F5F9] last:border-0 last:pb-0">
                     <div className="flex items-center justify-between">
                       <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-5 w-12" />
+                      <Skeleton className="h-6 w-12 rounded-lg" />
                     </div>
                     <Skeleton className="h-3 w-48" />
-                    <Skeleton className="h-3 w-32" />
-                    {i < 3 && <div className="h-px w-full bg-slate-50 mt-4" />}
+                  </div>
+                ))
+              ) : activeDudis.length > 0 ? (
+                activeDudis.map((dudi, index) => (
+                  <div key={dudi.id} className="group">
+                    <div className="flex items-center justify-between py-1.5">
+                       <div className="flex flex-col gap-1 pr-3">
+                         <h4 className="text-[14px] font-bold text-[#0F172A] group-hover:text-[#2563EB] transition-colors line-clamp-1">{dudi.namaPerusahaan}</h4>
+                         <p className="text-[12px] text-[#94A3B8] font-medium line-clamp-1">{dudi.alamat}</p>
+                       </div>
+                       <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#EFF6FF] border border-[#DBEAFE] text-[#2563EB] rounded-lg shrink-0 group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
+                         <Users className="w-3.5 h-3.5" />
+                         <span className="text-[12px] font-bold">{dudi.jumlahSiswa}</span>
+                       </div>
+                    </div>
+                    {index < activeDudis.length - 1 && <div className="h-px w-full bg-[#F1F5F9] mt-3" />}
                   </div>
                 ))
               ) : (
-                <>
-                  {activeDudis.map((dudi, index) => (
-                    <div key={dudi.id} className="flex flex-col gap-3 group">
-                      <div className="flex flex-col gap-2.5">
-                        <div className="flex items-start justify-between gap-4">
-                          <h4 className="text-[14px] font-bold text-slate-800 line-clamp-1 group-hover:text-[#EA580C] transition-colors">{dudi.namaPerusahaan}</h4>
-                          <div className="px-2 py-0.5 bg-orange-50 text-[#EA580C] rounded-md text-[10px] font-bold shrink-0 border border-orange-100 transition-all group-hover:bg-[#EA580C] group-hover:text-white">
-                            {dudi.jumlahSiswa} Siswa
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                          <p className="text-[12px] text-slate-500 font-medium leading-relaxed">{dudi.alamat}</p>
-                          <p className="text-[12px] text-slate-400 font-medium flex items-center gap-1.5">
-                            <span className="w-1 h-1 rounded-full bg-slate-200" />
-                            {dudi.noTelp}
-                          </p>
-                        </div>
-                      </div>
-                      {index < activeDudis.length - 1 && <div className="h-px w-full bg-slate-50 mt-1" />}
-                    </div>
-                  ))}
-                  {activeDudis.length === 0 && (
-                    <div className="text-[13px] font-medium text-slate-400 italic py-8 text-center bg-slate-50/30 rounded-2xl border border-dashed border-slate-200">
-                      Belum ada DUDI aktif.
-                    </div>
-                  )}
-                </>
+                <div className="text-[13px] font-medium text-[#94A3B8] italic py-8 text-center bg-[#F8FAFC] rounded-xl border border-dashed border-[#E2E8F0]">
+                  Belum ada DUDI aktif.
+                </div>
               )}
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-[#F1F5F9] flex justify-between items-center">
+              <span className="text-[13px] font-medium text-[#64748B]">Total DUDI Partner</span>
+              <span className="text-[16px] font-extrabold text-[#0F172A]">{activeDudis.length}</span>
             </div>
           </div>
         </div>

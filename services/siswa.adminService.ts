@@ -56,7 +56,7 @@ export const siswaAdminService = {
         no_telp,
         status,
         alamat,
-        magang (
+        magang!magang_siswa_id_fkey (
           id,
           status,
           guru_id,
@@ -81,7 +81,11 @@ export const siswaAdminService = {
 
     const { data, error } = await query.order('full_name')
 
-    if (error || !data) return []
+    if (error) {
+      console.error('Failed to fetch students:', error)
+      return []
+    }
+    if (!data) return []
 
     return data.map((s) => {
       const magangData = s.magang && Array.isArray(s.magang) ? s.magang[0] : null
