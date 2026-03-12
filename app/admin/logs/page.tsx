@@ -11,7 +11,11 @@ import {
   User,
   Activity,
   ChevronDown,
-  Clock
+  Clock,
+  Plus,
+  Edit2,
+  Trash,
+  Calendar
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { ActivityLog, ActivityStats } from '@/types/admin'
@@ -60,12 +64,115 @@ export default function ActivityLogs() {
     }
   }
 
-  const getActionColor = (action: string) => {
+  const getActionTheme = (action: string) => {
     const act = action.toLowerCase()
-    if (act.includes('create') || act.includes('tambah') || act.includes('add')) return 'bg-green-50 text-green-600 border-green-100'
-    if (act.includes('update') || act.includes('edit') || act.includes('ubah') || act.includes('patch')) return 'bg-blue-50 text-blue-600 border-blue-100'
-    if (act.includes('delete') || act.includes('hapus') || act.includes('remove')) return 'bg-red-50 text-red-600 border-red-100'
-    return 'bg-slate-50 text-slate-600 border-slate-100'
+    if (act.includes('create') || act.includes('tambah') || act.includes('add')) {
+      return {
+        bg: 'bg-[#ECFDF5]', 
+        text: 'text-[#059669]',
+        border: 'border-[#D1FAE5]',
+        icon: Plus,
+        iconBg: 'bg-[#ECFDF5]',
+        iconColor: 'text-[#10B981]'
+      }
+    }
+    if (act.includes('update') || act.includes('edit') || act.includes('ubah') || act.includes('patch')) {
+      return {
+        bg: 'bg-[#EFF6FF]', 
+        text: 'text-[#2563EB]',
+        border: 'border-[#DBEAFE]',
+        icon: Edit2,
+        iconBg: 'bg-[#EFF6FF]',
+        iconColor: 'text-[#3B82F6]'
+      }
+    }
+    if (act.includes('delete') || act.includes('hapus') || act.includes('remove')) {
+      return {
+        bg: 'bg-[#FEF2F2]', 
+        text: 'text-[#DC2626]',
+        border: 'border-[#FEE2E2]',
+        icon: Trash,
+        iconBg: 'bg-[#FEF2F2]',
+        iconColor: 'text-[#EF4444]'
+      }
+    }
+    return {
+      bg: 'bg-slate-50', 
+      text: 'text-slate-600',
+      border: 'border-slate-100',
+      icon: Activity,
+      iconBg: 'bg-slate-50',
+      iconColor: 'text-slate-400'
+    }
+  }
+
+  const getEntityColor = (entity: string) => {
+    const ent = entity.toUpperCase()
+    if (ent === 'GURU') return 'bg-[#EEF2FF] text-[#4F46E5] border-[#E0E7FF]'
+    if (ent === 'SISWA') return 'bg-[#F0FDFA] text-[#0D9488] border-[#CCFBF1]'
+    if (ent === 'DUDI') return 'bg-[#FFF7ED] text-[#EA580C] border-[#FFEDD5]'
+    if (ent === 'MAGANG') return 'bg-[#FAF5FF] text-[#9333EA] border-[#F3E8FF]'
+    return 'bg-slate-50 text-slate-500 border-slate-100'
+  }
+
+  const formatLogTitle = (log: ActivityLog) => {
+    const actionMap: Record<string, string> = {
+      'Create': 'Menambahkan',
+      'Update': 'Mengupdate',
+      'Delete': 'Menghapus'
+    }
+
+    const entityMap: Record<string, string> = {
+      'GURU': 'data guru',
+      'SISWA': 'data siswa',
+      'DUDI': 'data DUDI',
+      'MAGANG': 'data magang',
+      'PENGGUNA': 'data pengguna',
+      'PENGATURAN': 'pengaturan sekolah'
+    }
+
+    const actionText = actionMap[log.action] || log.action
+    const entityText = entityMap[log.entityType] || log.entityType.toLowerCase()
+    
+    // Attempt to extract a name if available in details
+    let identifier = ''
+    if (log.details && typeof log.details === 'object') {
+      const d = log.details as Record<string, unknown>
+      identifier = (d.nama || d.full_name || d.namaPerusahaan || d.nama_perusahaan || d.title || '') as string
+    }
+
+    const titlePrefix = `${actionText} ${entityText}${identifier ? ': ' + identifier : ''}`
+    
+    // Detail string
+    let detailStr = ''
+    if (log.action === 'Update' && log.details && typeof log.details === 'object') {
+      const d = log.details as Record<string, unknown>
+      const relevantFields = Object.entries(d)
+        .filter(([key]) => !['id', 'updated_at', 'created_at', 'password'].includes(key))
+        .map(([key, value]) => {
+          const fieldName = key.toUpperCase()
+          return `${fieldName}: ${String(value)}`
+        })
+      if (relevantFields.length > 0) {
+        detailStr = ` | Detail: ${relevantFields.slice(0, 2).join(', ')}`
+        if (relevantFields.length > 2) detailStr += '...'
+      }
+    } else if (log.action === 'Create' && log.details && typeof log.details === 'object') {
+       const d = log.details as Record<string, unknown>
+       const nis = (d.nis || d.nip || d.npsn || '') as string
+       if (nis) detailStr = ` | Detail: ${d.nis ? 'NIS' : (d.nip ? 'NIP' : 'NPSN')}: ${nis}`
+    } else if (log.action === 'Delete' && log.details && typeof log.details === 'object') {
+       const d = log.details as Record<string, unknown>
+       const nis = (d.nis || d.nip || d.id || '') as string
+       if (nis) detailStr = ` | Detail: ${d.nis ? 'NIS' : (d.nip ? 'NIP' : 'ID')}: ${nis}`
+    }
+
+    return (
+      <span className="text-[14px] sm:text-[15px] font-bold text-slate-800 leading-snug">
+        {titlePrefix}
+        {detailStr && <span className="text-slate-500 font-medium">{detailStr}</span>}
+      </span>
+    )
   }
 
   return (
@@ -172,102 +279,97 @@ export default function ActivityLogs() {
         </div>
       </div>
 
-      {/* Timeline Section */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-none overflow-hidden">
-        <div className="p-5 sm:p-6 lg:p-8 border-b border-slate-50 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
-              <History className="w-5 h-5 text-slate-400" />
-            </div>
-            <h3 className="text-[16px] sm:text-[18px] font-bold text-slate-800">Garis Waktu Aktivitas</h3>
-            {!loading && (
-              <span className="hidden sm:inline-block px-2 py-0.5 bg-[#00BCD4] text-white text-[10px] font-bold rounded-md ml-2 drop-shadow-sm">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-4">
+           <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                <History className="w-5 h-5 text-[#00BCD4]" />
+              </div>
+              <h3 className="text-[18px] font-bold text-slate-800">Garis Waktu Aktivitas</h3>
+           </div>
+           {!loading && (
+              <span className="px-3 py-1 bg-[#EEF2FF] text-[#4F46E5] text-[12px] font-bold rounded-full border border-[#E0E7FF]">
                 {logs.length} entri ditemukan
               </span>
-            )}
-          </div>
+           )}
         </div>
 
-        <div className="p-5 sm:p-6 lg:p-8">
-          {loading ? (
-            <div className="space-y-8 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-50">
-               {Array(4).fill(0).map((_, i) => (
-                  <div key={i} className="relative pl-12">
-                    <Skeleton className="absolute left-[14px] top-1 w-3 h-3 rounded-full border-2 border-white z-10" />
-                    <div className="space-y-3">
-                      <Skeleton className="h-3 w-32" />
-                      <div className="bg-slate-50/50 rounded-2xl p-4 border border-slate-50 space-y-3">
-                        <div className="flex gap-2"><Skeleton className="h-4 w-32" /><Skeleton className="h-4 w-20" /></div>
-                        <Skeleton className="h-3 w-full" />
-                      </div>
-                    </div>
+        {loading ? (
+          <div className="space-y-4">
+             {Array(5).fill(0).map((_, i) => (
+                <div key={i} className="bg-white rounded-[24px] p-6 flex gap-4 border border-slate-100 shadow-sm">
+                  <Skeleton className="w-12 h-12 rounded-full shrink-0" />
+                  <div className="space-y-3 w-full text-left">
+                    <Skeleton className="h-5 w-3/4" />
+                    <div className="flex gap-4"><Skeleton className="h-4 w-20" /><Skeleton className="h-4 w-20" /></div>
                   </div>
-               ))}
-            </div>
-          ) : logs.length === 0 ? (
-            <div className="py-20 flex flex-col items-center justify-center text-slate-300">
-              <RefreshCw className="w-12 h-12 mb-4 opacity-10" />
-              <p className="text-[15px] font-medium">Belum ada catatan aktivitas sistem.</p>
-            </div>
-          ) : (
-            <div className="space-y-10 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
-              {logs.map((log) => (
-                <div key={log.id} className="relative pl-12 group">
-                  {/* Timeline Dot */}
-                  <div className="absolute left-[14px] top-1 w-3 h-3 rounded-full bg-white border-2 border-[#00BCD4] z-10 group-hover:scale-125 transition-transform shadow-sm" />
-                  
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-1.5 transition-opacity duration-300">
-                      <Clock className="w-3 h-3 text-slate-300" />
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                        {new Date(log.createdAt).toLocaleString('id-ID', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </span>
-                    </div>
+                </div>
+             ))}
+          </div>
+        ) : logs.length === 0 ? (
+          <div className="bg-white rounded-[32px] py-20 flex flex-col items-center justify-center text-slate-300 border border-slate-100 shadow-sm">
+            <RefreshCw className="w-16 h-16 mb-4 opacity-10 animate-spin-slow" />
+            <p className="text-[16px] font-bold text-slate-400 tracking-tight">Belum ada catatan aktivitas sistem.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {logs.map((log) => {
+              const theme = getActionTheme(log.action)
+              return (
+                <div 
+                  key={log.id} 
+                  className="group bg-white rounded-[24px] px-6 py-5 border border-slate-100 hover:border-[#00BCD4]/20 hover:shadow-xl hover:shadow-[#00BCD4]/5 transition-all duration-300 flex items-center gap-6"
+                >
+                  {/* Left Icon Area - Matching Image Size and Circle Style */}
+                  <div className={`w-12 h-12 rounded-full shrink-0 flex items-center justify-center ${theme.iconBg} ${theme.iconColor} transition-transform group-hover:scale-110 shadow-sm border border-white`}>
+                    <theme.icon className="w-5 h-5" />
+                  </div>
 
-                    <div className="bg-slate-50/30 hover:bg-white rounded-2xl p-4 sm:p-5 border border-slate-100/50 hover:border-[#00BCD4]/20 hover:shadow-xl hover:shadow-[#00BCD4]/5 transition-all duration-300 group-hover:-translate-y-1">
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3">
-                        <div className="flex items-center gap-2 text-[14px] font-bold text-slate-800">
-                          <div className="w-6 h-6 rounded-full bg-white border border-slate-100 flex items-center justify-center">
-                             <User className="w-3 h-3 text-slate-400" />
-                          </div>
-                          {log.userName}
-                        </div>
-                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-extrabold border uppercase tracking-widest leading-none ${getActionColor(log.action)} shadow-sm`}>
-                          {log.action}
-                        </span>
-                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-50">
-                          <Activity className="w-3 h-3 text-[#00BCD4]" />
-                          {log.entityType}
-                        </div>
+                  {/* Content Area */}
+                  <div className="flex-1 min-w-0">
+                    <div className="mb-2">
+                       {formatLogTitle(log)}
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-y-2 gap-x-5">
+                      {/* Entity Badge - Styled precisely like GURU/SISWA badges in image */}
+                      <span className={`px-3 py-0.5 rounded-[6px] text-[10px] font-black uppercase tracking-widest border shadow-sm ${getEntityColor(log.entityType)}`}>
+                        {log.entityType}
+                      </span>
+
+                      {/* Action Label */}
+                      <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-400">
+                        <span className="text-slate-400/60">Action:</span>
+                        <span className="text-slate-500/80 uppercase tracking-wide">{log.action}</span>
                       </div>
-                      
-                      <div className="text-[13px] text-slate-600 leading-relaxed font-medium border-l-4 border-[#00BCD4]/20 pl-4 py-2 bg-white/50 rounded-r-xl">
-                        {typeof log.details === 'object' ? (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1">
-                            {Object.entries(log.details).map(([key, value]) => (
-                              <div key={key} className="flex items-start gap-2 border-b border-slate-100 last:border-0 py-1">
-                                <span className="text-[11px] font-extrabold text-[#94A3B8] uppercase tracking-wider min-w-[80px] pt-0.5">{key}:</span>
-                                <span className="text-slate-700 break-all">{String(value)}</span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="italic">&quot;{log.details}&quot;</p>
-                        )}
+
+                      {/* User Info */}
+                      <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-400/80">
+                        <User className="w-3.5 h-3.5 opacity-50" />
+                        <span className="text-slate-500/80">{log.userName}</span>
+                      </div>
+
+                      {/* Time Info */}
+                      <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-400/80">
+                        <Calendar className="w-3.5 h-3.5 opacity-50" />
+                        <span className="text-slate-500/80 uppercase">
+                          {new Date(log.createdAt).toLocaleString('id-ID', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                          }).replace('.', ':')}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )

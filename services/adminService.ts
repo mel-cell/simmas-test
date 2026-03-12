@@ -1,9 +1,23 @@
-import { supabase } from '@/lib/supabase'
-import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, TeacherStats, GuruData, DudiStats, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings } from '@/types/admin'
+import { createClient as createServerClient } from '@/lib/supabaseServer'
+import { 
+  AdminStats, 
+  RecentMagang, 
+  RecentLogbook, 
+  ActiveDudi, 
+  TeacherStats, 
+  GuruData, 
+  DudiStats, 
+  InternshipStats, 
+  UserProfileData, 
+  ActivityLog, 
+  ActivityStats, 
+  SchoolSettings 
+} from '@/types/admin'
 import { logActivity } from './activityLogger'
 
 export const adminService = {
   getDashboardStats: async (): Promise<AdminStats> => {
+    const supabase = await createServerClient()
     const { count: totalSiswa } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
@@ -16,7 +30,7 @@ export const adminService = {
     const { count: siswaMagang } = await supabase
       .from('magang')
       .select('*', { count: 'exact', head: true })
-      .in('status', ['aktif', 'berjalan', 'menunggu']) // Adjust to real status you need
+      .in('status', ['aktif', 'berjalan', 'menunggu']) 
       
     const today = new Date().toISOString().split('T')[0]
     const { count: logbookHariIni } = await supabase
@@ -33,6 +47,7 @@ export const adminService = {
   },
 
   getRecentMagang: async (): Promise<RecentMagang[]> => {
+    const supabase = await createServerClient()
     const { data, error } = await supabase
       .from('magang')
       .select(`
@@ -49,32 +64,30 @@ export const adminService = {
 
     if (error || !data) return []
 
-    return data.map((item: {
-      id: string;
-      tgl_mulai: string | null;
-      tgl_selesai: string | null;
-      status: string | null;
-      siswa: { full_name: string }[] | { full_name: string } | null;
-      guru: { full_name: string }[] | { full_name: string } | null;
-      dudi: { nama_perusahaan: string }[] | { nama_perusahaan: string } | null;
-    }) => {
-      const siswa = Array.isArray(item.siswa) ? item.siswa[0] : item.siswa;
-      const guru = Array.isArray(item.guru) ? item.guru[0] : item.guru;
-      const dudi = Array.isArray(item.dudi) ? item.dudi[0] : item.dudi;
+    return (data as unknown[]).map((i) => {
+      const item = i as Record<string, unknown>
+      const siswa = item.siswa as Record<string, unknown> | Record<string, unknown>[] | null
+      const guru = item.guru as Record<string, unknown> | Record<string, unknown>[] | null
+      const dudi = item.dudi as Record<string, unknown> | Record<string, unknown>[] | null
+      
+      const siswaData = Array.isArray(siswa) ? siswa[0] : siswa
+      const guruData = Array.isArray(guru) ? guru[0] : guru
+      const dudiData = Array.isArray(dudi) ? dudi[0] : dudi
       
       return {
-        id: item.id,
-        namaSiswa: siswa?.full_name || 'Tidak diketahui',
-        dudi: dudi?.nama_perusahaan || 'Tidak diketahui',
-        pembimbing: guru?.full_name || 'Belum ditugaskan',
-        startDate: item.tgl_mulai || '-',
-        endDate: item.tgl_selesai || '-',
-        status: item.status || 'menunggu',
-      };
+        id: item.id as string,
+        namaSiswa: (siswaData?.full_name as string) || 'Tidak diketahui',
+        dudi: (dudiData?.nama_perusahaan as string) || 'Tidak diketahui',
+        pembimbing: (guruData?.full_name as string) || 'Belum ditugaskan',
+        startDate: (item.tgl_mulai as string) || '-',
+        endDate: (item.tgl_selesai as string) || '-',
+        status: (item.status as string) || 'menunggu',
+      }
     })
   },
 
   getRecentLogbooks: async (): Promise<RecentLogbook[]> => {
+    const supabase = await createServerClient()
     const { data, error } = await supabase
       .from('logbooks')
       .select('id, kegiatan, tanggal, kendala, status')
@@ -83,22 +96,21 @@ export const adminService = {
       
     if (error || !data) return []
     
-    return data.map((item: {
-      id: string;
-      kegiatan: string;
-      tanggal: string;
-      kendala: string | null;
-      status: string;
-    }) => ({
-      id: item.id,
-      kegiatan: item.kegiatan,
-      tanggal: item.tanggal,
-      kendala: item.kendala,
-      status: item.status === 'pending' ? 'pending' : item.status === 'Disetujui' ? 'Disetujui' : item.status === 'approved' ? 'Disetujui' : 'Ditolak',
-    }))
+    return (data as unknown[]).map((i) => {
+      const item = i as Record<string, unknown>
+      const status = item.status as string
+      return {
+        id: item.id as string,
+        kegiatan: item.kegiatan as string,
+        tanggal: item.tanggal as string,
+        kendala: item.kendala as string | null,
+        status: status === 'pending' ? 'pending' : (status === 'Disetujui' || status === 'approved' ? 'Disetujui' : 'Ditolak'),
+      }
+    })
   },
 
   getActiveDudi: async (): Promise<ActiveDudi[]> => {
+    const supabase = await createServerClient()
     const { data, error } = await supabase
       .from('dudi')
       .select(`
@@ -116,48 +128,39 @@ export const adminService = {
       
     if (error || !data) return []
     
-    return data.map((item: {
-      id: string;
-      nama_perusahaan: string;
-      alamat: string;
-      email: string | null;
-      no_telp: string | null;
-      penanggung_jawab: string | null;
-      magang: { count: number }[];
-      is_active: boolean;
-    }) => ({
-      id: item.id,
-      namaPerusahaan: item.nama_perusahaan,
-      alamat: item.alamat,
-      email: item.email || '-',
-      noTelp: item.no_telp || '-',
-      penanggungJawab: item.penanggung_jawab || '-',
-      jumlahSiswa: item.magang[0]?.count || 0,
-      status: item.is_active
-    }))
+    return (data as unknown[]).map((i) => {
+      const item = i as Record<string, unknown>
+      const magang = item.magang as { count: number }[] | null
+      return {
+        id: item.id as string,
+        namaPerusahaan: item.nama_perusahaan as string,
+        alamat: item.alamat as string,
+        email: (item.email as string) || '-',
+        noTelp: (item.no_telp as string) || '-',
+        penanggungJawab: (item.penanggung_jawab as string) || '-',
+        jumlahSiswa: magang && magang[0] ? magang[0].count : 0,
+        status: item.is_active as boolean
+      }
+    })
   },
 
   getTeacherStats: async (): Promise<TeacherStats> => {
-
-    // 1. Total Guru
+    const supabase = await createServerClient()
     const { count: total } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('role', 'GURU')
 
-    // 2. Guru Aktif
     const { count: aktif } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('role', 'GURU')
       .eq('status', 'aktif')
 
-    // 3. Total Siswa Bimbingan (count rows in magang)
     const { count: totalBimbingan } = await supabase
       .from('magang')
       .select('*', { count: 'exact', head: true })
     
-    // 4. Rata-rata Siswa (Total Bimbingan / Total Guru)
     const rataRataSiswa = total && total > 0 ? Math.round((totalBimbingan || 0) / total) : 0
 
     return {
@@ -169,6 +172,7 @@ export const adminService = {
   },
 
   getAllGuru: async (filters?: { query?: string, status?: string }): Promise<GuruData[]> => {
+    const supabase = await createServerClient()
     let query = supabase
       .from('profiles')
       .select(`
@@ -195,43 +199,35 @@ export const adminService = {
 
     if (error || !data) return []
 
-    return data.map((g: {
-      id: string;
-      nomor_induk: string | null;
-      full_name: string;
-      jurusan: string | null;
-      email: string;
-      no_telp: string | null;
-      status: string | null;
-      magang_count: { count: number }[];
-    }) => ({
-      id: g.id,
-      nip: g.nomor_induk || '-',
-      nama: g.full_name,
-      mataPelajaran: g.jurusan || 'Tidak Diatur', // Assuming jurusan as mata pelajaran for guru in profiles
-      email: g.email,
-      nohp: g.no_telp || '-',
-      totalSiswa: g.magang_count && g.magang_count.length > 0 ? g.magang_count[0].count : 0,
-      status: g.status || 'aktif'
-    }))
+    return (data as unknown[]).map((i) => {
+      const g = i as Record<string, unknown>
+      const magangCount = g.magang_count as { count: number }[] | null
+      return {
+        id: g.id as string,
+        nip: (g.nomor_induk as string) || '-',
+        nama: g.full_name as string,
+        mataPelajaran: (g.jurusan as string) || 'Tidak Diatur', 
+        email: g.email as string,
+        nohp: (g.no_telp as string) || '-',
+        totalSiswa: magangCount && magangCount.length > 0 ? magangCount[0].count : 0,
+        status: (g.status as string) || 'aktif'
+      }
+    })
   },
 
   getDudiStats: async (): Promise<DudiStats> => {
-    // 1. Total DUDI
+    const supabase = await createServerClient()
     const { count: total } = await supabase
       .from('dudi')
       .select('*', { count: 'exact', head: true })
 
-    // 2. DUDI Aktif
     const { count: aktif } = await supabase
       .from('dudi')
       .select('*', { count: 'exact', head: true })
       .eq('is_active', true)
 
-    // 3. DUDI Tidak Aktif
     const tidakAktif = (total || 0) - (aktif || 0)
 
-    // 4. Total Siswa Magang (count all active students in magang)
     const { count: totalSiswaMagang } = await supabase
       .from('magang')
       .select('*', { count: 'exact', head: true })
@@ -246,6 +242,7 @@ export const adminService = {
   },
 
   getAllDudi: async (filters?: { query?: string, status?: string }): Promise<ActiveDudi[]> => {
+    const supabase = await createServerClient()
     let query = supabase
       .from('dudi')
       .select(`
@@ -272,46 +269,38 @@ export const adminService = {
 
     if (error || !data) return []
 
-    return data.map((d: {
-      id: string;
-      nama_perusahaan: string;
-      alamat: string;
-      email: string | null;
-      no_telp: string | null;
-      penanggung_jawab: string | null;
-      is_active: boolean;
-      magang_count: { count: number }[];
-    }) => ({
-      id: d.id,
-      namaPerusahaan: d.nama_perusahaan,
-      alamat: d.alamat,
-      email: d.email || '-',
-      noTelp: d.no_telp || '-',
-      penanggungJawab: d.penanggung_jawab || '-',
-      jumlahSiswa: d.magang_count && d.magang_count.length > 0 ? d.magang_count[0].count : 0,
-      status: d.is_active
-    }))
+    return (data as unknown[]).map((i) => {
+      const d = i as Record<string, unknown>
+      const magangCount = d.magang_count as { count: number }[] | null
+      return {
+        id: d.id as string,
+        namaPerusahaan: d.nama_perusahaan as string,
+        alamat: d.alamat as string,
+        email: (d.email as string) || '-',
+        noTelp: (d.no_telp as string) || '-',
+        penanggungJawab: (d.penanggung_jawab as string) || '-',
+        jumlahSiswa: magangCount && magangCount.length > 0 ? magangCount[0].count : 0,
+        status: d.is_active as boolean
+      }
+    })
   },
 
   getInternshipStats: async (): Promise<InternshipStats> => {
-    // 1. Total Magang
+    const supabase = await createServerClient()
     const { count: total } = await supabase
       .from('magang')
       .select('*', { count: 'exact', head: true })
 
-    // 2. Sedang Aktif
     const { count: aktif } = await supabase
       .from('magang')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'aktif')
 
-    // 3. Selesai
     const { count: selesai } = await supabase
       .from('magang')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'selesai')
 
-    // 4. Dibatalkan
     const { count: dibatalkan } = await supabase
       .from('magang')
       .select('*', { count: 'exact', head: true })
@@ -326,6 +315,7 @@ export const adminService = {
   },
 
   getAllMagang: async (filters?: { query?: string, status?: string }): Promise<RecentMagang[]> => {
+    const supabase = await createServerClient()
     let query = supabase
       .from('magang')
       .select(`
@@ -346,34 +336,30 @@ export const adminService = {
 
     if (error || !data) return []
 
-    // Filter results locally if there is a query string (for joined fields)
-    let results: RecentMagang[] = data.map((m: {
-      id: string;
-      status: string | null;
-      tgl_mulai: string | null;
-      tgl_selesai: string | null;
-      siswa: { full_name: string }[] | { full_name: string } | null;
-      guru: { full_name: string }[] | { full_name: string } | null;
-      dudi: { nama_perusahaan: string }[] | { nama_perusahaan: string } | null;
-    }) => {
-      const siswa = Array.isArray(m.siswa) ? m.siswa[0] : m.siswa;
-      const guru = Array.isArray(m.guru) ? m.guru[0] : m.guru;
-      const dudi = Array.isArray(m.dudi) ? m.dudi[0] : m.dudi;
+    let results: RecentMagang[] = (data as unknown[]).map((i) => {
+      const m = i as Record<string, unknown>
+      const siswa = m.siswa as Record<string, unknown> | Record<string, unknown>[] | null
+      const guru = m.guru as Record<string, unknown> | Record<string, unknown>[] | null
+      const dudi = m.dudi as Record<string, unknown> | Record<string, unknown>[] | null
+
+      const siswaData = Array.isArray(siswa) ? siswa[0] : siswa
+      const guruData = Array.isArray(guru) ? guru[0] : guru
+      const dudiData = Array.isArray(dudi) ? dudi[0] : dudi
 
       return {
-        id: m.id,
-        namaSiswa: siswa?.full_name || 'Tidak diketahui',
-        dudi: dudi?.nama_perusahaan || 'Tidak diketahui',
-        pembimbing: guru?.full_name || 'Belum ditugaskan',
-        startDate: m.tgl_mulai || '-',
-        endDate: m.tgl_selesai || '-',
-        status: m.status || 'menunggu'
-      };
+        id: m.id as string,
+        namaSiswa: (siswaData?.full_name as string) || 'Tidak diketahui',
+        dudi: (dudiData?.nama_perusahaan as string) || 'Tidak diketahui',
+        pembimbing: (guruData?.full_name as string) || 'Belum ditugaskan',
+        startDate: (m.tgl_mulai as string) || '-',
+        endDate: (m.tgl_selesai as string) || '-',
+        status: (m.status as string) || 'menunggu'
+      }
     })
 
     if (filters?.query) {
       const q = filters.query.toLowerCase()
-      results = results.filter((r: RecentMagang) => 
+      results = results.filter((r) => 
         r.namaSiswa.toLowerCase().includes(q) || 
         r.dudi.toLowerCase().includes(q) || 
         r.pembimbing.toLowerCase().includes(q)
@@ -384,6 +370,7 @@ export const adminService = {
   },
 
   getAllUsers: async (filters?: { query?: string, role?: string }): Promise<UserProfileData[]> => {
+    const supabase = await createServerClient()
     let query = supabase
       .from('profiles')
       .select(`
@@ -406,23 +393,21 @@ export const adminService = {
 
     if (error || !data) return []
 
-    return data.map((u: {
-      id: string;
-      full_name: string;
-      email: string;
-      role: string;
-      created_at: string;
-    }) => ({
-      id: u.id,
-      fullName: u.full_name,
-      email: u.email,
-      role: u.role,
-      isVerified: true, // Assuming default true for now as in the screenshot mockups
-      createdAt: u.created_at
-    }))
+    return (data as unknown[]).map((i) => {
+      const u = i as Record<string, unknown>
+      return {
+        id: u.id as string,
+        fullName: u.full_name as string,
+        email: u.email as string,
+        role: u.role as string,
+        isVerified: true, 
+        createdAt: u.created_at as string
+      }
+    })
   },
 
   getActivityStats: async (): Promise<ActivityStats> => {
+    const supabase = await createServerClient()
     const { count: total } = await supabase.from('activity_logs').select('*', { count: 'exact', head: true })
     const { count: created } = await supabase.from('activity_logs').select('*', { count: 'exact', head: true }).ilike('action', '%create%')
     const { count: updated } = await supabase.from('activity_logs').select('*', { count: 'exact', head: true }).ilike('action', '%update%')
@@ -437,6 +422,7 @@ export const adminService = {
   },
 
   getAllLogs: async (filters?: { query?: string, action?: string, entity?: string, limit?: number }): Promise<ActivityLog[]> => {
+    const supabase = await createServerClient()
     let query = supabase
       .from('activity_logs')
       .select(`
@@ -464,28 +450,23 @@ export const adminService = {
 
     if (error || !data) return []
 
-    let results: ActivityLog[] = (data as {
-      id: string;
-      action: string;
-      entity_type: string | null;
-      details: unknown;
-      created_at: string;
-      profiles: { full_name: string }[] | { full_name: string } | null;
-    }[]).map((l) => {
-      const profile = Array.isArray(l.profiles) ? l.profiles[0] : l.profiles;
+    let results: ActivityLog[] = (data as unknown[]).map((i) => {
+      const l = i as Record<string, unknown>
+      const profiles = l.profiles as Record<string, unknown> | Record<string, unknown>[] | null
+      const profileData = Array.isArray(profiles) ? profiles[0] : profiles
       return {
-        id: l.id,
-        userName: profile?.full_name || 'System',
-        action: l.action,
-        entityType: l.entity_type || '-',
-        details: l.details || '-',
-        createdAt: l.created_at
+        id: l.id as string,
+        userName: (profileData?.full_name as string) || 'System',
+        action: l.action as string,
+        entityType: (l.entity_type as string) || '-',
+        details: typeof l.details === 'object' && l.details !== null ? (l.details as Record<string, unknown>) : null,
+        createdAt: l.created_at as string
       }
     })
 
     if (filters?.query) {
       const q = filters.query.toLowerCase()
-      results = results.filter((r: ActivityLog) => {
+      results = results.filter((r) => {
         const detailsStr = typeof r.details === 'object' ? JSON.stringify(r.details).toLowerCase() : String(r.details).toLowerCase()
         return (
           r.userName.toLowerCase().includes(q) || 
@@ -499,11 +480,13 @@ export const adminService = {
   },
 
   clearLogs: async (): Promise<boolean> => {
-    const { error } = await supabase.from('activity_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000') // Deleting all rows
+    const supabase = await createServerClient()
+    const { error } = await supabase.from('activity_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000') 
     return !error
   },
 
   getSchoolSettings: async (): Promise<SchoolSettings | null> => {
+    const supabase = await createServerClient()
     const { data, error } = await supabase
       .from('sekolah_settings')
       .select('*')
@@ -529,6 +512,7 @@ export const adminService = {
   },
 
   updateSchoolSettings: async (settings: Partial<SchoolSettings>): Promise<boolean> => {
+    const supabase = await createServerClient()
     const updateData: Record<string, string | number | boolean | null | undefined> = {}
     if (settings.npsn !== undefined) updateData.npsn = settings.npsn
     if (settings.namaSekolah !== undefined) updateData.nama_sekolah = settings.namaSekolah
@@ -547,45 +531,32 @@ export const adminService = {
       .eq('id', 1)
 
     if (!error) {
-      await logActivity('Update', 'Pengaturan', '1', updateData)
+      await logActivity('Update', 'PENGATURAN', '1', updateData)
     }
 
     return !error
   },
 
-  uploadFile: async (file: File, bucket: string): Promise<string | null> => {
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${Math.random()}.${fileExt}`
-    const filePath = `settings/${fileName}`
-
-    const { error: uploadError } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, file)
-
-    if (uploadError) {
-      console.error('Error uploading file:', uploadError)
-      return null
-    }
-
-    const { data } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(filePath)
-
-    return data.publicUrl
-  },
-
   getTeacherOptions: async () => {
+    const supabase = await createServerClient()
     const { data } = await supabase
       .from('profiles')
       .select('id, full_name')
       .eq('role', 'GURU')
-    return data?.map(g => ({ id: g.id, nama: g.full_name })) || []
+    return (data || []).map((i: unknown) => {
+      const g = i as Record<string, unknown>
+      return { id: (g.id as string), nama: (g.full_name as string) }
+    })
   },
 
   getDudiOptions: async () => {
+    const supabase = await createServerClient()
     const { data } = await supabase
       .from('dudi')
       .select('id, nama_perusahaan')
-    return data?.map(d => ({ id: d.id, name: d.nama_perusahaan })) || []
+    return (data || []).map((i: unknown) => {
+      const d = i as Record<string, unknown>
+      return { id: (d.id as string), name: (d.nama_perusahaan as string) }
+    })
   }
 }

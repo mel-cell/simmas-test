@@ -23,7 +23,7 @@ import {
 import { useState, useEffect, useRef } from 'react'
 import { SchoolSettings } from '@/types/admin'
 import { api } from '@/lib/api'
-import { adminService } from '@/services/adminService'
+import { uploadService } from '@/services/uploadService'
 import { useSchoolSettings } from '@/components/providers/SchoolSettingsProvider'
 import Image from 'next/image'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -63,7 +63,7 @@ export default function PengaturanSekolah() {
 
     try {
       setUploading(true)
-      const publicUrl = await adminService.uploadFile(file, 'logos')
+      const publicUrl = await uploadService.uploadFile(file, 'logos')
       if (publicUrl) {
         setFormData({ ...formData, logoUrl: publicUrl })
         setMessage({ type: 'success', text: 'Logo berhasil diunggah' })
@@ -267,7 +267,7 @@ export default function PengaturanSekolah() {
                                 if (!file) return
                                 try {
                                   setUploading(true)
-                                  const url = await adminService.uploadFile(file, 'logos')
+                                  const url = await uploadService.uploadFile(file, 'logos')
                                   if (url) setFormData({ ...formData, headerSuratUrl: url })
                                 } finally {
                                   setUploading(false)

@@ -139,7 +139,7 @@ export const siswaAdminService = {
         return false
       }
 
-      await logActivity('Create', 'Siswa', newUserId as string, data)
+      await logActivity('Create', 'SISWA', newUserId as string, data)
       return true
     } catch (error) {
       console.error('Error in createSiswa:', error)
@@ -196,7 +196,7 @@ export const siswaAdminService = {
       }
     }
 
-    await logActivity('Update', 'Siswa', id, data)
+    await logActivity('Update', 'SISWA', id, data)
     return true
   },
 
@@ -211,7 +211,7 @@ export const siswaAdminService = {
       .eq('id', id)
 
     if (!error) {
-      await logActivity('Delete', 'Siswa', id, { id })
+      await logActivity('Delete', 'SISWA', id, { id })
     }
 
     return !error

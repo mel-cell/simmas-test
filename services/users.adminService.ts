@@ -52,7 +52,7 @@ export const usersAdminService = {
       return false
     }
     
-    await logActivity('Create', 'Pengguna', newUserId as string, data)
+    await logActivity('Create', 'PENGGUNA', newUserId as string, data)
     return true
   },
 
@@ -76,7 +76,7 @@ export const usersAdminService = {
       return false
     }
     
-    await logActivity('Update', 'Pengguna', id, data)
+    await logActivity('Update', 'PENGGUNA', id, data)
     return true
   },
 
@@ -90,7 +90,7 @@ export const usersAdminService = {
       return false
     }
     
-    await logActivity('Delete', 'Pengguna', id, { id })
+    await logActivity('Delete', 'PENGGUNA', id, { id })
     return true
   }
 }

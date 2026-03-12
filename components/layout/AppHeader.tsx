@@ -17,15 +17,24 @@ import { useSchoolSettings } from '@/components/providers/SchoolSettingsProvider
 export function AppHeader() {
   const { toggleSidebar } = useSidebar()
   const router = useRouter()
-  const [profile, setProfile] = useState<{ full_name: string, role: string } | null>(null)
+  const [profile, setProfile] = useState<{ 
+    full_name: string, 
+    role: string,
+    nomor_induk?: string,
+    kelas?: string,
+    jurusan?: string
+  } | null>(null)
 
   useEffect(() => {
     async function fetchProfile() {
       const data = await authService.getProfile()
-      if (data) {
+      if (data && data.profile) {
         setProfile({
-          full_name: data.profile?.full_name || 'User',
-          role: data.profile?.role || 'Guest'
+          full_name: data.profile.full_name || 'User',
+          role: data.profile.role || 'Guest',
+          nomor_induk: data.profile.nomor_induk,
+          kelas: data.profile.kelas,
+          jurusan: data.profile.jurusan
         })
       }
     }
@@ -104,13 +113,21 @@ export function AppHeader() {
             </div>
             <div className="text-start hidden lg:flex flex-col">
               <p className="text-[13px] font-bold text-[#0F172A] leading-tight truncate max-w-[120px]">{userName}</p>
-              <p className="text-[11px] text-[#64748B] font-medium capitalize mt-0.5">{userRole.toLowerCase()}</p>
+              <p className="text-[11px] text-[#64748B] font-medium mt-0.5">
+                {userRole === 'SISWA' && profile?.nomor_induk 
+                  ? `${profile.nomor_induk} • ${profile.kelas || ''}` 
+                  : userRole.toLowerCase()}
+              </p>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[220px] rounded-2xl p-0 overflow-hidden shadow-xl border border-[#E2E8F0] mt-2 bg-white z-50">
             <div className="px-5 py-4 bg-[#F8FAFC] border-b border-[#F1F5F9]">
               <p className="text-[14px] font-bold text-[#0F172A] truncate">{userName}</p>
-              <p className="text-[12px] text-[#64748B] font-medium mt-1 capitalize">{userRole.toLowerCase()}</p>
+              <p className="text-[12px] text-[#64748B] font-medium mt-1">
+                {userRole === 'SISWA' && profile?.nomor_induk 
+                  ? `${profile.nomor_induk} • ${profile.kelas || ''} ${profile.jurusan || ''}`
+                  : userRole.toLowerCase()}
+              </p>
             </div>
             <div className="p-2">
               <DropdownMenuItem 

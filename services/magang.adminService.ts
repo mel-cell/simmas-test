@@ -127,7 +127,7 @@ export const magangAdminService = {
       return false
     }
 
-    await logActivity('Create', 'Magang', newMagang?.id, data)
+    await logActivity('Create', 'MAGANG', newMagang?.id, data)
     return true
   },
 
@@ -150,7 +150,7 @@ export const magangAdminService = {
       return false
     }
     
-    await logActivity('Update', 'Magang', id, updateData)
+    await logActivity('Update', 'MAGANG', id, updateData)
     return true
   },
 
@@ -165,7 +165,7 @@ export const magangAdminService = {
       return false
     }
     
-    await logActivity('Delete', 'Magang', id, { id })
+    await logActivity('Delete', 'MAGANG', id, { id })
     return true
   },
   

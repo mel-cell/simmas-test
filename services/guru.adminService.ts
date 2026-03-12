@@ -108,7 +108,7 @@ export const guruAdminService = {
         return false
       }
 
-      await logActivity('Create', 'Guru', newUserId as string, data)
+      await logActivity('Create', 'GURU', newUserId as string, data)
       return true
     } catch (error) {
       console.error('Error in createGuru:', error)
@@ -136,7 +136,7 @@ export const guruAdminService = {
       return false
     }
     
-    await logActivity('Update', 'Guru', id, data)
+    await logActivity('Update', 'GURU', id, data)
     return true
   },
 
@@ -151,7 +151,7 @@ export const guruAdminService = {
       .eq('role', 'GURU')
 
     if (!error) {
-      await logActivity('Delete', 'Guru', id, { id })
+      await logActivity('Delete', 'GURU', id, { id })
     }
 
     return !error

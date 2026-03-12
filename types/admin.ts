@@ -104,12 +104,24 @@ export type UserProfileData = {
   createdAt: string
 }
 
+export type Logbook = {
+  id: string
+  siswa_id: string
+  tgl: string
+  kegiatan: string
+  kendala?: string
+  status: 'draft' | 'menunggu' | 'disetujui' | 'ditolak'
+  catatan_guru?: string
+  foto_url?: string
+  created_at?: string
+}
+
 export type ActivityLog = {
   id: string
   userName: string
   action: string
   entityType: string
-  details: any
+  details: Record<string, unknown> | null
   createdAt: string
 }
 

@@ -1,4 +1,5 @@
 import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings, SiswaInput } from '@/types/admin'
+import { SiswaDashboardResponse, SiswaJournal, SiswaDudi, SiswaApplication } from '@/types/siswa'
 
 // Konfigurasi dasar fetch
 const fetcher = async <T>(url: string, options?: RequestInit): Promise<T> => {
@@ -221,4 +222,34 @@ export const api = {
       })
     },
   },
+  siswa: {
+    getDashboard: () => fetcher<SiswaDashboardResponse>('/api/siswa/dashboard'),
+    getAllJournals: () => fetcher<{ journals: SiswaJournal[] }>('/api/siswa/jurnal'),
+    getJournalDetail: (id: string) => fetcher<SiswaJournal>(`/api/siswa/jurnal/${id}`),
+    createJournal: (journal: { tgl: string, kegiatan: string, kendala?: string, status?: string, foto_url?: string }) => {
+      return fetcher<{ success: boolean }>('/api/siswa/jurnal', {
+        method: 'POST',
+        body: JSON.stringify(journal)
+      })
+    },
+    updateJournal: (id: string, journal: { kegiatan?: string, kendala?: string, status?: string }) => {
+      return fetcher<{ success: boolean }>(`/api/siswa/jurnal/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(journal)
+      })
+    },
+    deleteJournal: (id: string) => {
+      return fetcher<{ success: boolean }>(`/api/siswa/jurnal/${id}`, {
+        method: 'DELETE'
+      })
+    },
+    getAvailableDudis: () => fetcher<{ dudi: SiswaDudi[] }>('/api/siswa/magang/available'),
+    getApplications: () => fetcher<{ applications: SiswaApplication[] }>('/api/siswa/magang/applications'),
+    applyInternship: (dudiId: string) => {
+      return fetcher<{ success: boolean }>('/api/siswa/magang/apply', {
+        method: 'POST',
+        body: JSON.stringify({ dudiId })
+      })
+    },
+  }
 }
