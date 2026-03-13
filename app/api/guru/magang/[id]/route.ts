@@ -9,6 +9,9 @@ export async function PATCH(
   try {
     const { id } = await params
     const profileData = await authService.getProfile()
+    if (!profileData?.user || profileData.user.user_metadata?.role !== 'GURU') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     const body = await req.json()
 
     let success = false
