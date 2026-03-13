@@ -59,7 +59,14 @@ export const usersAdminService = {
   updateUser: async (id: string, data: Partial<UserInput>): Promise<boolean> => {
     // Requires email, nama, role, isVerified since we don't have patch support on the RPC yet
     // we assume the caller provides all fields that were not changed.
-    if (!data.email || !data.fullName || !data.role) return false;
+    if (!data.email || !data.fullName || !data.role) {
+      console.error('Update User failed: Missing required fields', { 
+        email: !!data.email, 
+        fullName: !!data.fullName, 
+        role: !!data.role 
+      });
+      return false;
+    }
     
     // update password separately if needed. If user wants to update password, we'd need another RPC,
     // but the UI currently doesn't allow editing password on update, let's assume it doesn't. Admin can edit name/role/email.
@@ -68,7 +75,8 @@ export const usersAdminService = {
       p_email: data.email,
       p_nama: data.fullName,
       p_role: data.role,
-      p_is_verified: data.isVerified === undefined ? true : data.isVerified
+      p_is_verified: data.isVerified === undefined ? true : data.isVerified,
+      p_password: data.password || null
     })
 
     if (error) {

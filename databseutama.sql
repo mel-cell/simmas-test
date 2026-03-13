@@ -200,9 +200,10 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP FUNCTION IF EXISTS public.handle_new_user();
 
 -- =========================================================================
--- 14. RPC FUNCTIONS (Khusus Bypass Auth Limits)
+-- 14. RPC FUNCTIONS (Bypass Auth Limits & Management)
 -- =========================================================================
 
+-- 14.1 Create Siswa
 CREATE OR REPLACE FUNCTION public.create_siswa_bypassing_auth(
   p_email text,
   p_password text,
@@ -220,56 +221,46 @@ DECLARE
   new_user_id uuid;
   encrypted_pw text;
 BEGIN
-  -- Enkripsi password untuk auth.users
   encrypted_pw := crypt(p_password, gen_salt('bf'));
   new_user_id := gen_random_uuid();
 
-  -- Insert ke tabel internal auth.users
   INSERT INTO auth.users (
     instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
     last_sign_in_at, raw_app_meta_data, raw_user_meta_data, 
-    created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token
+    created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token,
+    is_super_admin, is_sso_user, is_anonymous
   ) VALUES (
     '00000000-0000-0000-0000-000000000000', new_user_id, 'authenticated', 'authenticated', p_email, encrypted_pw, now(), 
     now(), '{"provider":"email","providers":["email"]}', 
-    '{}', now(), now(), '', '', '', ''
+    format('{"full_name":"%s","role":"SISWA"}', p_nama)::jsonb, 
+    now(), now(), '', '', '', '',
+    false, false, false
   );
 
-  -- Insert ke auth.identities
   INSERT INTO auth.identities (
     id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at
   ) VALUES (
     gen_random_uuid(), new_user_id, format('{"sub":"%s","email":"%s"}', new_user_id::text, p_email)::jsonb, 
-    'email', new_user_id, now(), now(), now()
+    'email', new_user_id::text, now(), now(), now()
   );
 
-  -- Insert ke public.profiles
-  -- Default status profile diset 'aktif' (Belum Magang)
   INSERT INTO public.profiles (
     id, full_name, email, role, nomor_induk, kelas, jurusan, no_telp, alamat, status
   ) VALUES (
     new_user_id, p_nama, p_email, 'SISWA', p_nis, p_kelas, p_jurusan, p_nohp, p_alamat, 'aktif'
   );
 
-  -- Plotting tabel magang jika DUDI / Guru dipilih
-  -- Pilihan status: jika langsung diplot, set 'menunggu' atau sesuaikan p_status
   IF p_dudi_id IS NOT NULL OR p_guru_id IS NOT NULL THEN
-    INSERT INTO public.magang (
-      siswa_id, dudi_id, guru_id, status
-    ) VALUES (
-      new_user_id, p_dudi_id, p_guru_id, p_status
-    );
+    INSERT INTO public.magang (siswa_id, dudi_id, guru_id, status) 
+    VALUES (new_user_id, p_dudi_id, p_guru_id, p_status);
   END IF;
 
   RETURN new_user_id;
-
-EXCEPTION
-  WHEN OTHERS THEN
-    RAISE EXCEPTION 'Gagal membuat user: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
+-- 14.2 Create Guru
 CREATE OR REPLACE FUNCTION public.create_guru_bypassing_auth(
   p_email text,
   p_password text,
@@ -284,30 +275,29 @@ DECLARE
   new_user_id uuid;
   encrypted_pw text;
 BEGIN
-  -- Enkripsi password untuk auth.users
   encrypted_pw := crypt(p_password, gen_salt('bf'));
   new_user_id := gen_random_uuid();
 
-  -- Insert ke tabel internal auth.users
   INSERT INTO auth.users (
     instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
     last_sign_in_at, raw_app_meta_data, raw_user_meta_data, 
-    created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token
+    created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token,
+    is_super_admin, is_sso_user, is_anonymous
   ) VALUES (
     '00000000-0000-0000-0000-000000000000', new_user_id, 'authenticated', 'authenticated', p_email, encrypted_pw, now(), 
     now(), '{"provider":"email","providers":["email"]}', 
-    '{}', now(), now(), '', '', '', ''
+    format('{"full_name":"%s","role":"GURU"}', p_nama)::jsonb, 
+    now(), now(), '', '', '', '',
+    false, false, false
   );
 
-  -- Insert ke auth.identities
   INSERT INTO auth.identities (
     id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at
   ) VALUES (
     gen_random_uuid(), new_user_id, format('{"sub":"%s","email":"%s"}', new_user_id::text, p_email)::jsonb, 
-    'email', new_user_id, now(), now(), now()
+    'email', new_user_id::text, now(), now(), now()
   );
 
-  -- Insert ke public.profiles
   INSERT INTO public.profiles (
     id, full_name, email, role, nomor_induk, jurusan, no_telp, alamat, status
   ) VALUES (
@@ -315,9 +305,90 @@ BEGIN
   );
 
   RETURN new_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
-EXCEPTION
-  WHEN OTHERS THEN
-    RAISE EXCEPTION 'Gagal membuat user guru: %', SQLERRM;
+
+-- 14.3 Generic User Management (RPC)
+CREATE OR REPLACE FUNCTION public.create_generic_user_bypassing_auth(
+  p_email text, p_password text, p_nama text, p_role text, p_is_verified boolean
+) RETURNS uuid AS $$
+DECLARE
+  new_user_id uuid;
+  confirmed_at timestamp with time zone;
+BEGIN
+  IF EXISTS (SELECT 1 FROM auth.users WHERE email = p_email) THEN
+    RAISE EXCEPTION 'Email % sudah terdaftar', p_email;
+  END IF;
+
+  new_user_id := gen_random_uuid();
+  confirmed_at := CASE WHEN p_is_verified THEN now() ELSE NULL END;
+
+  INSERT INTO auth.users (
+    instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
+    last_sign_in_at, raw_app_meta_data, raw_user_meta_data, 
+    created_at, updated_at, is_super_admin, is_sso_user, is_anonymous
+  ) VALUES (
+    '00000000-0000-0000-0000-000000000000', new_user_id, 'authenticated', 'authenticated', p_email, 
+    crypt(p_password, gen_salt('bf')), confirmed_at, 
+    now(), '{"provider":"email","providers":["email"]}', 
+    format('{"full_name":"%s","role":"%s"}', p_nama, upper(p_role))::jsonb, 
+    now(), now(), false, false, false
+  );
+
+  INSERT INTO auth.identities (id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at) 
+  VALUES (gen_random_uuid(), new_user_id, format('{"sub":"%s","email":"%s"}', new_user_id::text, p_email)::jsonb, 'email', new_user_id::text, now(), now(), now());
+
+  INSERT INTO public.profiles (id, full_name, email, role, status) VALUES (new_user_id, p_nama, p_email, upper(p_role)::user_role, 'aktif');
+
+  RETURN new_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.update_user_bypassing_auth(
+  p_user_id uuid, p_email text, p_nama text, p_role text, p_is_verified boolean, p_password text DEFAULT NULL
+) RETURNS boolean AS $$
+BEGIN
+  IF p_password IS NOT NULL AND p_password <> '' THEN
+    UPDATE auth.users SET 
+      email = p_email, 
+      email_confirmed_at = CASE WHEN p_is_verified THEN now() ELSE NULL END,
+      encrypted_password = crypt(p_password, gen_salt('bf')),
+      raw_user_meta_data = raw_user_meta_data || format('{"full_name":"%s","role":"%s"}', p_nama, upper(p_role))::jsonb,
+      updated_at = now()
+    WHERE id = p_user_id;
+  ELSE
+    UPDATE auth.users SET 
+      email = p_email, 
+      email_confirmed_at = CASE WHEN p_is_verified THEN now() ELSE NULL END,
+      raw_user_meta_data = raw_user_meta_data || format('{"full_name":"%s","role":"%s"}', p_nama, upper(p_role))::jsonb,
+      updated_at = now()
+    WHERE id = p_user_id;
+  END IF;
+
+  UPDATE auth.identities SET identity_data = identity_data || format('{"email":"%s"}', p_email)::jsonb, updated_at = now() 
+  WHERE user_id = p_user_id AND provider = 'email';
+
+  UPDATE public.profiles SET full_name = p_nama, email = p_email, role = upper(p_role)::user_role, updated_at = now() WHERE id = p_user_id;
+  RETURN true;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.delete_user_bypassing_auth(p_user_id uuid) RETURNS boolean AS $$
+BEGIN
+  DELETE FROM auth.users WHERE id = p_user_id;
+  RETURN true;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+CREATE OR REPLACE FUNCTION public.get_all_users_admin()
+RETURNS TABLE (id uuid, full_name text, email text, role text, is_verified boolean, created_at timestamp with time zone) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT p.id, p.full_name, p.email, p.role::text, (au.email_confirmed_at IS NOT NULL) AS is_verified, p.created_at
+  FROM public.profiles p LEFT JOIN auth.users au ON au.id = p.id ORDER BY p.created_at DESC;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
