@@ -38,8 +38,8 @@ const adminNavItems = [
 
 const guruNavItems = [
   { title: 'Dashboard', subtitle: 'Ringkasan sistem', url: '/guru/dashboard', icon: LayoutDashboard },
-  { title: 'Siswa Bimbingan', subtitle: 'Daftar siswa', url: '/guru/siswa', icon: Users },
-  { title: 'Logbook Siswa', subtitle: 'Review jurnal', url: '/guru/logbook', icon: BookOpen },
+  { title: 'Siswa Bimbingan', subtitle: 'Manajemen magang', url: '/guru/magang', icon: Users },
+  { title: 'Approval Jurnal', subtitle: 'Review laporan', url: '/guru/approval', icon: BookOpen },
 ]
 
 const siswaNavItems = [

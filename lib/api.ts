@@ -1,5 +1,6 @@
 import { AdminStats, RecentMagang, RecentLogbook, ActiveDudi, SiswaData, GuruData, InternshipStats, UserProfileData, ActivityLog, ActivityStats, SchoolSettings, SiswaInput } from '@/types/admin'
 import { SiswaDashboardResponse, SiswaJournal, SiswaDudi, SiswaApplication } from '@/types/siswa'
+import { GuruDashboardResponse, BimbinganSiswa, GuruJournalApproval } from '@/types/guru'
 
 // Konfigurasi dasar fetch
 const fetcher = async <T>(url: string, options?: RequestInit): Promise<T> => {
@@ -252,5 +253,31 @@ export const api = {
         body: JSON.stringify({ dudiId, guruId })
       })
     },
+  },
+  guru: {
+    getDashboard: () => fetcher<GuruDashboardResponse>('/api/guru/dashboard'),
+    getBimbingan: (params?: { query?: string, status?: string }) => {
+      const searchParams = new URLSearchParams(params as Record<string, string>).toString()
+      return fetcher<{ bimbingan: BimbinganSiswa[] }>(`/api/guru/magang?${searchParams}`)
+    },
+    updateMagangStatus: (id: string, data: { status: string, tgl_mulai?: string, tgl_selesai?: string, catatan?: string }) => {
+      return fetcher<{ success: boolean }>(`/api/guru/magang/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ type: 'status', ...data })
+      })
+    },
+    inputNilai: (id: string, nilai: number) => {
+      return fetcher<{ success: boolean }>(`/api/guru/magang/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ type: 'nilai', nilai })
+      })
+    },
+    getJournals: () => fetcher<{ journals: GuruJournalApproval[] }>('/api/guru/journals'),
+    approveJournal: (id: string, status: 'disetujui' | 'ditolak', notes?: string) => {
+      return fetcher<{ success: boolean }>(`/api/guru/journals/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status, notes })
+      })
+    }
   }
 }
