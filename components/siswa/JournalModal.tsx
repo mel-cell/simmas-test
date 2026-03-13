@@ -24,20 +24,42 @@ import { Textarea } from '@/components/ui/textarea'
 import { uploadService } from '@/services/uploadService'
 import { api } from '@/lib/api'
 import { toast } from 'sonner'
+import { SiswaJournal } from '@/types/siswa'
+import { useEffect } from 'react'
 
 interface JournalModalProps {
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
+  journal?: SiswaJournal | null
 }
 
-export function JournalModal({ isOpen, onClose, onSuccess }: JournalModalProps) {
+export function JournalModal({ isOpen, onClose, onSuccess, journal }: JournalModalProps) {
   const [loading, setLoading] = useState(false)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [description, setDescription] = useState('')
   const [problems, setProblems] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
+  
+  const isEdit = !!journal
+
+  useEffect(() => {
+    if (isOpen) {
+      if (journal) {
+        setDate(journal.tgl)
+        setDescription(journal.kegiatan)
+        setProblems(journal.kendala || '')
+        setError(null)
+      } else {
+        setDate(new Date().toISOString().split('T')[0])
+        setDescription('')
+        setProblems('')
+        setFile(null)
+        setError(null)
+      }
+    }
+  }, [isOpen, journal])
 
   const isDescriptionValid = description.length >= 50
   const isFormValid = isDescriptionValid && date !== ''
@@ -57,22 +79,34 @@ export function JournalModal({ isOpen, onClose, onSuccess }: JournalModalProps) 
         }
       }
 
-      const res = await api.siswa.createJournal({
-        tgl: date,
-        kegiatan: description,
-        kendala: problems,
-        foto_url: fotoUrl,
-        status: 'menunggu'
-      })
+      let res: { success: boolean }
+      if (isEdit && journal) {
+        res = await api.siswa.updateJournal(journal.id, {
+          kegiatan: description,
+          kendala: problems,
+          foto_url: fotoUrl || journal.foto_url,
+          status: 'menunggu'
+        })
+      } else {
+        res = await api.siswa.createJournal({
+          tgl: date,
+          kegiatan: description,
+          kendala: problems,
+          foto_url: fotoUrl,
+          status: 'menunggu'
+        })
+      }
 
       if (res.success) {
-        toast.success('Jurnal harian berhasil disimpan')
+        toast.success(isEdit ? 'Jurnal harian berhasil diperbarui' : 'Jurnal harian berhasil disimpan')
         onSuccess()
         onClose()
-        // Reset form
-        setDescription('')
-        setProblems('')
-        setFile(null)
+        if (!isEdit) {
+          // Reset form only if not editing
+          setDescription('')
+          setProblems('')
+          setFile(null)
+        }
       }
     } catch (err: unknown) {
       const error = err as Error
@@ -89,10 +123,10 @@ export function JournalModal({ isOpen, onClose, onSuccess }: JournalModalProps) 
         <DialogHeader className="p-8 pb-5">
           <div className="flex flex-col gap-1">
             <DialogTitle className="text-2xl font-black text-slate-800 tracking-tight">
-              Tambah Jurnal Harian
+              {isEdit ? 'Edit Jurnal Harian' : 'Tambah Jurnal Harian'}
             </DialogTitle>
             <DialogDescription className="text-slate-500 font-bold text-sm">
-              Dokumentasikan kegiatan magang harian Anda
+              {isEdit ? 'Perbarui dokumentasi kegiatan magang Anda' : 'Dokumentasikan kegiatan magang harian Anda'}
             </DialogDescription>
           </div>
         </DialogHeader>
@@ -134,8 +168,9 @@ export function JournalModal({ isOpen, onClose, onSuccess }: JournalModalProps) 
                       <Input 
                         type="date" 
                         value={date}
+                        disabled={isEdit}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDate(e.target.value)}
-                        className="pl-11 h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-700 focus:bg-white transition-all outline-none ring-0 focus-visible:ring-4 focus-visible:ring-[#00BCD4]/5 focus-visible:border-[#00BCD4]/30"
+                        className="pl-11 h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-700 focus:bg-white transition-all outline-none ring-0 focus-visible:ring-4 focus-visible:ring-[#00BCD4]/5 focus-visible:border-[#00BCD4]/30 disabled:opacity-50"
                       />
                    </div>
                 </div>
@@ -256,7 +291,7 @@ export function JournalModal({ isOpen, onClose, onSuccess }: JournalModalProps) 
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 Processing...
               </>
-            ) : 'Simpan Jurnal'}
+            ) : isEdit ? 'Perbarui Jurnal' : 'Simpan Jurnal'}
           </Button>
         </DialogFooter>
       </DialogContent>

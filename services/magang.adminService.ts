@@ -103,12 +103,27 @@ export const magangAdminService = {
   },
 
   createMagang: async (data: MagangInput): Promise<boolean> => {
-    // Make sure dudi_id is present
-    if (!data.dudi_id) return false;
+    // 1. Validasi Input
+    if (!data.dudi_id || !data.siswa_id) return false;
+
+    // 2. Cegah Double Plot (Constraint logic)
+    // Cek apakah siswa sudah punya magang yang statusnya 'aktif' atau 'menunggu'
+    const { data: existing } = await supabase
+      .from('magang')
+      .select('id')
+      .eq('siswa_id', data.siswa_id)
+      .in('status', ['aktif', 'menunggu'])
+      .maybeSingle()
+
+    if (existing) {
+      console.error('Siswa sudah terdaftar di penempatan lain yang sedang aktif/menunggu.')
+      return false
+    }
 
     // Optional guru
     const guru_id = data.guru_id === '' ? null : data.guru_id;
 
+    // 3. Insert Penempatan Baru
     const { data: newMagang, error } = await supabase
       .from('magang')
       .insert({
@@ -127,6 +142,12 @@ export const magangAdminService = {
       return false
     }
 
+    // 4. Sinkronisasi Status Profil Siswa
+    // Jika status magang diset 'aktif', ubah status di profile siswa menjadi 'magang'
+    if (data.status === 'aktif') {
+      await supabase.from('profiles').update({ status: 'magang' }).eq('id', data.siswa_id)
+    }
+
     await logActivity('Create', 'MAGANG', newMagang?.id, data)
     return true
   },
@@ -140,6 +161,14 @@ export const magangAdminService = {
     if (data.tgl_selesai !== undefined) updateData.tgl_selesai = data.tgl_selesai
     if (data.status !== undefined) updateData.status = data.status
 
+    // 1. Get current magang to know who the student is (if not provided in data)
+    let siswaId = data.siswa_id
+    if (!siswaId) {
+      const { data: current } = await supabase.from('magang').select('siswa_id').eq('id', id).single()
+      if (current) siswaId = current.siswa_id
+    }
+
+    // 2. Perform Update
     const { error } = await supabase
       .from('magang')
       .update(updateData)
@@ -148,6 +177,18 @@ export const magangAdminService = {
     if (error) {
       console.error('Error updating magang:', error)
       return false
+    }
+
+    // 3. Sinkronisasi Status Profil Siswa
+    if (siswaId && data.status) {
+      if (data.status === 'aktif') {
+        await supabase.from('profiles').update({ status: 'magang' }).eq('id', siswaId)
+      } else if (data.status === 'selesai') {
+        await supabase.from('profiles').update({ status: 'selesai' }).eq('id', siswaId)
+      } else if (data.status === 'dibatalkan' || data.status === 'menunggu') {
+        // Jika dibatalkan atau kembali menunggu, status profile dikembalikan ke 'aktif' (Belum Magang)
+        await supabase.from('profiles').update({ status: 'aktif' }).eq('id', siswaId)
+      }
     }
     
     await logActivity('Update', 'MAGANG', id, updateData)
@@ -171,18 +212,32 @@ export const magangAdminService = {
   
   // fetch options for dropdowns
   getSiswaOptions: async () => {
-    const { data, error } = await supabase
+    // Hanya ambil siswa yang status profilenya 'aktif' (artinya belum magang atau magang sebelumnya sudah selesai/dibatalkan)
+    // DAN tidak sedang memiliki record magang dengan status 'aktif' atau 'menunggu'
+    const { data: allSiswa, error } = await supabase
       .from('profiles')
-      .select('id, full_name, magang!magang_siswa_id_fkey(id)')
+      .select(`
+        id, 
+        full_name, 
+        magang!magang_siswa_id_fkey(status)
+      `)
       .eq('role', 'SISWA')
+      .eq('status', 'aktif') // Status 'aktif' di profiles berarti siap ditempatkan
       .order('full_name')
 
     if (error) return []
 
-    // Map to simple array
-    // Optionally we can only return students without active magang, 
-    // but the user might want to assign them anyway and overwrite or we can just list all
-    return data.map((d: { id: string, full_name: string }) => ({
+    // Filter tambahan di client-side untuk memastikan tidak ada record magang yang 'aktif'/'menunggu'
+    // (Meskipun status profile 'aktif' harusnya sudah sinkron, ini untuk keamanan extra)
+    const filtered = (allSiswa as unknown as { id: string, full_name: string, magang: { status: string }[] | { status: string } | null }[]).filter((s) => {
+      const magang = Array.isArray(s.magang) ? s.magang : (s.magang ? [s.magang] : [])
+      const activeInternships = magang.filter(m => 
+        ['aktif', 'menunggu'].includes(m.status)
+      )
+      return activeInternships.length === 0
+    })
+
+    return filtered.map((d) => ({
       id: d.id,
       nama: d.full_name
     }))

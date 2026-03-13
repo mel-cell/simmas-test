@@ -31,6 +31,7 @@ export default function JurnalSiswa() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter] = useState('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingJournal, setEditingJournal] = useState<SiswaJournal | null>(null)
 
   const fetchJournals = async () => {
     try {
@@ -47,6 +48,16 @@ export default function JurnalSiswa() {
   useEffect(() => {
     fetchJournals()
   }, [])
+
+  const handleEdit = (journal: SiswaJournal) => {
+    setEditingJournal(journal)
+    setIsModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+    setEditingJournal(null)
+  }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Apakah Anda yakin ingin menghapus jurnal ini?')) return
@@ -247,7 +258,12 @@ export default function JurnalSiswa() {
                           </Button>
                           {journal.status !== 'disetujui' && (
                             <>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-500">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 text-slate-400 hover:text-blue-500"
+                                onClick={() => handleEdit(journal)}
+                              >
                                 <Edit2 className="w-4 h-4" />
                               </Button>
                               <Button 
@@ -300,8 +316,9 @@ export default function JurnalSiswa() {
 
       <JournalModal 
         isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+        onClose={handleModalClose} 
         onSuccess={fetchJournals}
+        journal={editingJournal}
       />
     </div>
   )

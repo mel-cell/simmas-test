@@ -149,18 +149,24 @@ export const siswaAdminService = {
 
   updateSiswa: async (id: string, data: Partial<SiswaInput>): Promise<boolean> => {
     // 1. Update Profile
+    const updateProfileData: Record<string, string | null | undefined> = {}
+    if (data.nis !== undefined) updateProfileData.nomor_induk = data.nis
+    if (data.nama !== undefined) updateProfileData.full_name = data.nama
+    if (data.email !== undefined) updateProfileData.email = data.email
+    if (data.nohp !== undefined) updateProfileData.no_telp = data.nohp
+    if (data.kelas !== undefined) updateProfileData.kelas = data.kelas
+    if (data.jurusan !== undefined) updateProfileData.jurusan = data.jurusan
+    if (data.alamat !== undefined) updateProfileData.alamat = data.alamat
+    
+    // Status Logic: Di profiles, status 'magang' berarti sedang PKL.
+    // Di aplikasi, status 'aktif' di profiles berarti "Ready/Aktif" (Belum Magang).
+    if (data.status !== undefined) {
+      updateProfileData.status = data.status
+    }
+
     const { error: pError } = await supabase
       .from('profiles')
-      .update({
-        nomor_induk: data.nis,
-        full_name: data.nama,
-        email: data.email,
-        no_telp: data.nohp,
-        kelas: data.kelas,
-        jurusan: data.jurusan,
-        alamat: data.alamat,
-        status: data.status === 'magang' ? 'aktif' : (data.status || 'aktif')
-      })
+      .update(updateProfileData)
       .eq('id', id)
 
     if (pError) {
@@ -168,32 +174,40 @@ export const siswaAdminService = {
       return false
     }
 
-    // 2. Update Magang (upsert/update existing)
-    if (data.dudi_id !== undefined || data.guru_id !== undefined) {
-      // Find existing magang
-      const { data: existingMagang } = await supabase
-        .from('magang')
-        .select('id')
-        .eq('siswa_id', id)
-        .maybeSingle()
+    // 2. Update Magang Sync
+    const { data: existingMagang } = await supabase
+      .from('magang')
+      .select('id, status')
+      .eq('siswa_id', id)
+      .maybeSingle()
 
-      if (existingMagang) {
-        await supabase
-          .from('magang')
-          .update({
-            dudi_id: data.dudi_id || null,
-            guru_id: data.guru_id || null,
-            status: data.status === 'magang' ? 'aktif' : (data.status === 'selesai' ? 'selesai' : 'menunggu')
-          })
-          .eq('id', existingMagang.id)
-      } else if (data.dudi_id || data.guru_id) {
-        await supabase.from('magang').insert({
-          siswa_id: id,
-          dudi_id: data.dudi_id || null,
-          guru_id: data.guru_id || null,
-          status: data.status === 'magang' ? 'aktif' : 'menunggu'
-        })
-      }
+    const magangStatusMap: Record<string, string> = {
+      'magang': 'aktif',
+      'selesai': 'selesai',
+      'aktif': 'dibatalkan', // Jika profile kembali ke 'aktif' (Ready), magang yg ada dibatalkan
+      'non-aktif': 'dibatalkan'
+    }
+
+    if (existingMagang) {
+      const newMagangStatus = data.status ? magangStatusMap[data.status] : existingMagang.status
+      
+      const magangUpdate: Record<string, string | null | undefined> = {}
+      if (data.dudi_id !== undefined) magangUpdate.dudi_id = data.dudi_id || null
+      if (data.guru_id !== undefined) magangUpdate.guru_id = data.guru_id || null
+      if (data.status !== undefined) magangUpdate.status = newMagangStatus
+
+      await supabase
+        .from('magang')
+        .update(magangUpdate)
+        .eq('id', existingMagang.id)
+    } else if (data.dudi_id || data.guru_id) {
+      // Create new magang if it doesn't exist but DUDI/Guru is assigned
+      await supabase.from('magang').insert({
+        siswa_id: id,
+        dudi_id: data.dudi_id || null,
+        guru_id: data.guru_id || null,
+        status: data.status === 'magang' ? 'aktif' : 'menunggu'
+      })
     }
 
     await logActivity('Update', 'SISWA', id, data)

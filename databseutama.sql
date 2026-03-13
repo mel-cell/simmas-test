@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   no_telp TEXT,
   alamat TEXT,
   avatar_url TEXT,
-  status TEXT DEFAULT 'aktif',
+  status TEXT DEFAULT 'aktif', -- 'aktif' (Ready), 'magang' (On-site), 'selesai', 'non-aktif'
   last_login_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -79,13 +79,21 @@ CREATE TABLE IF NOT EXISTS magang (
   dudi_id UUID REFERENCES public.dudi(id) ON DELETE CASCADE,
   tgl_mulai DATE,
   tgl_selesai DATE,
-  status TEXT DEFAULT 'menunggu',
+  status TEXT DEFAULT 'menunggu', -- 'menunggu', 'aktif', 'selesai', 'dibatalkan'
   pilihan_ke INTEGER,
   nilai_akhir FLOAT,
   sertifikat_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- =========================================================================
+-- 7.1 CONSTRAINT: CEGAH DOUBLE PLOT (Berdasarkan admin.md baris 73)
+-- Satu siswa tidak boleh punya lebih dari satu penempatan 'aktif' atau 'menunggu'
+-- =========================================================================
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_magang 
+ON public.magang (siswa_id) 
+WHERE status IN ('aktif', 'menunggu');
 
 -- 8. Table: LOGBOOKS
 CREATE TABLE IF NOT EXISTS logbooks (
@@ -146,8 +154,29 @@ VALUES
   ('Sentra Solusi IT', 'Komp. Perkantoran Hijau Blok A, Bandung', 'Andi Wijaya', 'admin@sentrasolusi.com', '022-999333', 4)
 ON CONFLICT DO NOTHING;
 
--- 13. TRIGGERS (MANUAL ONLY)
--- Trigger untuk auto-update "updated_at"
+-- 13. FUNCTIONS & TRIGGERS
+-- Function for auto-status sync (Sync profiles.status based on magang.status)
+CREATE OR REPLACE FUNCTION sync_profile_status_from_magang()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+        IF NEW.status = 'aktif' THEN
+            UPDATE public.profiles SET status = 'magang' WHERE id = NEW.siswa_id;
+        ELSIF NEW.status = 'selesai' THEN
+            UPDATE public.profiles SET status = 'selesai' WHERE id = NEW.siswa_id;
+        ELSIF NEW.status = 'dibatalkan' OR NEW.status = 'menunggu' THEN
+            -- Kembalikan ke 'aktif' (Ready) jika dibatalkan atau masih menunggu
+            UPDATE public.profiles SET status = 'aktif' WHERE id = NEW.siswa_id;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Triggers Area
+DROP TRIGGER IF EXISTS trg_sync_magang_to_profile ON magang;
+CREATE TRIGGER trg_sync_magang_to_profile AFTER INSERT OR UPDATE ON magang FOR EACH ROW EXECUTE PROCEDURE sync_profile_status_from_magang();
+
 DROP TRIGGER IF EXISTS update_sekolah_settings_modtime ON sekolah_settings;
 CREATE TRIGGER update_sekolah_settings_modtime BEFORE UPDATE ON sekolah_settings FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
@@ -215,18 +244,20 @@ BEGIN
   );
 
   -- Insert ke public.profiles
+  -- Default status profile diset 'aktif' (Belum Magang)
   INSERT INTO public.profiles (
     id, full_name, email, role, nomor_induk, kelas, jurusan, no_telp, alamat, status
   ) VALUES (
-    new_user_id, p_nama, p_email, 'SISWA', p_nis, p_kelas, p_jurusan, p_nohp, p_alamat, p_status
+    new_user_id, p_nama, p_email, 'SISWA', p_nis, p_kelas, p_jurusan, p_nohp, p_alamat, 'aktif'
   );
 
   -- Plotting tabel magang jika DUDI / Guru dipilih
+  -- Pilihan status: jika langsung diplot, set 'menunggu' atau sesuaikan p_status
   IF p_dudi_id IS NOT NULL OR p_guru_id IS NOT NULL THEN
     INSERT INTO public.magang (
       siswa_id, dudi_id, guru_id, status
     ) VALUES (
-      new_user_id, p_dudi_id, p_guru_id, 'menunggu'
+      new_user_id, p_dudi_id, p_guru_id, p_status
     );
   END IF;
 

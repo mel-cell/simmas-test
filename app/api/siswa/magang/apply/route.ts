@@ -9,16 +9,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { dudiId } = await req.json()
+    const { dudiId, guruId } = await req.json()
     if (!dudiId) {
       return NextResponse.json({ error: 'ID DUDI diperlukan' }, { status: 400 })
     }
 
-    const success = await siswaService.applyForInternship(profileData.user.id, dudiId)
+    const success = await siswaService.applyForInternship(profileData.user.id, dudiId, guruId)
     return NextResponse.json({ success })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Gagal melakukan pendaftaran'
     return NextResponse.json(
-      { error: error.message || 'Gagal melakukan pendaftaran' },
+      { error: message },
       { status: 400 }
     )
   }

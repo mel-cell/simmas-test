@@ -19,6 +19,7 @@ import { SiswaDashboardResponse, SiswaDudi, SiswaApplication } from '@/types/sis
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { TeacherSelectModal } from '@/components/siswa/TeacherSelectModal'
 
 export default function MagangSiswa() {
   const [activeTab, setActiveTab] = useState<'status' | 'cari'>('status')
@@ -26,7 +27,12 @@ export default function MagangSiswa() {
   const [applications, setApplications] = useState<SiswaApplication[]>([])
   const [availableDudi, setAvailableDudi] = useState<SiswaDudi[]>([])
   const [loading, setLoading] = useState(true)
+  const [applying, setApplying] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  
+  // Modal State
+  const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false)
+  const [selectedDudi, setSelectedDudi] = useState<{ id: string, nama: string } | null>(null)
 
   const fetchAllData = async () => {
     try {
@@ -51,17 +57,28 @@ export default function MagangSiswa() {
     fetchAllData()
   }, [])
 
-  const handleApply = async (dudiId: string) => {
+  const handleApply = (dudiId: string, companyName: string) => {
+    setSelectedDudi({ id: dudiId, nama: companyName })
+    setIsTeacherModalOpen(true)
+  }
+
+  const handleConfirmApplication = async (teacherId: string) => {
+    if (!selectedDudi) return
+
     try {
-      const res = await api.siswa.applyInternship(dudiId)
+      setApplying(true)
+      const res = await api.siswa.applyInternship(selectedDudi.id, teacherId)
       if (res.success) {
         toast.success('Pendaftaran berhasil!')
+        setIsTeacherModalOpen(false)
         fetchAllData()
         setActiveTab('status')
       }
     } catch (err: unknown) {
       const error = err as Error
       toast.error(error.message || 'Gagal mendaftar')
+    } finally {
+      setApplying(false)
     }
   }
 
@@ -244,8 +261,8 @@ export default function MagangSiswa() {
                       </div>
 
                       <Button 
-                        onClick={() => handleApply(dudi.id)}
-                        disabled={pendingCount >= 3}
+                        onClick={() => handleApply(dudi.id, dudi.nama_perusahaan)}
+                        disabled={pendingCount >= 3 || applying}
                         className={`w-full h-11 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                           pendingCount >= 3 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-[#007AFF] hover:bg-blue-600 text-white'
                         }`}
@@ -266,6 +283,14 @@ export default function MagangSiswa() {
            </div>
          )}
       </div>
+
+      <TeacherSelectModal 
+        isOpen={isTeacherModalOpen}
+        onClose={() => setIsTeacherModalOpen(false)}
+        onConfirm={handleConfirmApplication}
+        companyName={selectedDudi?.nama || ''}
+        loading={applying}
+      />
     </div>
   )
 }

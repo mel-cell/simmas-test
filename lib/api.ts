@@ -232,7 +232,7 @@ export const api = {
         body: JSON.stringify(journal)
       })
     },
-    updateJournal: (id: string, journal: { kegiatan?: string, kendala?: string, status?: string }) => {
+    updateJournal: (id: string, journal: { kegiatan?: string, kendala?: string, status?: string, foto_url?: string }) => {
       return fetcher<{ success: boolean }>(`/api/siswa/jurnal/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(journal)
@@ -245,10 +245,11 @@ export const api = {
     },
     getAvailableDudis: () => fetcher<{ dudi: SiswaDudi[] }>('/api/siswa/magang/available'),
     getApplications: () => fetcher<{ applications: SiswaApplication[] }>('/api/siswa/magang/applications'),
-    applyInternship: (dudiId: string) => {
+    getAvailableTeachers: () => fetcher<{ teachers: { id: string, full_name: string, nomor_induk: string, jurusan: string, email: string }[] }>('/api/siswa/magang/teachers'),
+    applyInternship: (dudiId: string, guruId: string) => {
       return fetcher<{ success: boolean }>('/api/siswa/magang/apply', {
         method: 'POST',
-        body: JSON.stringify({ dudiId })
+        body: JSON.stringify({ dudiId, guruId })
       })
     },
   }

@@ -246,7 +246,7 @@ export const siswaService = {
     return data || []
   },
 
-  applyForInternship: async (siswaId: string, dudiId: string) => {
+  applyForInternship: async (siswaId: string, dudiId: string, guruId?: string) => {
     const supabase = await createServerClient()
     // 1. Check if already has 3 pending applications
     const { count } = await supabase
@@ -277,9 +277,23 @@ export const siswaService = {
       .insert({
         siswa_id: siswaId,
         dudi_id: dudiId,
+        guru_id: guruId || null,
         status: 'menunggu'
       })
     
     return !error
+  },
+
+  getAvailableTeachers: async () => {
+    const supabase = await createServerClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, full_name, nomor_induk, jurusan, email')
+      .eq('role', 'GURU')
+      .eq('status', 'aktif')
+      .order('full_name', { ascending: true })
+    
+    if (error) return []
+    return data || []
   }
 }
