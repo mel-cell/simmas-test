@@ -1,24 +1,24 @@
 'use client'
 
 import { 
-  Settings, 
-  Edit, 
-  Save, 
-  X, 
   Building2, 
   MapPin, 
   Phone, 
   Mail, 
+  Globe,
   User, 
   Hash, 
-  Layout, 
+  Eye,
   FileText, 
   Printer, 
-  Info,
   CheckCircle2,
   RefreshCw,
   Upload,
-  AlertTriangle
+  AlertTriangle,
+  Layout,
+  Edit2,
+  Save,
+  X,
 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { SchoolSettings } from '@/types/admin'
@@ -69,7 +69,7 @@ export default function PengaturanSekolah() {
         setMessage({ type: 'success', text: 'Logo berhasil diunggah' })
         setTimeout(() => setMessage(null), 3000)
       } else {
-        setMessage({ type: 'error', text: 'Gagal mengunggah logo. Pastikan bucket "logos" sudah ada di Supabase.' })
+        setMessage({ type: 'error', text: 'Gagal mengunggah logo.' })
       }
     } catch {
       setMessage({ type: 'error', text: 'Terjadi kesalahan saat mengunggah' })
@@ -86,7 +86,7 @@ export default function PengaturanSekolah() {
         const newSettings = { ...settings, ...formData } as SchoolSettings
         setSettings(newSettings)
         setEditing(false)
-        await refreshSettings() // Refresh global state (sidebar & header)
+        await refreshSettings()
         setMessage({ type: 'success', text: 'Pengaturan berhasil diperbarui' })
         setTimeout(() => setMessage(null), 3000)
       } else {
@@ -99,61 +99,69 @@ export default function PengaturanSekolah() {
     }
   }
 
+  const InputLabel = ({ label, icon: Icon, required }: { label: string, icon?: any, required?: boolean }) => (
+    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-500 mb-2">
+      {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
+      {label} {required && <span className="text-red-500">*</span>}
+    </label>
+  )
+
   return (
     <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-[24px] sm:text-[28px] font-bold text-slate-800 tracking-tight">Pengaturan Sekolah</h2>
-          <p className="text-[13px] sm:text-[14px] text-slate-500 mt-1 font-medium italic sm:not-italic">Konfigurasi identitas instansi dan tampilan sistem secara global</p>
         </div>
       </div>
 
       {message && (
-        <div className={`p-4 rounded-xl border flex items-center gap-3 animate-in fade-in zoom-in duration-300 ${
-          message.type === 'success' ? 'bg-green-50 border-green-100 text-green-700' : 'bg-red-50 border-red-100 text-red-700'
+        <div className={`p-4 rounded-2xl border flex items-center justify-between gap-3 animate-in fade-in zoom-in duration-300 ${
+          message.type === 'success' ? 'bg-[#ECFDF5] border-[#D1FAE5] text-[#059669]' : 'bg-red-50 border-red-100 text-red-700'
         }`}>
-          {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertTriangle className="w-5 h-5 shrink-0" />}
-          <span className="text-[14px] font-bold">{message.text}</span>
+          <div className="flex items-center gap-3">
+             {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
+             <span className="text-[14px] font-bold">{message.text}</span>
+          </div>
+          <button onClick={() => setMessage(null)}><X className="w-4 h-4" /></button>
         </div>
       )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-10 gap-8 items-start text-left">
         
-        {/* Left Column: Form */}
-        <div className="xl:col-span-2 space-y-6">
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-none overflow-hidden">
-            <div className="p-5 sm:p-6 lg:p-8 border-b border-slate-50 flex items-center justify-between">
+        {/* Left Column: Form (6/10) */}
+        <div className="xl:col-span-6 space-y-6">
+          <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden p-6 sm:p-8">
+            <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#00BCD4]/10 flex items-center justify-center">
-                  <Settings className="w-5 h-5 text-[#00BCD4]" />
+                <div className="w-10 h-10 rounded-xl bg-[#00BCD4]/10 flex items-center justify-center">
+                  <Layout className="w-5 h-5 text-[#00BCD4]" />
                 </div>
-                <h3 className="text-[16px] sm:text-[18px] font-bold text-slate-800">Identitas Instansi</h3>
+                <h3 className="text-[18px] font-bold text-slate-800 tracking-tight">Informasi Sekolah</h3>
               </div>
-              
+
               {!loading && (
                 !editing ? (
                   <button 
                      onClick={() => setEditing(true)}
-                    className="px-4 py-2 sm:px-5 sm:py-2.5 bg-[#00BCD4] text-white rounded-xl font-bold text-[12px] sm:text-[13px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-none"
+                    className="h-10 px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-[#00acc1] transition-all shadow-lg shadow-cyan-500/20 active:scale-95"
                   >
-                    <Edit className="w-4 h-4" />
-                    Ubah
+                    <Edit2 className="w-4 h-4" />
+                    Edit
                   </button>
                 ) : (
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => { setEditing(false); setFormData(settings || {}); }}
-                      className="px-4 py-2 sm:px-5 sm:py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-[12px] sm:text-[13px] flex items-center gap-2 hover:bg-slate-200 transition-all"
+                      className="h-10 px-5 bg-slate-100 text-slate-600 rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-slate-200 transition-all"
                     >
-                      <X className="w-3.5 h-3.5" />
                       Batal
                     </button>
                     <button 
                       onClick={handleSave}
                       disabled={saving}
-                      className="px-4 py-2 sm:px-5 sm:py-2.5 bg-[#00BCD4] text-white rounded-xl font-bold text-[12px] sm:text-[13px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-none disabled:opacity-50"
+                      className="h-10 px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-[#00acc1] transition-all disabled:opacity-50 shadow-lg shadow-cyan-500/20 active:scale-95"
                     >
-                      {saving ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                      {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                       Simpan
                     </button>
                   </div>
@@ -161,310 +169,274 @@ export default function PengaturanSekolah() {
               )}
             </div>
 
-            <div className="p-5 sm:p-6 lg:p-8 space-y-8">
-              {loading ? (
-                <div className="space-y-8">
-                  <div className="flex gap-6 items-start">
-                    <Skeleton className="w-24 h-24 rounded-2xl" />
-                    <div className="flex-1 space-y-3 pt-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-10 w-full rounded-xl" />
+            {loading ? (
+               <div className="space-y-6">
+                  <Skeleton className="w-24 h-24 rounded-2xl" />
+                  <Skeleton className="h-12 w-full rounded-xl" />
+                  <Skeleton className="h-32 w-full rounded-xl" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Skeleton className="h-12 w-full rounded-xl" />
+                    <Skeleton className="h-12 w-full rounded-xl" />
+                  </div>
+               </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Logo Section */}
+                <div className="space-y-3">
+                  <InputLabel label="Logo Sekolah" icon={Upload} />
+                  <div className="flex items-center gap-6">
+                    <div 
+                      onClick={() => editing && fileInputRef.current?.click()}
+                      className={`w-28 h-28 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden transition-all group relative ${
+                        editing ? 'cursor-pointer hover:border-[#00BCD4] border-slate-200 bg-slate-50' : 'border-slate-100 bg-slate-50/50'
+                      }`}
+                    >
+                      {formData.logoUrl ? (
+                         <Image src={formData.logoUrl} alt="Logo" fill className="object-contain p-2" />
+                      ) : (
+                         <div className="text-center">
+                            <Layout className="w-6 h-6 text-slate-300 mx-auto mb-1" />
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Logo</span>
+                         </div>
+                      )}
+                      {uploading && (
+                         <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                            <RefreshCw className="w-6 h-6 text-[#00BCD4] animate-spin" />
+                         </div>
+                      )}
                     </div>
-                  </div>
-                  <div className="space-y-4 pt-4 border-t border-slate-50">
-                    <Skeleton className="h-4 w-40" />
-                    <Skeleton className="h-32 w-full rounded-2xl" />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-3"><Skeleton className="h-4 w-28" /><Skeleton className="h-11 w-full rounded-xl" /></div>
-                    <div className="space-y-3"><Skeleton className="h-4 w-28" /><Skeleton className="h-11 w-full rounded-xl" /></div>
+                    <input type="file" ref={fileInputRef} hidden accept="image/*" onChange={handleFileUpload} />
+                    {editing && (
+                        <p className="text-[11px] text-slate-400 font-medium italic max-w-[200px] leading-relaxed">
+                           Klik area kotak untuk mengganti logo. Gunakan format PNG Transparan untuk hasil terbaik.
+                        </p>
+                    )}
                   </div>
                 </div>
-              ) : (
-                <>
-                  {/* Logo Section */}
+
+                {/* Main Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="md:col-span-2">
+                    <InputLabel label="Nama Sekolah/Instansi" icon={Building2} required />
+                    <input 
+                      disabled={!editing}
+                      type="text" 
+                      className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-[16px] text-[14px] font-bold text-slate-800 disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                      value={formData.namaSekolah || ''}
+                      onChange={(e) => setFormData({ ...formData, namaSekolah: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <InputLabel label="Alamat Lengkap" icon={MapPin} />
+                    <textarea 
+                      disabled={!editing}
+                      rows={3}
+                      className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-[16px] text-[14px] font-medium text-slate-800 disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all resize-none"
+                      value={formData.alamatSekolah || ''}
+                      onChange={(e) => setFormData({ ...formData, alamatSekolah: e.target.value })}
+                    />
+                  </div>
+
                   <div>
-                    <label className="text-[12px] font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <Layout className="w-3.5 h-3.5" /> Logo Sekolah
-                    </label>
-                    <div className="flex items-start gap-4 sm:gap-6">
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden group relative transition-all hover:border-[#00BCD4]/50 shrink-0">
-                        {formData.logoUrl ? (
-                          <Image src={formData.logoUrl} alt="Logo" fill className="object-contain p-2" />
-                        ) : (
-                          <span className="text-[9px] font-bold text-slate-400">NO LOGO</span>
-                        )}
-                        {uploading && (
-                          <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                            <RefreshCw className="w-5 h-5 text-[#00BCD4] animate-spin" />
-                          </div>
-                        )}
-                      </div>
-                      {editing && (
-                        <div className="flex-1 space-y-3 min-w-0">
-                          <div className="flex flex-wrap gap-2">
-                            <button 
-                              onClick={() => fileInputRef.current?.click()}
-                              disabled={uploading}
-                              className="h-10 px-4 bg-white border border-slate-200 rounded-xl text-[12px] font-bold text-slate-700 flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
-                            >
-                              <Upload className="w-3.5 h-3.5 text-[#00BCD4]" />
-                              Unggah File
-                            </button>
-                            <input 
-                              type="file" 
-                              ref={fileInputRef}
-                              hidden 
-                              accept="image/*"
-                              onChange={handleFileUpload}
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <input 
-                              type="text" 
-                              placeholder="Atau tempel Link Logo URL (https://...)" 
-                              className="w-full h-10 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 transition-all placeholder:text-slate-400"
-                              value={formData.logoUrl || ''}
-                              onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
-                            />
-                            <p className="text-[11px] text-slate-400 font-medium italic leading-tight">Format PNG/SVG transparan direkomendasikan.</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <InputLabel label="Telepon" icon={Phone} />
+                    <input 
+                      disabled={!editing}
+                      type="text" 
+                      className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-[16px] text-[14px] font-medium text-slate-800 disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                      value={formData.telepon || ''}
+                      onChange={(e) => setFormData({ ...formData, telepon: e.target.value })}
+                    />
                   </div>
 
-                  {/* Header Surat Section */}
                   <div>
-                    <label className="text-[12px] font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <FileText className="w-3.5 h-3.5" /> Kop Surat Digital (Header Dokumen)
-                    </label>
-                    <div className="flex flex-col gap-4">
-                      <div className="w-full h-24 sm:h-32 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden relative group transition-all hover:border-[#00BCD4]/50">
-                        {formData.headerSuratUrl ? (
-                          <Image src={formData.headerSuratUrl} alt="Kop Surat" fill className="object-contain" />
-                        ) : (
-                          <div className="text-center opacity-40">
-                            <Printer className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400 mx-auto mb-2" />
-                            <span className="text-[9px] font-bold text-slate-500 tracking-widest">NO PREVIEW KOP SURAT</span>
-                          </div>
-                        )}
-                        {uploading && (
-                          <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                            <RefreshCw className="w-5 h-5 text-[#00BCD4] animate-spin" />
-                          </div>
-                        )}
-                      </div>
-                      {editing && (
-                        <div className="flex flex-col md:flex-row gap-3">
-                          <button 
-                            onClick={() => {
-                              const input = document.createElement('input')
-                              input.type = 'file'
-                              input.accept = 'image/*'
-                              input.onchange = async (e) => {
-                                const file = (e.target as HTMLInputElement).files?.[0]
-                                if (!file) return
-                                try {
-                                  setUploading(true)
-                                  const url = await uploadService.uploadFile(file, 'logos')
-                                  if (url) setFormData({ ...formData, headerSuratUrl: url })
-                                } finally {
-                                  setUploading(false)
-                                }
-                              }
-                              input.click()
-                            }}
-                            disabled={uploading}
-                            className="h-10 px-4 bg-white border border-slate-200 rounded-xl text-[12px] font-bold text-slate-700 flex items-center justify-center gap-2 hover:bg-slate-50 transition-all shadow-sm md:w-auto w-full"
-                          >
-                            <Upload className="w-3.5 h-3.5 text-emerald-500" />
-                            Ganti Kop
-                          </button>
-                          <input 
-                            type="text" 
-                            placeholder="Atau Link Kop Surat URL" 
-                            className="flex-1 h-10 px-4 bg-slate-50 border border-slate-100 rounded-xl text-[13px] focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 transition-all placeholder:text-slate-400"
-                            value={formData.headerSuratUrl || ''}
-                            onChange={(e) => setFormData({ ...formData, headerSuratUrl: e.target.value })}
-                          />
-                        </div>
-                      )}
-                      <p className="text-[11px] text-slate-400 font-medium italic">Kop surat ini akan digunakan otomatis pada sertifikat dan laporan resmi.</p>
-                    </div>
+                    <InputLabel label="Email" icon={Mail} />
+                    <input 
+                      disabled={!editing}
+                      type="email" 
+                      className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-[16px] text-[14px] font-medium text-slate-800 disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                      value={formData.email || ''}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
                   </div>
 
-                  {/* Form Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 pt-4 border-t border-slate-50">
-                    <div className="md:col-span-2">
-                      <label className="text-[13px] font-bold text-slate-600 mb-2 flex items-center gap-2">
-                        <Building2 className="w-3.5 h-3.5 text-[#00BCD4]" /> Nama Sekolah / Instansi
-                      </label>
-                      <input 
-                        disabled={!editing}
-                        type="text" 
-                        className="w-full h-11 px-4 bg-slate-50/50 border border-slate-100 rounded-xl text-[14px] font-bold text-slate-800 disabled:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20"
-                        value={formData.namaSekolah || ''}
-                        onChange={(e) => setFormData({ ...formData, namaSekolah: e.target.value })}
-                      />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="text-[13px] font-bold text-slate-600 mb-2 flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-[#00BCD4]" /> Alamat Lengkap
-                      </label>
-                      <textarea 
-                        disabled={!editing}
-                        rows={3}
-                        className="w-full p-4 bg-slate-50/50 border border-slate-100 rounded-xl text-[14px] font-medium text-slate-800 disabled:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 resize-none"
-                        value={formData.alamatSekolah || ''}
-                        onChange={(e) => setFormData({ ...formData, alamatSekolah: e.target.value })}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[13px] font-bold text-slate-600 mb-2 flex items-center gap-2">
-                        <Phone className="w-3.5 h-3.5 text-[#00BCD4]" /> Nomor Telepon / WA
-                      </label>
-                      <input 
-                        disabled={!editing}
-                        type="text" 
-                        className="w-full h-11 px-4 bg-slate-50/50 border border-slate-100 rounded-xl text-[14px] font-medium text-slate-800 disabled:text-slate-500"
-                        value={formData.telepon || ''}
-                        onChange={(e) => setFormData({ ...formData, telepon: e.target.value })}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[13px] font-bold text-slate-600 mb-2 flex items-center gap-2">
-                        <Mail className="w-3.5 h-3.5 text-[#00BCD4]" /> Email Instansi
-                      </label>
-                      <input 
-                        disabled={!editing}
-                        type="email" 
-                        className="w-full h-11 px-4 bg-slate-50/50 border border-slate-100 rounded-xl text-[14px] font-medium text-slate-800 disabled:text-slate-500"
-                        value={formData.email || ''}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      />
-                    </div>
-
-                    <div className="md:col-span-1">
-                      <label className="text-[13px] font-bold text-slate-600 mb-2 flex items-center gap-2">
-                        <User className="w-3.5 h-3.5 text-[#00BCD4]" /> Nama Kepala Sekolah
-                      </label>
-                      <input 
-                        disabled={!editing}
-                        type="text" 
-                        className="w-full h-11 px-4 bg-slate-50/50 border border-slate-100 rounded-xl text-[14px] font-medium text-slate-800 disabled:text-slate-500"
-                        value={formData.kepalaSekolah || ''}
-                        onChange={(e) => setFormData({ ...formData, kepalaSekolah: e.target.value })}
-                      />
-                    </div>
-
-                    <div className="md:col-span-1">
-                      <label className="text-[13px] font-bold text-slate-600 mb-2 flex items-center gap-2">
-                        <Hash className="w-3.5 h-3.5 text-[#00BCD4]" /> NIP (Kepala Sekolah)
-                      </label>
-                      <input 
-                        disabled={!editing}
-                        type="text" 
-                        placeholder="Contoh: 19800101..."
-                        className="w-full h-11 px-4 bg-slate-50/50 border border-slate-100 rounded-xl text-[14px] font-medium text-slate-800 disabled:text-slate-500"
-                        value={formData.nipKepalaSekolah || ''}
-                        onChange={(e) => setFormData({ ...formData, nipKepalaSekolah: e.target.value })}
-                      />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="text-[13px] font-bold text-slate-600 mb-2 flex items-center gap-2">
-                        <Building2 className="w-3.5 h-3.5 text-[#00BCD4]" /> NPSN (Nomor Identitas Sekolah)
-                      </label>
-                      <input 
-                        disabled={!editing}
-                        type="text" 
-                        className="w-full h-11 px-4 bg-slate-50/50 border border-slate-100 rounded-xl text-[14px] font-medium text-slate-800 disabled:text-slate-500"
-                        value={formData.npsn || ''}
-                        onChange={(e) => setFormData({ ...formData, npsn: e.target.value })}
-                      />
-                    </div>
+                  <div className="md:col-span-2">
+                    <InputLabel label="Website" icon={Globe} />
+                    <input 
+                      disabled={!editing}
+                      type="text" 
+                      className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-[16px] text-[14px] font-medium text-slate-800 disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                      value={formData.website || ''}
+                      onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                    />
                   </div>
-                </>
-              )}
-            </div>
 
-            <div className="px-5 sm:px-8 py-4 bg-slate-50/30 border-t border-slate-100/50">
-              <p className="text-[11px] text-slate-400 font-medium font-mono">
-                Sistem ID: #INST-{settings?.id ? String(settings.id).slice(-5).toUpperCase() : '---'} | Last Sync: {settings?.updatedAt ? new Date(settings.updatedAt).toLocaleString('id-ID') : 'Never'}
-              </p>
-            </div>
+                  <div className="md:col-span-2">
+                    <InputLabel label="Kepala Sekolah" icon={User} />
+                    <input 
+                      disabled={!editing}
+                      type="text" 
+                      className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-[16px] text-[14px] font-medium text-slate-800 disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                      value={formData.kepalaSekolah || ''}
+                      onChange={(e) => setFormData({ ...formData, kepalaSekolah: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <InputLabel label="NPSN (Nomor Pokok Sekolah Nasional)" icon={Hash} />
+                    <input 
+                      disabled={!editing}
+                      type="text" 
+                      className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-[16px] text-[14px] font-medium text-slate-800 disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                      value={formData.npsn || ''}
+                      onChange={(e) => setFormData({ ...formData, npsn: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-50">
+                   <p className="text-[12px] text-slate-400 font-medium italic">
+                      Terakhir diperbarui: {settings?.updatedAt ? new Date(settings.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+                   </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Right Column: Previews & Info */}
-        <div className="space-y-6">
-          {/* Dashboard Header Preview */}
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-none p-5 sm:p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <Layout className="w-3.5 h-3.5 text-blue-400" /> Header Dashboard
-              </label>
-            </div>
-            {loading ? <Skeleton className="h-20 w-full rounded-2xl" /> : (
-              <div className="p-4 bg-[#F8FAFC] rounded-2xl border border-slate-100 flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center p-2 shrink-0 relative overflow-hidden">
-                  <Image src={formData.logoUrl || '/logo-placeholder.png'} alt="Logo" width={40} height={40} className="object-contain" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="text-[13px] font-bold text-slate-800 leading-tight truncate">{formData.namaSekolah || 'NAMA SEKOLAH'}</h4>
-                  <p className="text-[10px] text-slate-400 mt-0.5 font-bold tracking-tight uppercase">Platform Magang</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Document Preview Card */}
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-none p-5 sm:p-6 space-y-4">
-            <label className="text-[12px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-              <Printer className="w-3.5 h-3.5 text-emerald-400" /> Header Dokumen
-            </label>
-            {loading ? <Skeleton className="h-40 w-full rounded-2xl" /> : (
-              <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center text-center relative overflow-hidden">
-                <div className="w-10 h-10 mb-3 relative">
-                  <Image src={formData.logoUrl || '/logo-placeholder.png'} alt="Logo" width={40} height={40} className="object-contain" />
-                </div>
-                <h4 className="text-[13px] font-black text-slate-900 leading-none uppercase">{formData.namaSekolah || 'NAMA INSTANSI'}</h4>
-                <p className="text-[8px] text-slate-500 mt-2 font-medium max-w-[180px] leading-tight italic">
-                  {formData.alamatSekolah || 'Alamat Belum Diatur'}
-                </p>
-                <div className="w-full h-[1.5px] bg-slate-900 mt-3" />
-                <div className="w-full h-[0.5px] bg-slate-900 mt-px" />
-                <span className="text-[9px] font-bold tracking-[2px] mt-4 uppercase text-slate-400">Preview Sertifikat</span>
-              </div>
-            )}
-          </div>
-
-          {/* User Guide Card */}
-          <div className="bg-slate-900 rounded-3xl p-6 text-white overflow-hidden relative group">
-             <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#00BCD4]/10 rounded-full blur-2xl group-hover:bg-[#00BCD4]/20 transition-all" />
-             <div className="relative space-y-4">
-               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                 <Info className="w-5 h-5 text-[#00BCD4]" />
-               </div>
-               <div>
-                  <h4 className="text-[15px] font-bold">Butuh Bantuan?</h4>
-                  <p className="text-[12px] text-slate-400 mt-1 leading-relaxed">Pastikan file logo memiliki background transparan (.png) untuk hasil terbaik pada mode gelap dan terang.</p>
-               </div>
-               <ul className="space-y-2 pt-2 border-t border-white/5">
-                  <li className="flex items-center gap-2 text-[11px] font-medium text-slate-300">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#00BCD4]" />
-                    Maksimal ukuran file: 2MB
-                  </li>
-                  <li className="flex items-center gap-2 text-[11px] font-medium text-slate-300">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#00BCD4]" />
-                    Format yang didukung: PNG, SVG, JPG
-                  </li>
-               </ul>
+        {/* Right Column: Previews (4/10) */}
+        <div className="xl:col-span-4 space-y-6">
+          <div className="flex items-center gap-4 mb-8 bg-white rounded-[24px] border border-slate-100 p-5 sm:p-6 space-y-4 shadow-sm">
+             <div className="w-12 h-12 rounded-[18px] bg-[#00BCD4]/10 flex items-center justify-center shrink-0 border border-[#00BCD4]/5">
+                <Eye className="w-6 h-6 text-[#00BCD4]" />
              </div>
+             <div>
+                <h4 className="text-[16px] font-black text-slate-800 uppercase tracking-widest">Preview Tampilan</h4>
+                <p className="text-[12px] text-slate-400 font-bold -mt-0.5">Pratinjau bagaimana informasi sekolah ditampilkan</p>
+             </div>
+          </div>
+
+          {/* Dashboard Header Preview */}
+          <div className="bg-white rounded-[24px] border border-slate-100 p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-blue-50 flex items-center justify-center">
+                <Layout className="w-3.5 h-3.5 text-blue-500" />
+              </div>
+              <span className="text-[13px] font-bold text-slate-700">Dashboard Header</span>
+            </div>
+            <div className="p-4 bg-[#F0FDFF] rounded-[20px] border border-[#B2EBF2]/40 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center p-1.5 shrink-0 shadow-sm relative overflow-hidden">
+                {formData.logoUrl ? (
+                  <Image src={formData.logoUrl} alt="Logo" width={32} height={32} className="object-contain" />
+                ) : (
+                  <span className="text-[8px] font-black text-slate-300">LOGO</span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-[13px] font-black text-slate-800 leading-tight truncate">{formData.namaSekolah || 'SMK Negeri 1 Surabaya'}</h4>
+                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-tight opacity-60">Sistem Informasi Magang</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Header Rapor/Sertifikat Preview */}
+          <div className="bg-white rounded-[24px] border border-slate-100 p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2">
+               <div className="w-6 h-6 rounded-md bg-emerald-50 flex items-center justify-center">
+                <FileText className="w-3.5 h-3.5 text-emerald-500" />
+               </div>
+               <span className="text-[13px] font-bold text-slate-700">Header Rapor/Sertifikat</span>
+            </div>
+            <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-1">
+               <div className="p-6 bg-white rounded-xl border border-slate-100 flex flex-col items-center shadow-sm">
+                  <div className="w-12 h-12 mb-4 relative flex items-center justify-center">
+                    {formData.logoUrl ? (
+                      <Image src={formData.logoUrl} alt="Logo" width={48} height={48} className="object-contain" />
+                    ) : (
+                      <div className="w-full h-full bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100 text-[8px] font-black text-slate-300">LOGO</div>
+                    )}
+                  </div>
+                  <h5 className="text-[13px] font-black text-slate-900 uppercase text-center leading-tight mb-1">{formData.namaSekolah || 'SMK Negeri 1 Surabaya'}</h5>
+                  <p className="text-[7px] font-bold text-slate-500 max-w-[200px] text-center mb-0.5 leading-tight">
+                    {formData.alamatSekolah || 'Jl. SMK Negeri 1 Surabaya, Jawa Timur'}
+                  </p>
+                  <p className="text-[7px] font-bold text-slate-400 mb-3 text-center">
+                    Telp: {formData.telepon || '-'} | Email: {formData.email || '-'} | Web: {formData.website || '-'}
+                  </p>
+                  <div className="w-full h-[0.5px] bg-slate-300 mb-[1px]" />
+                  <div className="w-full h-[2px] bg-black rounded-full" />
+                  <p className="text-[10px] font-black text-slate-800 uppercase tracking-[4px] mt-4">SERTIFIKAT MAGANG</p>
+               </div>
+            </div>
+          </div>
+
+          {/* Dokumen Cetak Preview */}
+          <div className="bg-white rounded-[24px] border border-slate-100 p-5 sm:p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2">
+               <div className="w-6 h-6 rounded-md bg-purple-50 flex items-center justify-center">
+                <Printer className="w-3.5 h-3.5 text-purple-500" />
+               </div>
+               <span className="text-[13px] font-bold text-slate-700">Dokumen Cetak</span>
+            </div>
+            <div className="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm">
+               <div className="flex gap-4 items-start mb-4">
+                  <div className="shrink-0 w-10 h-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5">
+                    {formData.logoUrl ? (
+                     <Image src={formData.logoUrl} alt="Logo" width={32} height={32} className="object-contain" />
+                    ) : (
+                      <span className="text-[6px] font-black text-slate-300">LOGO</span>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <h5 className="text-[12px] font-black text-slate-900 leading-tight uppercase mb-0.5 truncate">{formData.namaSekolah || 'SMK Negeri 1 Surabaya'}</h5>
+                    <p className="text-[9px] font-bold text-[#00BCD4] uppercase tracking-wider">NPSN: {formData.npsn || '20567890'}</p>
+                  </div>
+               </div>
+               <div className="space-y-1.5 border-t border-slate-50 pt-3">
+                  <div className="flex items-start gap-2 text-[9px] text-slate-500 font-bold leading-relaxed">
+                     <MapPin className="w-3 h-3 text-slate-300 shrink-0 mt-0.5" />
+                     {formData.alamatSekolah || 'Jl. SMKN 1 Surabaya No. 123'}
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-bold">
+                       <Phone className="w-3 h-3 text-slate-300" />
+                       {formData.telepon || '-'}
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-bold">
+                       <Mail className="w-3 h-3 text-slate-300" />
+                       {formData.email || '-'}
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-bold truncate">
+                       <Globe className="w-3 h-3 text-slate-300" />
+                       {formData.website || '-'}
+                    </div>
+                  </div>
+                  <div className="pt-2">
+                     <p className="text-[9px] font-bold text-slate-800">
+                        Kepala Sekolah: <span className="text-slate-500 font-bold">{formData.kepalaSekolah || 'Drs. H. Sutrisno, M.Pd.'}</span>
+                     </p>
+                  </div>
+               </div>
+            </div>
+          </div>
+
+          {/* Usage Info Card */}
+          <div className="bg-[#EFF6FF] rounded-[24px] p-6 border border-[#DBEAFE] space-y-4">
+             <h4 className="text-[14px] font-black text-[#1E40AF]">Informasi Penggunaan:</h4>
+             <ul className="space-y-3">
+                <li className="flex gap-3 text-[12px] text-[#3B82F6] font-bold">
+                   <Layout className="w-4 h-4 shrink-0" />
+                   <span>Dashboard: Logo dan nama sekolah ditampilkan di header navigasi</span>
+                </li>
+                <li className="flex gap-3 text-[12px] text-[#3B82F6] font-bold">
+                   <FileText className="w-4 h-4 shrink-0" />
+                   <span>Rapor/Sertifikat: Informasi lengkap sebagai kop dokumen resmi</span>
+                </li>
+                <li className="flex gap-3 text-[12px] text-[#3B82F6] font-bold">
+                   <Printer className="w-4 h-4 shrink-0" />
+                   <span>Dokumen Cetak: Footer atau header pada laporan yang dicetak</span>
+                </li>
+             </ul>
           </div>
         </div>
       </div>
