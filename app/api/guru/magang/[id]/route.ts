@@ -4,15 +4,11 @@ import { guruService } from '@/services/guruService'
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const profileData = await authService.getProfile()
-    if (!profileData?.user || profileData.user.user_metadata?.role !== 'GURU') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { id } = params
     const body = await req.json()
 
     let success = false

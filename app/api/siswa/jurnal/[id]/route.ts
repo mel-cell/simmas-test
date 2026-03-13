@@ -4,15 +4,16 @@ import { siswaService } from '@/services/siswaService'
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const profileData = await authService.getProfile()
     if (!profileData?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const journal = await siswaService.getJournalDetail(params.id)
+    const journal = await siswaService.getJournalDetail(id)
     return NextResponse.json(journal)
   } catch (err) {
     console.error('Error fetching journal detail:', err)
@@ -22,16 +23,17 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const profileData = await authService.getProfile()
     if (!profileData?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
-    const success = await siswaService.updateJournal(params.id, body)
+    const success = await siswaService.updateJournal(id, body)
     
     return NextResponse.json({ success })
   } catch (err: unknown) {
@@ -45,15 +47,16 @@ export async function PATCH(
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const profileData = await authService.getProfile()
     if (!profileData?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const success = await siswaService.deleteJournal(params.id)
+    const success = await siswaService.deleteJournal(id)
     return NextResponse.json({ success })
   } catch (err: unknown) {
     const error = err as Error

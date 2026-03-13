@@ -1,22 +1,38 @@
-# Dockerfile for Next.js
 FROM node:20-alpine AS base
 
-# Install dependencies only when needed
+# 1. Install dependencies only when needed
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci
 
-# Rebuild the source code only when needed
+# Install pnpm
+RUN npm install -g pnpm
+
+# Install dependencies based on the preferred package manager
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm i --frozen-lockfile
+
+# 2. Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
+
+# Install pnpm again in builder stage
+RUN npm install -g pnpm
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Skip type checking and linting for faster builds if desired
-RUN npm run build
 
-# Production image, copy all the files and run next
+# Environment variables must be present at build time for Next.js
+# These should be passed as build args if they affect the client bundle
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+RUN pnpm build
+
+# 3. Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
@@ -26,10 +42,6 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
@@ -41,7 +53,6 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT 3000
-# set hostname to localhost
 ENV HOSTNAME "0.0.0.0"
 
 CMD ["node", "server.js"]
