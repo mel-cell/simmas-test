@@ -29,6 +29,7 @@ export default function ManajemenSiswa() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('semua')
   const [kelasFilter, setKelasFilter] = useState('semua')
+  const [jurusanFilter, setJurusanFilter] = useState('semua')
 
   // Modal State
   const [isSiswaModalOpen, setIsSiswaModalOpen] = useState(false)
@@ -43,7 +44,8 @@ export default function ManajemenSiswa() {
       const data = await api.admin.getStudents({
         query: searchQuery,
         status: statusFilter,
-        kelas: kelasFilter
+        kelas: kelasFilter,
+        jurusan: jurusanFilter
       })
       setStats(data.stats)
       setStudents(data.students)
@@ -52,7 +54,7 @@ export default function ManajemenSiswa() {
     } finally {
       setLoading(false)
     }
-  }, [searchQuery, statusFilter, kelasFilter])
+  }, [searchQuery, statusFilter, kelasFilter, jurusanFilter])
 
   useEffect(() => {
     loadData()
@@ -110,9 +112,9 @@ export default function ManajemenSiswa() {
         />
         <StatCard 
           loading={loading && !stats}
-          title="Sedang Magang" 
+          title="Aktif Magang" 
           value={stats?.sedangMagang || 0} 
-          description="Siswa di lokasi DUDI" 
+          description="Siswa sedang aktif magang" 
           icon={Clock} 
           color="text-[#F59E0B]"
         />
@@ -120,15 +122,15 @@ export default function ManajemenSiswa() {
           loading={loading && !stats}
           title="Selesai Magang" 
           value={stats?.selesaiMagang || 0} 
-          description="Sudah menyelesaikan PKL" 
+          description="Siswa sudah menyelesaikan PKL" 
           icon={CheckCircle2} 
           color="text-[#22C55E]"
         />
         <StatCard 
           loading={loading && !stats}
-          title="Belum Ada Pembimbing" 
+          title="Siswa Belum Magang" 
           value={stats?.belumAdaPembimbing || 0} 
-          description="Perlu penempatan segera" 
+          description="Siswa aktif (biasa) & belum magang" 
           icon={UserCheck} 
           color="text-[#EF4444]"
         />
@@ -147,7 +149,7 @@ export default function ManajemenSiswa() {
           <div className="flex flex-wrap items-center gap-3">
             <button 
               onClick={handleAdd}
-              className="h-11 px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[14px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-lg shadow-cyan-500/20 active:scale-95"
+              className="h-11 px-6 bg-[#2563EB] text-white rounded-xl font-bold text-[14px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all border border-[#2563EB]/10 shadow-lg shadow-blue-600/20 active:scale-95"
             >
               <Plus className="w-4 h-4" />
               Tambah Siswa
@@ -162,7 +164,7 @@ export default function ManajemenSiswa() {
             <input 
               type="text"
               placeholder="Cari siswa..."
-              className="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+              className="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -171,23 +173,36 @@ export default function ManajemenSiswa() {
           <select 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 min-w-[150px] appearance-none"
+            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 min-w-[150px] appearance-none"
           >
             <option value="semua">Semua Status</option>
-            <option value="aktif">Aktif</option>
-            <option value="magang">Sedang Magang</option>
-            <option value="selesai">Selesai</option>
+            <option value="aktif">Aktif (Siswa)</option>
+            <option value="magang">Aktif Magang</option>
+            <option value="selesai">Selesai Magang</option>
           </select>
 
           <select 
             value={kelasFilter}
             onChange={(e) => setKelasFilter(e.target.value)}
-            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 min-w-[150px] appearance-none"
+            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 min-w-[150px] appearance-none"
           >
             <option value="semua">Semua Kelas</option>
             <option value="X">Kelas X</option>
             <option value="XI">Kelas XI</option>
             <option value="XII">Kelas XII</option>
+          </select>
+
+          <select 
+            value={jurusanFilter}
+            onChange={(e) => setJurusanFilter(e.target.value)}
+            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 min-w-[180px] appearance-none"
+          >
+            <option value="semua">Semua Jurusan</option>
+            <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
+            <option value="Teknik Komputer Jaringan">Teknik Komputer Jaringan</option>
+            <option value="Multimedia">Multimedia</option>
+            <option value="Desain Komunikasi Visual">Desain Komunikasi Visual</option>
+            <option value="Teknik Otomasi Industri">Teknik Otomasi Industri</option>
           </select>
         </div>
 
@@ -255,8 +270,8 @@ export default function ManajemenSiswa() {
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-[#00BCD4]/10 flex items-center justify-center border border-[#00BCD4]/20 group-hover:scale-110 transition-transform">
-                        <UserCheck className="w-4 h-4 text-[#00BCD4]" />
+                      <div className="w-9 h-9 rounded-full bg-[#2563EB]/10 flex items-center justify-center border border-[#2563EB]/20 group-hover:scale-110 transition-transform">
+                        <UserCheck className="w-4 h-4 text-[#2563EB]" />
                       </div>
                       <span className="text-[14px] font-bold text-slate-800">{siswa.nama}</span>
                     </div>
@@ -284,10 +299,12 @@ export default function ManajemenSiswa() {
                       <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider leading-none shadow-sm border ${
                         siswa.status === 'magang' ? 'bg-[#E0F2FE] text-[#0369A1] border-[#BAE6FD]' :
                         siswa.status === 'selesai' ? 'bg-[#DCFCE7] text-[#15803D] border-[#BBF7D0]' :
-                        siswa.status === 'aktif' ? 'bg-[#F0FDF4]/50 text-[#15803D] border-[#BBF7D0]' :
+                        siswa.status === 'aktif' ? 'bg-[#F0FDF4] text-[#15803D] border-[#BBF7D0]' :
                         'bg-slate-100 text-slate-600 border-slate-200'
                       }`}>
-                        {siswa.status}
+                        {siswa.status === 'magang' ? 'Aktif Magang' : 
+                         siswa.status === 'aktif' ? 'Aktif Biasa' : 
+                         siswa.status === 'selesai' ? 'Selesai Magang' : siswa.status}
                       </span>
                     </div>
                   </td>
@@ -347,7 +364,7 @@ export default function ManajemenSiswa() {
         <div className="px-6 lg:px-8 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/20">
           <div className="flex items-center gap-3">
             <span className="text-[13px] text-slate-500 font-bold">Tampilkan</span>
-            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none">
+            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none">
               <option>10</option>
               <option>25</option>
               <option>50</option>

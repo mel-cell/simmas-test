@@ -21,11 +21,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const success = await usersAdminService.createUser(body)
-    return NextResponse.json({ success })
+    const result = await usersAdminService.createUser(body)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error creating user:', error)
-    return NextResponse.json({ error: 'Gagal membuat data user' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal membuat data user' }, { status: 500 })
   }
 }
 
@@ -33,11 +33,11 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json()
     const { id, ...data } = body
-    const success = await usersAdminService.updateUser(id, data)
-    return NextResponse.json({ success })
+    const result = await usersAdminService.updateUser(id, data)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error updating user:', error)
-    return NextResponse.json({ error: 'Gagal memperbarui data user' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal memperbarui data user' }, { status: 500 })
   }
 }
 
@@ -45,10 +45,10 @@ export async function DELETE(request: Request) {
   try {
     const body = await request.json()
     const { id } = body
-    const success = await usersAdminService.deleteUser(id)
-    return NextResponse.json({ success })
+    const result = await usersAdminService.deleteUser(id)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error deleting user:', error)
-    return NextResponse.json({ error: 'Gagal menghapus data user' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal menghapus data user' }, { status: 500 })
   }
 }

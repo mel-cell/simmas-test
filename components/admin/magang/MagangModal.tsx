@@ -32,7 +32,8 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
     dudi_id: '',
     tgl_mulai: '',
     tgl_selesai: '',
-    status: 'menunggu'
+    status: 'menunggu',
+    catatan: ''
   })
 
   // Load dropdown options
@@ -65,7 +66,8 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
           dudi_id: internship.dudi_id || '',
           tgl_mulai: internship.startDate && internship.startDate !== '-' ? internship.startDate : '',
           tgl_selesai: internship.endDate && internship.endDate !== '-' ? internship.endDate : '',
-          status: internship.status || 'menunggu'
+          status: internship.status || 'menunggu',
+          catatan: internship.catatan || ''
         })
       } else {
         setFormData({
@@ -74,7 +76,8 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
           dudi_id: '',
           tgl_mulai: '',
           tgl_selesai: '',
-          status: 'aktif'
+          status: 'aktif',
+          catatan: ''
         })
       }
     }
@@ -95,7 +98,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
         onSuccess()
         onClose()
       } else {
-        alert("Gagal menyimpan data magang. Silakan cek konsol untuk detail error.")
+        alert(res.error || "Gagal menyimpan data magang. Silakan cek konsol untuk detail error.")
       }
     } catch (err: unknown) {
       console.error('Failed to save internship:', err)
@@ -121,8 +124,8 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
         {/* Header */}
         <div className="p-6 sm:p-8 border-b border-slate-50 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#00BCD4]/10 flex items-center justify-center">
-              <Briefcase className="w-6 h-6 text-[#00BCD4]" />
+            <div className="w-12 h-12 rounded-2xl bg-[#2563EB]/10 flex items-center justify-center">
+              <Briefcase className="w-6 h-6 text-[#2563EB]" />
             </div>
             <div>
               <h3 className="text-[20px] font-bold text-slate-800 leading-tight">
@@ -148,11 +151,11 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
             {/* Siswa */}
             <div className="md:col-span-2 space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-[#00BCD4]" /> Siswa
+                <GraduationCap className="w-4 h-4 text-[#2563EB]" /> Siswa
               </label>
               <select 
                 required
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
                 value={formData.siswa_id}
                 onChange={(e) => setFormData({ ...formData, siswa_id: e.target.value })}
               >
@@ -166,11 +169,11 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
             {/* DUDI */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-[#00BCD4]" /> DUDI (Perusahaan)
+                <Building2 className="w-4 h-4 text-[#2563EB]" /> DUDI (Perusahaan)
               </label>
               <select 
                 required
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
                 value={formData.dudi_id}
                 onChange={(e) => setFormData({ ...formData, dudi_id: e.target.value })}
               >
@@ -184,10 +187,10 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
             {/* Guru Pembimbing */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <User className="w-4 h-4 text-[#00BCD4]" /> Guru Pembimbing
+                <User className="w-4 h-4 text-[#2563EB]" /> Guru Pembimbing
               </label>
               <select 
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
                 value={formData.guru_id}
                 onChange={(e) => setFormData({ ...formData, guru_id: e.target.value })}
               >
@@ -201,12 +204,12 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
             {/* Tanggal Mulai */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-[#00BCD4]" /> Tanggal Mulai
+                <Calendar className="w-4 h-4 text-[#2563EB]" /> Tanggal Mulai
               </label>
               <input 
                 required
                 type="date"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.tgl_mulai}
                 onChange={(e) => setFormData({ ...formData, tgl_mulai: e.target.value })}
               />
@@ -215,48 +218,47 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
             {/* Tanggal Selesai */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-[#00BCD4]" /> Tanggal Selesai
+                <Calendar className="w-4 h-4 text-[#2563EB]" /> Tanggal Selesai
               </label>
               <input 
                 required
                 type="date"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.tgl_selesai}
                 onChange={(e) => setFormData({ ...formData, tgl_selesai: e.target.value })}
               />
             </div>
 
             {/* Status */}
-            <div className="md:col-span-2 space-y-2 mt-4 border-t border-slate-100 pt-6">
+            <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-[#00BCD4]" /> Status Magang
+                <RefreshCw className="w-4 h-4 text-[#2563EB]" /> Status Magang
               </label>
-              
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {['menunggu', 'aktif', 'selesai', 'dibatalkan'].map((statusOption) => (
-                  <label 
-                    key={statusOption}
-                    className={`
-                      relative flex flex-col items-center gap-2 p-4 rounded-xl cursor-pointer border-2 transition-all
-                      ${formData.status === statusOption 
-                        ? 'border-[#00BCD4] bg-cyan-50/50' 
-                        : 'border-slate-100 bg-white hover:border-slate-200'}
-                    `}
-                  >
-                    <input 
-                      type="radio" 
-                      name="status" 
-                      value={statusOption}
-                      checked={formData.status === statusOption}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                      className="sr-only"
-                    />
-                    <span className={`text-[13px] font-bold capitalize ${formData.status === statusOption ? 'text-[#00BCD4]' : 'text-slate-500'}`}>
-                      {statusOption}
-                    </span>
-                  </label>
-                ))}
-              </div>
+              <select 
+                required
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              >
+                <option value="menunggu">Menunggu</option>
+                <option value="aktif">Aktif</option>
+                <option value="selesai">Selesai</option>
+                <option value="dibatalkan">Dibatalkan</option>
+              </select>
+            </div>
+
+            {/* Catatan */}
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+                <Briefcase className="w-4 h-4 text-[#2563EB]" /> Catatan Tambahan
+              </label>
+              <textarea 
+                rows={3}
+                placeholder="Catatan tambahan (opsional)..."
+                className="w-full p-5 bg-slate-50 border border-slate-100 rounded-[24px] text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all resize-none"
+                value={formData.catatan}
+                onChange={(e) => setFormData({ ...formData, catatan: e.target.value })}
+              />
             </div>
 
           </div>
@@ -274,7 +276,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
           <button 
             onClick={handleSubmit}
             disabled={loading}
-            className="px-8 py-3 bg-[#00BCD4] text-white rounded-2xl font-bold text-[14px] hover:bg-[#00acc1] transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-50 flex items-center gap-2"
+            className="px-8 py-3 bg-[#2563EB] text-white rounded-2xl font-bold text-[14px] hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
           >
             {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
             {internship ? 'Simpan Perubahan' : 'Tambah Magang'}

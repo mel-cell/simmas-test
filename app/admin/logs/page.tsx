@@ -230,7 +230,7 @@ export default function ActivityLogs() {
       {/* Filter Section */}
       <div className="bg-white rounded-2xl border border-slate-100 p-5 sm:p-6 lg:p-8 shadow-none">
         <label className="flex items-center gap-2 text-[15px] font-bold text-slate-800 mb-5">
-          <Filter className="w-4 h-4 text-[#00BCD4]" />
+          <Filter className="w-4 h-4 text-[#2563EB]" />
           Filter pencarian
         </label>
         
@@ -240,7 +240,7 @@ export default function ActivityLogs() {
             <input 
               type="text"
               placeholder="Cari detail log..."
-              className="w-full h-11 pl-10 pr-4 bg-slate-50 border-0 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 transition-all"
+              className="w-full h-11 pl-10 pr-4 bg-slate-50 border-0 rounded-xl text-[14px] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -250,7 +250,7 @@ export default function ActivityLogs() {
             <select 
               value={actionFilter}
               onChange={(e) => setActionFilter(e.target.value)}
-              className="w-full h-11 px-4 bg-slate-50 border-0 rounded-xl text-[13px] sm:text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 appearance-none cursor-pointer"
+              className="w-full h-11 px-4 bg-slate-50 border-0 rounded-xl text-[13px] sm:text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 appearance-none cursor-pointer"
             >
               <option value="all">Semua Tindakan</option>
               <option value="create">Penambahan Data</option>
@@ -264,7 +264,7 @@ export default function ActivityLogs() {
             <select 
               value={entityFilter}
               onChange={(e) => setEntityFilter(e.target.value)}
-              className="w-full h-11 px-4 bg-slate-50 border-0 rounded-xl text-[13px] sm:text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00BCD4]/20 appearance-none cursor-pointer"
+              className="w-full h-11 px-4 bg-slate-50 border-0 rounded-xl text-[13px] sm:text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 appearance-none cursor-pointer"
             >
               <option value="all">Semua Entitas</option>
               <option value="SISWA">Siswa</option>
@@ -283,7 +283,7 @@ export default function ActivityLogs() {
         <div className="flex items-center justify-between mb-4">
            <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">
-                <History className="w-5 h-5 text-[#00BCD4]" />
+                <History className="w-5 h-5 text-[#2563EB]" />
               </div>
               <h3 className="text-[18px] font-bold text-slate-800">Garis Waktu Aktivitas</h3>
            </div>
@@ -318,7 +318,7 @@ export default function ActivityLogs() {
               return (
                 <div 
                   key={log.id} 
-                  className="group bg-white rounded-[24px] px-6 py-5 border border-slate-100 hover:border-[#00BCD4]/20 hover:shadow-xl hover:shadow-[#00BCD4]/5 transition-all duration-300 flex items-center gap-6"
+                  className="group bg-white rounded-[24px] px-6 py-5 border border-slate-100 hover:border-[#2563EB]/20 hover:shadow-xl hover:shadow-[#2563EB]/5 transition-all duration-300 flex items-center gap-6"
                 >
                   {/* Left Icon Area - Matching Image Size and Circle Style */}
                   <div className={`w-12 h-12 rounded-full shrink-0 flex items-center justify-center ${theme.iconBg} ${theme.iconColor} transition-transform group-hover:scale-110 shadow-sm border border-white`}>

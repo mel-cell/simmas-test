@@ -83,7 +83,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
 
     try {
       setLoading(true)
-      let res
+      let res: { success: boolean, error?: string }
       
       const payload = {
         fullName: formData.fullName,
@@ -103,7 +103,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
         onSuccess()
         onClose()
       } else {
-        alert("Gagal menyimpan data user. Hubungi administrator.")
+        alert(res.error || "Gagal menyimpan data user. Hubungi administrator.")
       }
     } catch (err: unknown) {
       console.error('Failed to save user:', err)
@@ -143,7 +143,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
               required
               type="text"
               placeholder="Masukkan nama lengkap"
-              className="w-full h-12 px-4 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+              className="w-full h-12 px-4 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
             />
@@ -157,7 +157,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
               required
               type="email"
               placeholder="Contoh: user@email.com"
-              className="w-full h-12 px-4 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+              className="w-full h-12 px-4 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
@@ -169,7 +169,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
             </label>
             <select 
               required
-              className="w-full h-12 px-4 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none cursor-pointer"
+              className="w-full h-12 px-4 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none cursor-pointer"
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             >
@@ -188,7 +188,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
                  required={!user}
                 type={showPassword ? 'text' : 'password'}
                 placeholder={user ? "Kosongkan jika tidak ingin mengubah" : "Masukkan password (min. 6 karakter)"}
-                className="w-full h-12 px-4 pr-12 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-4 pr-12 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
@@ -211,7 +211,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
                 required={!user || !!formData.password}
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Ulangi password"
-                className="w-full h-12 px-4 pr-12 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-4 pr-12 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               />
@@ -233,7 +233,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
               Email Verification
             </label>
             <select 
-              className="w-full h-12 px-4 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none cursor-pointer"
+              className="w-full h-12 px-4 bg-white border border-[#E2E8F0] rounded-xl text-[14px] font-medium text-[#1E293B] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none cursor-pointer"
               value={formData.isVerified}
               onChange={(e) => setFormData({ ...formData, isVerified: e.target.value })}
             >
@@ -255,10 +255,10 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
           <button 
             onClick={handleSubmit}
             disabled={loading}
-            className="flex-1 px-6 py-3 bg-[#CBD5E1] hover:bg-[#94A3B8] text-white rounded-[14px] font-bold text-[14px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 px-6 py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-[14px] font-bold text-[14px] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
           >
              {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
-            Simpan
+            {user ? 'Update' : 'Simpan'}
           </button>
         </div>
       </div>

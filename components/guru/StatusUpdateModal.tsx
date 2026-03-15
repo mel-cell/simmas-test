@@ -32,9 +32,9 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
 
   useEffect(() => {
     if (magang && isOpen) {
-      setStatus(magang.status)
-      setStartDate(magang.tgl_mulai)
-      setEndDate(magang.tgl_selesai)
+      setStatus(magang.status || 'menunggu')
+      setStartDate(magang.tgl_mulai || '')
+      setEndDate(magang.tgl_selesai || '')
       setNotes(magang.catatan || '')
     }
   }, [magang, isOpen])
@@ -44,10 +44,10 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
       setLoading(true)
       await onConfirm({
         status,
-        tgl_mulai: startDate,
-        tgl_selesai: endDate,
+        tgl_mulai: startDate || null,
+        tgl_selesai: endDate || null,
         catatan: notes
-      })
+      } as any)
       onClose()
     } catch (error) {
       console.error(error)
@@ -64,7 +64,7 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
             Update Status Magang
           </DialogTitle>
           <DialogDescription className="text-slate-500 font-bold text-sm">
-            Atur status dan periode magang untuk siswa <span className="text-[#00BCD4]">{magang?.siswa?.full_name}</span>
+            Atur status dan periode magang untuk siswa <span className="text-[#2563EB]">{magang?.siswa?.full_name}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -74,7 +74,7 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
             <select 
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-bold text-slate-700 outline-none focus:ring-4 focus:ring-[#00BCD4]/5 focus:border-[#00BCD4]/30 transition-all appearance-none"
+              className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-bold text-slate-700 outline-none focus:ring-4 focus:ring-[#2563EB]/5 focus:border-[#2563EB]/30 transition-all appearance-none"
             >
               <option value="aktif">Aktif (Sedang Berlangsung)</option>
               <option value="selesai">Selesai (Tuntas)</option>
@@ -116,7 +116,7 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
               placeholder="Opsional: Catatan untuk siswa..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="min-h-[100px] bg-slate-50 border-slate-100 rounded-xl p-4 font-bold text-slate-700 shadow-none focus:ring-4 focus:ring-[#00BCD4]/5"
+              className="min-h-[100px] bg-slate-50 border-slate-100 rounded-xl p-4 font-bold text-slate-700 shadow-none focus:ring-4 focus:ring-[#2563EB]/5"
             />
           </div>
         </div>
@@ -132,7 +132,7 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
           <Button 
             onClick={handleSubmit}
             disabled={loading}
-            className="rounded-2xl h-12 px-10 bg-[#00BCD4] hover:bg-[#00ACC1] text-white font-black shadow-lg shadow-cyan-500/20 transition-all"
+            className="rounded-2xl h-12 px-10 bg-[#2563EB] hover:bg-[#00ACC1] text-white font-black shadow-lg shadow-blue-600/20 transition-all"
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : 'Simpan Perubahan'}
           </Button>

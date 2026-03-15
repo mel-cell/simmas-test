@@ -91,7 +91,7 @@ export default function ManajemenUser() {
     switch (role?.toUpperCase()) {
       case 'ADMIN': return 'bg-purple-50 text-purple-600 border-purple-100'
       case 'GURU': return 'bg-blue-50 text-blue-600 border-blue-100'
-      case 'SISWA': return 'bg-cyan-50 text-cyan-600 border-cyan-100'
+      case 'SISWA': return 'bg-blue-50 text-blue-700 border-blue-100'
       default: return 'bg-slate-50 text-slate-600 border-slate-100'
     }
   }
@@ -118,7 +118,7 @@ export default function ManajemenUser() {
           <div className="flex flex-wrap items-center gap-3">
             <button 
               onClick={handleAdd}
-              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-lg shadow-cyan-500/20 active:scale-95 group"
+              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#2563EB] text-white rounded-xl font-bold text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all border border-[#2563EB]/10 shadow-lg shadow-blue-600/20 active:scale-95 group"
             >
               <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
               Tambah User Baru
@@ -133,7 +133,7 @@ export default function ManajemenUser() {
             <input 
               type="text"
               placeholder="Cari nama, email, atau role..."
-              className="w-full h-10 sm:h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all placeholder:text-slate-400"
+              className="w-full h-10 sm:h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all placeholder:text-slate-400"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -143,7 +143,7 @@ export default function ManajemenUser() {
              <select 
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none cursor-pointer"
+              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer"
             >
               <option value="semua">Semua Role</option>
               <option value="admin">Admin</option>
@@ -203,7 +203,7 @@ export default function ManajemenUser() {
                 <tr key={user.id} className="hover:bg-slate-50/30 transition-colors group">
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#00BCD4] text-white flex items-center justify-center font-bold text-[16px] shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-bold text-[16px] shadow-sm">
                         {getInitials(user.fullName)}
                       </div>
                       <div className="flex flex-col">
@@ -271,7 +271,7 @@ export default function ManajemenUser() {
         <div className="px-6 lg:px-8 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/20">
           <div className="flex items-center gap-3">
             <span className="text-[13px] text-slate-500 font-bold">Tampilkan</span>
-            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none cursor-pointer">
+            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer">
               <option>10</option>
               <option>25</option>
               <option>50</option>

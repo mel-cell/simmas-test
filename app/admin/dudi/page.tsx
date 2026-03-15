@@ -106,7 +106,7 @@ export default function ManajemenDudi() {
           value={stats?.total || 0} 
           description="Perusahaan mitra terjalin" 
           icon={Building2} 
-          color="text-[#00BCD4]"
+          color="text-[#2563EB]"
         />
         <StatCard 
           loading={loading && !stats}
@@ -130,7 +130,7 @@ export default function ManajemenDudi() {
           value={stats?.totalSiswaMagang || 0} 
           description="Total siswa di lokasi mitra" 
           icon={Activity} 
-          color="text-[#00BCD4]"
+          color="text-[#2563EB]"
         />
       </div>
 
@@ -147,7 +147,7 @@ export default function ManajemenDudi() {
           <div className="flex flex-wrap items-center gap-3">
             <button 
               onClick={handleAdd}
-              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-lg shadow-cyan-500/20 active:scale-95 group"
+              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#2563EB] text-white rounded-xl font-bold text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all border border-[#2563EB]/10 shadow-lg shadow-blue-600/20 active:scale-95 group"
             >
               <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
               Tambah Perusahaan
@@ -162,7 +162,7 @@ export default function ManajemenDudi() {
             <input 
               type="text"
               placeholder="Cari perusahaan, alamat, penanggung jawab..."
-              className="w-full h-10 sm:h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all placeholder:text-slate-400"
+              className="w-full h-10 sm:h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all placeholder:text-slate-400"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -172,7 +172,7 @@ export default function ManajemenDudi() {
             <select 
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none cursor-pointer"
+              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer"
             >
               <option value="semua">Semua Status</option>
               <option value="aktif">Status Aktif</option>
@@ -238,8 +238,8 @@ export default function ManajemenDudi() {
                 <tr key={dudi.id} className="hover:bg-slate-50/30 transition-colors group">
                   <td className="px-6 py-5">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#00BCD4]/10 flex items-center justify-center border border-[#00BCD4]/20 shrink-0 group-hover:scale-110 transition-transform">
-                        <Building2 className="w-5 h-5 text-[#00BCD4]" />
+                      <div className="w-10 h-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center border border-[#2563EB]/20 shrink-0 group-hover:scale-110 transition-transform">
+                        <Building2 className="w-5 h-5 text-[#2563EB]" />
                       </div>
                       <div className="flex flex-col">
                         <span className="text-[13px] sm:text-[14px] font-bold text-slate-800">{dudi.namaPerusahaan}</span>
@@ -312,7 +312,7 @@ export default function ManajemenDudi() {
         <div className="px-6 lg:px-8 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/20">
           <div className="flex items-center gap-3">
             <span className="text-[13px] text-slate-500 font-bold">Tampilkan</span>
-            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none cursor-pointer">
+            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer">
               <option>10</option>
               <option>25</option>
               <option>50</option>

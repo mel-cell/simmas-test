@@ -105,7 +105,7 @@ export default function MagangSiswa() {
   return (
     <div className="flex flex-col gap-8 w-full pb-20 px-8 max-w-[1400px] mx-auto">
       {/* Blue Header Section */}
-      <div className="bg-[#007AFF] w-full rounded-none p-12 text-white text-center">
+      <div className="bg-[#2563EB] w-full rounded-none p-12 text-white text-center">
          <h1 className="text-4xl font-bold tracking-tight mb-2">Magang Siswa</h1>
          <p className="text-white/80 font-medium text-sm">Cari tempat magang dan pantau status pendaftaran Anda</p>
       </div>
@@ -115,19 +115,19 @@ export default function MagangSiswa() {
          <div className="flex items-center justify-center gap-12 border-none pb-0">
             <button 
               onClick={() => setActiveTab('status')}
-              className={`flex items-center gap-2 pb-2 text-[13px] font-bold transition-all relative ${activeTab === 'status' ? 'text-[#007AFF]' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`flex items-center gap-2 pb-2 text-[13px] font-bold transition-all relative ${activeTab === 'status' ? 'text-[#2563EB]' : 'text-slate-400 hover:text-slate-600'}`}
             >
                <Clock className="w-4 h-4" />
                Status Magang Saya
-               {activeTab === 'status' && <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#007AFF] rounded-full" />}
+               {activeTab === 'status' && <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#2563EB] rounded-full" />}
             </button>
             <button 
               onClick={() => setActiveTab('cari')}
-              className={`flex items-center gap-2 pb-2 text-[13px] font-bold transition-all relative ${activeTab === 'cari' ? 'text-[#007AFF]' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`flex items-center gap-2 pb-2 text-[13px] font-bold transition-all relative ${activeTab === 'cari' ? 'text-[#2563EB]' : 'text-slate-400 hover:text-slate-600'}`}
             >
                <Search className="w-4 h-4" />
                Cari Tempat Magang
-               {activeTab === 'cari' && <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#007AFF] rounded-full" />}
+               {activeTab === 'cari' && <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#2563EB] rounded-full" />}
             </button>
          </div>
 
@@ -151,7 +151,7 @@ export default function MagangSiswa() {
                  </div>
 
                  <div className="text-right flex flex-col items-end">
-                    <div className="text-4xl font-bold text-[#007AFF] tracking-tight">
+                    <div className="text-4xl font-bold text-[#2563EB] tracking-tight">
                       {pendingCount}<span className="text-slate-200">/3</span>
                     </div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pendaftaran Pending</p>
@@ -207,7 +207,7 @@ export default function MagangSiswa() {
                       <p className="text-slate-400 font-medium text-sm mt-1">Anda belum mendaftar ke tempat magang manapun.</p>
                       <Button 
                         onClick={() => setActiveTab('cari')}
-                        className="mt-8 bg-[#007AFF] hover:bg-blue-600 text-white font-bold h-11 px-8 rounded-xl shadow-lg shadow-blue-500/10 flex items-center gap-2"
+                        className="mt-8 bg-[#2563EB] hover:bg-blue-600 text-white font-bold h-11 px-8 rounded-xl shadow-lg shadow-blue-500/10 flex items-center gap-2"
                       >
                          <Search className="w-4 h-4" />
                          Cari Tempat Magang
@@ -220,11 +220,12 @@ export default function MagangSiswa() {
            <div className="flex flex-col gap-8 animate-in fade-in duration-500">
               {/* Info Box */}
               <div className="bg-[#F0F7FF] border border-[#E0F0FF] rounded-2xl p-8">
-                 <h4 className="text-sm font-bold text-[#007AFF] mb-3">Informasi Pendaftaran</h4>
+                 <h4 className="text-sm font-bold text-[#2563EB] mb-3">Informasi Pendaftaran</h4>
                  <ul className="text-[13px] font-medium text-[#4A7AFF] space-y-2">
-                    <li className="flex gap-2 underline decoration-blue-200">• Maksimal 3 pendaftaran dengan status pending.</li>
-                    <li className="flex gap-2 underline decoration-blue-200">• Pendaftaran langsung masuk ke sistem magang (menunggu konfirmasi).</li>
-                    <li className="flex gap-2 underline decoration-blue-200">• Saat ini: <span className="font-bold underline decoration-blue-500">0/3 pending.</span></li>
+                     <li className="flex gap-2 underline decoration-blue-200">• Maksimal 3 pendaftaran dengan status pending.</li>
+                     <li className="flex gap-2 underline decoration-blue-200">• Pendaftaran langsung masuk ke sistem magang (menunggu konfirmasi).</li>
+                     <li className="flex gap-2 underline decoration-blue-200">• Jika pendaftaran sudah <span className="font-bold">AKTIF MAGANG</span>, Anda tidak bisa mendaftar lagi ke DUDI lain.</li>
+                     <li className="flex gap-2 underline decoration-blue-200">• Saat ini: <span className="font-bold underline decoration-blue-500">{pendingCount}/3 pending.</span></li>
                  </ul>
               </div>
 
@@ -236,7 +237,7 @@ export default function MagangSiswa() {
                    placeholder="Cari perusahaan atau lokasi..."
                    value={searchQuery}
                    onChange={(e) => setSearchQuery(e.target.value)}
-                   className="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-700 outline-none focus:bg-white focus:border-[#007AFF]/20 transition-all"
+                   className="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-700 outline-none focus:bg-white focus:border-[#2563EB]/20 transition-all"
                  />
               </div>
 
@@ -260,16 +261,26 @@ export default function MagangSiswa() {
                          </div>
                       </div>
 
-                      <Button 
-                        onClick={() => handleApply(dudi.id, dudi.nama_perusahaan)}
-                        disabled={pendingCount >= 3 || applying}
-                        className={`w-full h-11 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
-                          pendingCount >= 3 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-[#007AFF] hover:bg-blue-600 text-white'
-                        }`}
-                      >
-                         <Send className="w-4 h-4" />
-                         Daftar
-                      </Button>
+                      {(() => {
+                        const isInterning = data?.magang?.status === 'aktif' || 
+                                          data?.profile?.status === 'magang' || 
+                                          applications.some(a => a.status === 'aktif');
+                        const isMaxPending = pendingCount >= 3;
+                        const isDisabled = isInterning || isMaxPending || applying;
+
+                        return (
+                          <Button 
+                            onClick={() => handleApply(dudi.id, dudi.nama_perusahaan)}
+                            disabled={isDisabled}
+                            className={`w-full h-11 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+                              isDisabled ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-[#2563EB] hover:bg-blue-600 text-white'
+                            }`}
+                          >
+                            <Send className="w-4 h-4" />
+                            {isInterning ? 'Sudah Aktif Magang' : 'Daftar'}
+                          </Button>
+                        );
+                      })()}
                    </div>
                  ))}
                  

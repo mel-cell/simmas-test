@@ -8,6 +8,7 @@ export interface SiswaProfile {
   no_telp?: string
   alamat?: string
   avatar_url?: string
+  status?: string
 }
 
 export interface SiswaDudi {

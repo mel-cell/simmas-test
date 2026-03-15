@@ -32,9 +32,15 @@ interface JournalModalProps {
   onClose: () => void
   onSuccess: () => void
   journal?: SiswaJournal | null
+  magangInfo?: {
+    dudi: {
+      nama_perusahaan: string
+    }
+    status: string
+  } | null
 }
 
-export function JournalModal({ isOpen, onClose, onSuccess, journal }: JournalModalProps) {
+export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }: JournalModalProps) {
   const [loading, setLoading] = useState(false)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [description, setDescription] = useState('')
@@ -135,7 +141,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal }: JournalMod
           {/* Panduan Alert */}
           <div className="bg-[#EEF7FF] border border-[#D0E8FF] rounded-[24px] p-6 flex gap-4">
             <div className="p-2.5 bg-white rounded-xl shadow-sm self-start flex items-center justify-center shrink-0 border border-blue-50">
-              <Info className="w-5 h-5 text-[#007AFF]" />
+              <Info className="w-5 h-5 text-[#2563EB]" />
             </div>
             <div className="flex flex-col gap-2 flex-1">
               <h4 className="text-[12px] font-black text-[#0056B3] uppercase tracking-[2px]">
@@ -158,7 +164,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal }: JournalMod
           {/* Informasi Dasar */}
           <div className="flex flex-col gap-4">
              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Informasi Dasar</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-2">
                    <Label className="text-[13px] font-bold text-slate-500 ml-1">
                       Tanggal <span className="text-red-500">*</span>
@@ -170,17 +176,26 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal }: JournalMod
                         value={date}
                         disabled={isEdit}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDate(e.target.value)}
-                        className="pl-11 h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-700 focus:bg-white transition-all outline-none ring-0 focus-visible:ring-4 focus-visible:ring-[#00BCD4]/5 focus-visible:border-[#00BCD4]/30 disabled:opacity-50"
+                        className="pl-11 h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-700 focus:bg-white transition-all outline-none ring-0 focus-visible:ring-4 focus-visible:ring-[#2563EB]/5 focus-visible:border-[#2563EB]/30 disabled:opacity-50"
                       />
                    </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                   <Label className="text-[13px] font-bold text-slate-500 ml-1">Status</Label>
+                   <Label className="text-[13px] font-bold text-slate-500 ml-1">Penempatan DUDI</Label>
                    <Input 
                      disabled
-                     value="Menunggu Verifikasi"
-                     className="h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-400 italic cursor-not-allowed"
+                     value={magangInfo?.dudi?.nama_perusahaan || '-'}
+                     className="h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-600 italic cursor-not-allowed"
                    />
+                </div>
+                <div className="flex flex-col gap-2">
+                   <Label className="text-[13px] font-bold text-slate-500 ml-1">Status Aktivitas</Label>
+                   <div className="h-12 bg-blue-50/50 border border-blue-100 rounded-xl px-4 flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                      <span className="text-[13px] font-black text-blue-700 uppercase tracking-wider">
+                         {magangInfo?.status === 'aktif' ? 'Sedang Magang' : magangInfo?.status || 'Aktif Magang'}
+                      </span>
+                   </div>
                 </div>
              </div>
           </div>
@@ -199,7 +214,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal }: JournalMod
                 </Label>
                 <Textarea 
                   placeholder="Deskripsikan kegiatan yang Anda lakukan hari ini secara detail. Contoh: Membuat wireframe untuk halaman login menggunakan Figma, kemudian melakukan coding HTML dan CSS untuk implementasi desain tersebut..."
-                  className={`min-h-[160px] p-4 bg-slate-50 rounded-2xl font-semibold text-slate-700 leading-relaxed transition-all ring-0 outline-none focus:bg-white focus-visible:ring-4 focus-visible:ring-[#00BCD4]/5 ${isDescriptionValid ? 'border-slate-100 focus-visible:border-[#00BCD4]/30' : 'border-red-100 focus-visible:border-red-200'}`}
+                  className={`min-h-[160px] p-4 bg-slate-50 rounded-2xl font-semibold text-slate-700 leading-relaxed transition-all ring-0 outline-none focus:bg-white focus-visible:ring-4 focus-visible:ring-[#2563EB]/5 ${isDescriptionValid ? 'border-slate-100 focus-visible:border-[#2563EB]/30' : 'border-red-100 focus-visible:border-red-200'}`}
                   value={description}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                 />
@@ -223,7 +238,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal }: JournalMod
              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Dokumentasi Pendukung</h3>
              <div className="flex flex-col gap-2 text-center">
                 <div 
-                   className={`relative border-2 border-dashed rounded-3xl p-8 flex flex-col items-center gap-4 transition-all ${file ? 'bg-green-50/30 border-green-200' : 'bg-slate-50 border-slate-100 hover:border-[#00BCD4]/30 hover:bg-[#00BCD4]/5'}`}
+                   className={`relative border-2 border-dashed rounded-3xl p-8 flex flex-col items-center gap-4 transition-all ${file ? 'bg-green-50/30 border-green-200' : 'bg-slate-50 border-slate-100 hover:border-[#2563EB]/30 hover:bg-[#2563EB]/5'}`}
                 >
                    <input 
                      type="file" 
@@ -284,7 +299,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal }: JournalMod
           <Button 
             onClick={handleSubmit}
             disabled={!isFormValid || loading}
-            className={`rounded-2xl h-12 px-10 font-black text-white transition-all text-sm shadow-xl ${isFormValid ? 'bg-[#00BCD4] hover:bg-[#00ACC1] shadow-[#00BCD4]/20' : 'bg-slate-300 cursor-not-allowed'}`}
+            className={`rounded-2xl h-12 px-10 font-black text-white transition-all text-sm shadow-xl ${isFormValid ? 'bg-[#2563EB] hover:bg-[#00ACC1] shadow-[#2563EB]/20' : 'bg-slate-300 cursor-not-allowed'}`}
           >
             {loading ? (
               <>

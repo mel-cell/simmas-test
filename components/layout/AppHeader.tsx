@@ -84,7 +84,7 @@ export function AppHeader() {
       <div className="flex items-center gap-3 sm:gap-6 shrink-0">
         {/* Notification Bell */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="relative w-10 h-10 flex items-center justify-center cursor-pointer group border-none bg-transparent outline-none hover:bg-[#F1F5F9] rounded-full transition-all">
+          <DropdownMenuTrigger id="notification-trigger" className="relative w-10 h-10 flex items-center justify-center cursor-pointer group border-none bg-transparent outline-none hover:bg-[#F1F5F9] rounded-full transition-all">
              <Bell className="w-5 h-5 text-[#64748B] group-hover:text-[#0F172A] transition-colors" />
              {/* Unread indicator dot (optional visual addition) */}
              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
@@ -107,7 +107,7 @@ export function AppHeader() {
 
         {/* User Profile Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-3 cursor-pointer group border-none bg-transparent outline-none p-1 hover:bg-[#F8FAFC] rounded-full transition-all pr-3">
+          <DropdownMenuTrigger id="user-profile-trigger" className="flex items-center gap-3 cursor-pointer group border-none bg-transparent outline-none p-1 hover:bg-[#F8FAFC] rounded-full transition-all pr-3">
             <div className="w-9 h-9 bg-[#2563EB] rounded-full flex items-center justify-center text-white shrink-0 shadow-sm transition-transform group-hover:scale-105 font-bold text-sm">
                {initial}
             </div>

@@ -28,11 +28,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const success = await dudiAdminService.createDudi(body)
-    return NextResponse.json({ success })
+    const result = await dudiAdminService.createDudi(body)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error creating DUDI:', error)
-    return NextResponse.json({ error: 'Gagal membuat data DUDI' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal membuat data DUDI' }, { status: 500 })
   }
 }
 
@@ -40,11 +40,11 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json()
     const { id, ...data } = body
-    const success = await dudiAdminService.updateDudi(id, data)
-    return NextResponse.json({ success })
+    const result = await dudiAdminService.updateDudi(id, data)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error updating DUDI:', error)
-    return NextResponse.json({ error: 'Gagal memperbarui data DUDI' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal memperbarui data DUDI' }, { status: 500 })
   }
 }
 
@@ -52,10 +52,10 @@ export async function DELETE(request: Request) {
   try {
     const body = await request.json()
     const { id } = body
-    const success = await dudiAdminService.deleteDudi(id)
-    return NextResponse.json({ success })
+    const result = await dudiAdminService.deleteDudi(id)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error deleting DUDI:', error)
-    return NextResponse.json({ error: 'Gagal menghapus data DUDI' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal menghapus data DUDI' }, { status: 500 })
   }
 }

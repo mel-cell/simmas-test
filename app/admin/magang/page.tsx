@@ -105,7 +105,7 @@ export default function ManajemenMagang() {
           value={stats?.total || 0} 
           description="Total riwayat penempatan" 
           icon={Briefcase} 
-          color="text-[#00BCD4]"
+          color="text-[#2563EB]"
         />
         <StatCard 
           loading={loading && !stats}
@@ -146,7 +146,7 @@ export default function ManajemenMagang() {
           <div className="flex flex-wrap items-center gap-3">
             <button 
               onClick={handleAdd}
-              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-lg shadow-cyan-500/20 active:scale-95 group"
+              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#2563EB] text-white rounded-xl font-bold text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all border border-[#2563EB]/10 shadow-lg shadow-blue-600/20 active:scale-95 group"
             >
               <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
               Tambah Magang
@@ -161,7 +161,7 @@ export default function ManajemenMagang() {
             <input 
               type="text"
               placeholder="Cari siswa, DUDI, atau guru..."
-              className="w-full h-10 sm:h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all placeholder:text-slate-400"
+              className="w-full h-10 sm:h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all placeholder:text-slate-400"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -171,7 +171,7 @@ export default function ManajemenMagang() {
             <select 
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none cursor-pointer"
+              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer"
             >
               <option value="semua">Semua Status</option>
               <option value="aktif">Aktif</option>
@@ -234,8 +234,8 @@ export default function ManajemenMagang() {
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-200 group-hover:bg-[#00BCD4]/10 group-hover:border-[#00BCD4]/20 transition-colors">
-                        <Building2 className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#00BCD4]" />
+                      <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-200 group-hover:bg-[#2563EB]/10 group-hover:border-[#2563EB]/20 transition-colors">
+                        <Building2 className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2563EB]" />
                       </div>
                       <span className="text-[12px] sm:text-[13px] font-semibold text-slate-700">{m.dudi}</span>
                     </div>
@@ -262,7 +262,7 @@ export default function ManajemenMagang() {
                         m.status === 'dibatalkan' ? 'bg-red-50 text-red-500 border-red-100' :
                         'bg-slate-100 text-slate-500 border-slate-200'
                       }`}>
-                        {m.status}
+                        {m.status === 'aktif' ? 'Aktif Magang' : m.status}
                       </span>
                     </div>
                   </td>
@@ -294,7 +294,7 @@ export default function ManajemenMagang() {
         <div className="px-6 lg:px-8 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/20">
           <div className="flex items-center gap-3">
             <span className="text-[13px] text-slate-500 font-bold">Tampilkan</span>
-            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none cursor-pointer">
+            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer">
               <option>10</option>
               <option>25</option>
               <option>50</option>

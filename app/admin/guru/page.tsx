@@ -28,6 +28,7 @@ export default function ManajemenGuru() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('semua')
+  const [mapelFilter, setMapelFilter] = useState('semua')
 
   // Modal State
   const [isGuruModalOpen, setIsGuruModalOpen] = useState(false)
@@ -41,7 +42,8 @@ export default function ManajemenGuru() {
       setLoading(true)
       const data = await api.admin.getTeachers({
         query: searchQuery,
-        status: statusFilter
+        status: statusFilter,
+        mataPelajaran: mapelFilter
       })
       setStats(data.stats)
       setTeachers(data.teachers)
@@ -50,7 +52,7 @@ export default function ManajemenGuru() {
     } finally {
       setLoading(false)
     }
-  }, [searchQuery, statusFilter])
+  }, [searchQuery, statusFilter, mapelFilter])
 
   useEffect(() => {
     loadData()
@@ -104,7 +106,7 @@ export default function ManajemenGuru() {
           value={stats?.total || 0} 
           description="Guru pembimbing terdaftar" 
           icon={Users} 
-          color="text-[#00BCD4]"
+          color="text-[#2563EB]"
         />
         <StatCard 
           loading={loading && !stats}
@@ -120,7 +122,7 @@ export default function ManajemenGuru() {
           value={stats?.totalBimbingan || 0} 
           description="Siswa dalam pengawasan" 
           icon={BookOpen} 
-          color="text-[#00BCD4]"
+          color="text-[#2563EB]"
         />
         <StatCard 
           loading={loading && !stats}
@@ -145,7 +147,7 @@ export default function ManajemenGuru() {
           <div className="flex flex-wrap items-center gap-3">
             <button 
               onClick={handleAdd}
-              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#00BCD4] text-white rounded-xl font-bold text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#00acc1] transition-all border border-[#00BCD4]/10 shadow-lg shadow-cyan-500/20 active:scale-95 group"
+              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#2563EB] text-white rounded-xl font-bold text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all border border-[#2563EB]/10 shadow-lg shadow-blue-600/20 active:scale-95 group"
             >
               <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
               Tambah Guru
@@ -160,7 +162,7 @@ export default function ManajemenGuru() {
             <input 
               type="text"
               placeholder="Cari guru (Nama/NIP)..."
-              className="w-full h-10 sm:h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all placeholder:text-slate-400"
+              className="w-full h-10 sm:h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl text-[14px] focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all placeholder:text-slate-400"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -170,11 +172,26 @@ export default function ManajemenGuru() {
             <select 
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none cursor-pointer"
+              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer"
             >
               <option value="semua">Semua Status</option>
               <option value="aktif">Status Aktif</option>
               <option value="non-aktif">Status Non-Aktif</option>
+            </select>
+          </div>
+
+          <div className="relative min-w-[220px]">
+            <select 
+              value={mapelFilter}
+              onChange={(e) => setMapelFilter(e.target.value)}
+              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer"
+            >
+              <option value="semua">Semua Mata Pelajaran</option>
+              <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
+              <option value="Teknik Komputer Jaringan">Teknik Komputer Jaringan</option>
+              <option value="Multimedia">Multimedia</option>
+              <option value="Desain Komunikasi Visual">Desain Komunikasi Visual</option>
+              <option value="Teknik Otomasi Industri">Teknik Otomasi Industri</option>
             </select>
           </div>
         </div>
@@ -233,8 +250,8 @@ export default function ManajemenGuru() {
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-[#00BCD4]/10 flex items-center justify-center border border-[#00BCD4]/20 group-hover:scale-110 transition-transform">
-                        <UserCheck className="w-4 h-4 text-[#00BCD4]" />
+                      <div className="w-9 h-9 rounded-full bg-[#2563EB]/10 flex items-center justify-center border border-[#2563EB]/20 group-hover:scale-110 transition-transform">
+                        <UserCheck className="w-4 h-4 text-[#2563EB]" />
                       </div>
                       <span className="text-[14px] font-bold text-slate-800">{guru.nama}</span>
                     </div>
@@ -296,7 +313,7 @@ export default function ManajemenGuru() {
         <div className="px-6 lg:px-8 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/20">
           <div className="flex items-center gap-3">
             <span className="text-[13px] text-slate-500 font-bold">Tampilkan</span>
-            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 appearance-none cursor-pointer">
+            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer">
               <option>10</option>
               <option>25</option>
               <option>50</option>

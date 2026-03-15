@@ -23,6 +23,8 @@ export const siswaService = {
         guru:guru_id (full_name, no_telp)
       `)
       .eq('siswa_id', siswaId)
+      .order('status', { ascending: true })
+      .limit(1)
       .maybeSingle()
 
     // 3. Get Journal Stats by magang_id
@@ -128,11 +130,12 @@ export const siswaService = {
     // 1. Find Magang ID
     const { data: magang } = await supabase
       .from('magang')
-      .select('id')
+      .select('id, status')
       .eq('siswa_id', data.siswa_id)
+      .eq('status', 'aktif')
       .maybeSingle()
     
-    if (!magang) throw new Error('Anda belum terdaftar dalam program magang.')
+    if (!magang) throw new Error('Anda tidak dapat membuat jurnal karena belum memiliki program magang yang aktif.')
 
     // 2. Check for existing entry on same date
     const { data: existing } = await supabase

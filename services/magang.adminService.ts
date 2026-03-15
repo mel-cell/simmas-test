@@ -1,9 +1,12 @@
-import { supabase } from '@/lib/supabase'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createClient as createServerClient } from '@/lib/supabaseServer'
 import { InternshipStats, RecentMagang, MagangInput } from '@/types/admin'
 import { logActivity } from './activityLogger'
 
 export const magangAdminService = {
   getInternshipStats: async (): Promise<InternshipStats> => {
+    const supabase = await createServerClient()
+    
     // 1. Total Magang
     const { count: total } = await supabase
       .from('magang')
@@ -36,6 +39,8 @@ export const magangAdminService = {
   },
 
   getAllMagang: async (filters?: { query?: string, status?: string }): Promise<RecentMagang[]> => {
+    const supabase = await createServerClient()
+    
     let query = supabase
       .from('magang')
       .select(`
@@ -59,19 +64,7 @@ export const magangAdminService = {
 
     if (error || !data) return []
 
-    // Filter results locally if there is a query string (for joined fields)
-    let results: RecentMagang[] = data.map((m: {
-      id: string;
-      status: string | null;
-      tgl_mulai: string | null;
-      tgl_selesai: string | null;
-      siswa_id: string;
-      guru_id: string | null;
-      dudi_id: string;
-      siswa: { full_name: string }[] | { full_name: string } | null;
-      guru: { full_name: string }[] | { full_name: string } | null;
-      dudi: { nama_perusahaan: string }[] | { nama_perusahaan: string } | null;
-    }) => {
+    let results: RecentMagang[] = data.map((m: any) => {
       const siswa = Array.isArray(m.siswa) ? m.siswa[0] : m.siswa;
       const guru = Array.isArray(m.guru) ? m.guru[0] : m.guru;
       const dudi = Array.isArray(m.dudi) ? m.dudi[0] : m.dudi;
@@ -102,12 +95,13 @@ export const magangAdminService = {
     return results
   },
 
-  createMagang: async (data: MagangInput): Promise<boolean> => {
+  createMagang: async (data: MagangInput): Promise<{ success: boolean, error?: string }> => {
+    const supabase = await createServerClient()
+    
     // 1. Validasi Input
-    if (!data.dudi_id || !data.siswa_id) return false;
+    if (!data.dudi_id || !data.siswa_id) return { success: false, error: 'Data Siswa dan DUDI wajib diisi' };
 
     // 2. Cegah Double Plot (Constraint logic)
-    // Cek apakah siswa sudah punya magang yang statusnya 'aktif' atau 'menunggu'
     const { data: existing } = await supabase
       .from('magang')
       .select('id')
@@ -116,11 +110,9 @@ export const magangAdminService = {
       .maybeSingle()
 
     if (existing) {
-      console.error('Siswa sudah terdaftar di penempatan lain yang sedang aktif/menunggu.')
-      return false
+      return { success: false, error: 'Siswa sudah terdaftar di penempatan lain yang sedang aktif atau menunggu.' }
     }
 
-    // Optional guru
     const guru_id = data.guru_id === '' ? null : data.guru_id;
 
     // 3. Insert Penempatan Baru
@@ -139,20 +131,21 @@ export const magangAdminService = {
 
     if (error) {
       console.error('Error creating magang:', error)
-      return false
+      return { success: false, error: error.message }
     }
 
     // 4. Sinkronisasi Status Profil Siswa
-    // Jika status magang diset 'aktif', ubah status di profile siswa menjadi 'magang'
     if (data.status === 'aktif') {
       await supabase.from('profiles').update({ status: 'magang' }).eq('id', data.siswa_id)
     }
 
     await logActivity('Create', 'MAGANG', newMagang?.id, data)
-    return true
+    return { success: true }
   },
 
-  updateMagang: async (id: string, data: Partial<MagangInput>): Promise<boolean> => {
+  updateMagang: async (id: string, data: Partial<MagangInput>): Promise<{ success: boolean, error?: string }> => {
+    const supabase = await createServerClient()
+    
     const updateData: Record<string, unknown> = {}
     if (data.siswa_id !== undefined) updateData.siswa_id = data.siswa_id
     if (data.guru_id !== undefined) updateData.guru_id = data.guru_id === '' ? null : data.guru_id
@@ -161,7 +154,7 @@ export const magangAdminService = {
     if (data.tgl_selesai !== undefined) updateData.tgl_selesai = data.tgl_selesai
     if (data.status !== undefined) updateData.status = data.status
 
-    // 1. Get current magang to know who the student is (if not provided in data)
+    // 1. Get current magang to know who the student is
     let siswaId = data.siswa_id
     if (!siswaId) {
       const { data: current } = await supabase.from('magang').select('siswa_id').eq('id', id).single()
@@ -176,7 +169,7 @@ export const magangAdminService = {
 
     if (error) {
       console.error('Error updating magang:', error)
-      return false
+      return { success: false, error: error.message }
     }
 
     // 3. Sinkronisasi Status Profil Siswa
@@ -186,34 +179,38 @@ export const magangAdminService = {
       } else if (data.status === 'selesai') {
         await supabase.from('profiles').update({ status: 'selesai' }).eq('id', siswaId)
       } else if (data.status === 'dibatalkan' || data.status === 'menunggu') {
-        // Jika dibatalkan atau kembali menunggu, status profile dikembalikan ke 'aktif' (Belum Magang)
         await supabase.from('profiles').update({ status: 'aktif' }).eq('id', siswaId)
       }
     }
     
     await logActivity('Update', 'MAGANG', id, updateData)
-    return true
+    return { success: true }
   },
 
-  deleteMagang: async (id: string): Promise<boolean> => {
-    const { error } = await supabase
-      .from('magang')
-      .delete()
-      .eq('id', id)
+  deleteMagang: async (id: string): Promise<{ success: boolean, error?: string }> => {
+    try {
+      const supabase = await createServerClient()
+      const { error } = await supabase
+        .from('magang')
+        .delete()
+        .eq('id', id)
+        
+      if (error) {
+        console.error('Error deleting magang:', error)
+        return { success: false, error: error.message }
+      }
       
-    if (error) {
-      console.error('Error deleting magang:', error)
-      return false
+      await logActivity('Delete', 'MAGANG', id, { id })
+      return { success: true }
+    } catch (error) {
+      console.error('Error in deleteMagang:', error)
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message }
     }
-    
-    await logActivity('Delete', 'MAGANG', id, { id })
-    return true
   },
   
-  // fetch options for dropdowns
   getSiswaOptions: async () => {
-    // Hanya ambil siswa yang status profilenya 'aktif' (artinya belum magang atau magang sebelumnya sudah selesai/dibatalkan)
-    // DAN tidak sedang memiliki record magang dengan status 'aktif' atau 'menunggu'
+    const supabase = await createServerClient()
     const { data: allSiswa, error } = await supabase
       .from('profiles')
       .select(`
@@ -222,22 +219,20 @@ export const magangAdminService = {
         magang!magang_siswa_id_fkey(status)
       `)
       .eq('role', 'SISWA')
-      .eq('status', 'aktif') // Status 'aktif' di profiles berarti siap ditempatkan
+      .eq('status', 'aktif') 
       .order('full_name')
 
     if (error) return []
 
-    // Filter tambahan di client-side untuk memastikan tidak ada record magang yang 'aktif'/'menunggu'
-    // (Meskipun status profile 'aktif' harusnya sudah sinkron, ini untuk keamanan extra)
-    const filtered = (allSiswa as unknown as { id: string, full_name: string, magang: { status: string }[] | { status: string } | null }[]).filter((s) => {
+    const filtered = (allSiswa as any[]).filter((s) => {
       const magang = Array.isArray(s.magang) ? s.magang : (s.magang ? [s.magang] : [])
-      const activeInternships = magang.filter(m => 
+      const activeInternships = magang.filter((m: any) => 
         ['aktif', 'menunggu'].includes(m.status)
       )
       return activeInternships.length === 0
     })
 
-    return filtered.map((d) => ({
+    return filtered.map((d: any) => ({
       id: d.id,
       nama: d.full_name
     }))

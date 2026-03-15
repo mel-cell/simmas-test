@@ -28,11 +28,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const success = await magangAdminService.createMagang(body)
-    return NextResponse.json({ success })
+    const result = await magangAdminService.createMagang(body)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error creating magang:', error)
-    return NextResponse.json({ error: 'Gagal membuat data magang' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal membuat data magang' }, { status: 500 })
   }
 }
 
@@ -40,11 +40,11 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json()
     const { id, ...data } = body
-    const success = await magangAdminService.updateMagang(id, data)
-    return NextResponse.json({ success })
+    const result = await magangAdminService.updateMagang(id, data)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error updating magang:', error)
-    return NextResponse.json({ error: 'Gagal memperbarui data magang' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal memperbarui data magang' }, { status: 500 })
   }
 }
 

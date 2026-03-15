@@ -1,25 +1,22 @@
 'use client'
 
 import { 
-  Filter, 
-  ChevronDown,
   Clock,
   Eye,
   Check,
   X,
-  AlertCircle,
   BookOpen,
   CheckCircle2,
   XCircle,
-  ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight,
-  Search
+  Search,
+  MapPin,
+  CalendarDays
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
-import { GuruJournalApproval } from '@/types/guru'
+import { GuruJournalApproval, BimbinganSiswa } from '@/types/guru'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -28,31 +25,33 @@ import { JournalApprovalModal } from '@/components/guru/JournalApprovalModal'
 import { format } from 'date-fns'
 import { id as localeId } from 'date-fns/locale'
 
-export default function ApprovalJurnalGuru() {
+export default function ApprovalGuru() {
   const [journals, setJournals] = useState<GuruJournalApproval[]>([])
+  const [internships, setInternships] = useState<BimbinganSiswa[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter] = useState('all')
+  const [activeTab, setActiveTab] = useState<'jurnal' | 'magang'>('jurnal')
   
   // Modal state
   const [selectedJournal, setSelectedJournal] = useState<GuruJournalApproval | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const fetchJournals = async () => {
+  const fetchApprovalData = async () => {
     try {
       setLoading(true)
       const res = await api.guru.getJournals()
       setJournals(res.journals)
+      setInternships(res.internships || [])
     } catch (error) {
-      console.error('Failed to fetch journals:', error)
-      toast.error('Gagal mengambil data jurnal')
+      console.error('Failed to fetch approval data:', error)
+      toast.error('Gagal mengambil data approval')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchJournals()
+    fetchApprovalData()
   }, [])
 
   const handleAction = async (id: string, status: 'disetujui' | 'ditolak', notes: string = '') => {
@@ -60,7 +59,7 @@ export default function ApprovalJurnalGuru() {
       const res = await api.guru.approveJournal(id, status, notes)
       if (res.success) {
         toast.success(`Jurnal harian berhasil ${status === 'disetujui' ? 'disetujui' : 'ditolak'}`)
-        fetchJournals()
+        fetchApprovalData()
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Gagal update status jurnal'
@@ -68,237 +67,275 @@ export default function ApprovalJurnalGuru() {
     }
   }
 
+  const handleMagangAction = async (id: string, status: 'aktif' | 'dibatalkan') => {
+    try {
+      const res = await api.guru.updateMagangStatus(id, { 
+        status,
+        tgl_mulai: status === 'aktif' ? new Date().toISOString().split('T')[0] : undefined,
+        tgl_selesai: status === 'aktif' ? new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString().split('T')[0] : undefined
+      })
+      if (res.success) {
+        toast.success(`Permohonan magang berhasil ${status === 'aktif' ? 'disetujui' : 'ditolak'}`)
+        fetchApprovalData()
+      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Gagal update status magang'
+      toast.error(message)
+    }
+  }
+
   const filteredJournals = journals.filter(j => {
-    const matchesQuery = 
-      j.kegiatan.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      j.siswa.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      j.dudi.nama_perusahaan.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesStatus = statusFilter === 'all' || j.status === statusFilter
-    return matchesQuery && matchesStatus
+    return j.kegiatan.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           j.siswa.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+  })
+
+  const filteredInternships = internships.filter(i => {
+    return i.siswa.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           i.dudi.nama_perusahaan.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
   const stats = {
-    total: journals.length,
-    pending: journals.filter(j => j.status === 'menunggu').length,
+    total: journals.length + internships.length,
+    pending: journals.filter(j => j.status === 'menunggu').length + internships.length,
     approved: journals.filter(j => j.status === 'disetujui').length,
     rejected: journals.filter(j => j.status === 'ditolak').length,
   }
 
   return (
-    <div className="flex flex-col gap-8 w-full pb-20 px-4 md:px-8 max-w-[1600px] mx-auto font-sans">
+    <div className="flex flex-col gap-8 w-full pb-20 px-4 md:px-8 max-w-[1600px] mx-auto text-sans">
       {/* Header Section */}
       <div className="mt-6 flex flex-col gap-1">
-        <h1 className="text-3xl font-black text-slate-800 tracking-tight">Approval Jurnal Harian</h1>
-        <p className="text-slate-500 font-bold text-sm">Review dan setujui jurnal harian siswa bimbingan</p>
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Approval Center</h1>
+        <p className="text-slate-500 font-bold text-sm">Review dan setujui permohonan magang serta jurnal harian siswa</p>
       </div>
 
       {/* Stats Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Logbook', value: stats.total, sub: 'Laporan harian terdaftar', icon: BookOpen, color: 'blue' },
-          { label: 'Belum Diverifikasi', value: stats.pending, sub: 'Menunggu verifikasi', icon: Clock, color: 'cyan' },
-          { label: 'Disetujui', value: stats.approved, sub: 'Sudah diverifikasi', icon: CheckCircle2, color: 'green' },
-          { label: 'Ditolak', value: stats.rejected, sub: 'Perlu perbaikan', icon: XCircle, color: 'red' },
+          { label: 'Total Approval', value: stats.total, sub: 'Jurnal & Permohonan', icon: BookOpen, color: 'blue' },
+          { label: 'Menunggu', value: stats.pending, sub: 'Perlu verifikasi segera', icon: Clock, color: 'blue' },
+          { label: 'Disetujui', value: stats.approved, sub: 'Jurnal sudah diverifikasi', icon: CheckCircle2, color: 'green' },
+          { label: 'Ditolak', value: stats.rejected, sub: 'Jurnal perlu perbaikan', icon: XCircle, color: 'red' },
         ].map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col gap-4">
+          <div key={i} className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col gap-4 transition-all hover:shadow-md hover:border-[#2563EB]/10">
              <div className="flex items-center justify-between">
-                <span className="text-[13px] font-black text-slate-800">{stat.label}</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</span>
                 <div className={`${
-                  stat.color === 'blue' ? 'text-blue-500' : 
-                  stat.color === 'cyan' ? 'text-cyan-500' : 
+                  stat.color === 'blue' ? 'text-[#2563EB]' : 
                   stat.color === 'green' ? 'text-green-500' : 'text-red-400'
                 }`}>
                    <stat.icon className="w-5 h-5" />
                 </div>
              </div>
              <div>
-                <h3 className="text-3xl font-black text-slate-800 tracking-tight">{stat.value}</h3>
+                <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{stat.value}</h3>
                 <p className="text-[11px] font-bold text-slate-400 mt-0.5">{stat.sub}</p>
              </div>
           </div>
         ))}
       </div>
 
+      {/* Tab Switcher */}
+      <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit self-center md:self-start">
+        <button 
+          onClick={() => {
+            setActiveTab('jurnal')
+            setSearchQuery('')
+          }}
+          className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === 'jurnal' ? 'bg-white text-[#2563EB] shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+        >
+          Jurnal Harian ({journals.length})
+        </button>
+        <button 
+          onClick={() => {
+            setActiveTab('magang')
+            setSearchQuery('')
+          }}
+          className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === 'magang' ? 'bg-white text-[#2563EB] shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+        >
+          Permohonan Magang ({internships.length})
+        </button>
+      </div>
+
       {/* Main Table Section */}
-      <div className="bg-white rounded-[24px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+      <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden flex flex-col">
           {/* Controls Header */}
-          <div className="p-8">
-             <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-2">
-                <div className="relative w-full md:w-80">
+          <div className="p-8 border-b border-slate-50">
+             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="relative w-full md:w-96">
                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                    <input 
                      type="text"
-                     placeholder="Cari siswa, kegiatan, atau kendala..."
+                     placeholder={activeTab === 'jurnal' ? "Cari siswa atau kegiatan..." : "Cari siswa atau DUDI..."}
                      value={searchQuery}
                      onChange={(e) => setSearchQuery(e.target.value)}
-                     className="w-full pl-11 pr-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl text-[13px] font-medium text-slate-600 outline-none focus:bg-white focus:ring-2 focus:ring-slate-100 transition-all placeholder:text-slate-300"
+                     className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-[14px] font-bold text-slate-600 outline-none focus:bg-white focus:ring-4 focus:ring-[#2563EB]/5 transition-all shadow-sm"
                    />
-                </div>
-
-                <div className="flex items-center gap-4 w-full md:w-auto text-[13px]">
-                   <Button variant="outline" className="h-10 px-4 rounded-xl border-slate-100 text-slate-600 font-bold text-[13px] flex items-center gap-2">
-                       <Filter className="w-4 h-4 text-slate-400" />
-                       Tampilkan Filter
-                       <ChevronDown className="w-4 h-4 text-slate-300" />
-                   </Button>
-                   <div className="flex items-center gap-2 text-slate-500 font-bold">
-                      <span>Tampilkan:</span>
-                      <div className="relative">
-                         <select className="appearance-none bg-slate-50 border border-slate-100 rounded-lg px-4 py-1.5 pr-8 focus:outline-none text-[13px] font-black text-slate-600">
-                            <option>10</option>
-                            <option>25</option>
-                            <option>50</option>
-                         </select>
-                         <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
-                      </div>
-                      <span>per halaman</span>
-                   </div>
                 </div>
              </div>
           </div>
 
           <div className="overflow-x-auto">
-             <table className="w-full text-left border-collapse">
-                <thead>
-                   <tr className="border-y border-slate-50 bg-slate-50/30">
-                      <th className="px-8 py-4 w-12">
-                         <input type="checkbox" className="rounded border-slate-200" />
-                      </th>
-                      <th className="px-4 py-4 text-[13px] font-black text-slate-700 uppercase tracking-tight">Siswa & Tanggal</th>
-                      <th className="px-4 py-4 text-[13px] font-black text-slate-700 uppercase tracking-tight">Kegiatan & Kendala</th>
-                      <th className="px-4 py-4 text-[13px] font-black text-slate-700 uppercase tracking-tight text-center">Status</th>
-                      <th className="px-4 py-4 text-[13px] font-black text-slate-700 uppercase tracking-tight">Catatan Guru</th>
-                      <th className="px-8 py-4 text-[13px] font-black text-slate-700 uppercase tracking-tight text-right">Aksi</th>
-                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                   {loading ? (
-                     Array(3).fill(0).map((_, i) => (
-                       <tr key={i}>
-                          <td colSpan={6} className="px-8 py-8">
-                             <Skeleton className="h-24 w-full rounded-2xl" />
-                          </td>
-                       </tr>
-                     ))
-                   ) : filteredJournals.length > 0 ? (
-                     filteredJournals.map((journal) => (
-                       <tr key={journal.id} className="group hover:bg-slate-50/50 transition-colors">
-                          <td className="px-8 py-6 align-top pt-8">
-                             <input type="checkbox" className="rounded border-slate-200" />
-                          </td>
-                          <td className="px-4 py-6 align-top">
-                             <div className="flex flex-col gap-0.5 pt-2">
-                                <span className="text-[14px] font-black text-slate-800">{journal.siswa.full_name}</span>
-                                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">NIS: {journal.siswa.nomor_induk}</span>
-                                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{journal.siswa.kelas}</span>
-                                <span className="text-[11px] font-bold text-slate-400 mt-2">{format(new Date(journal.tgl), 'd MMM yyyy', { locale: localeId })}</span>
-                             </div>
-                          </td>
-                          <td className="px-4 py-6 max-w-[400px] align-top">
-                             <div className="flex flex-col gap-2 pt-2">
-                                <div className="flex flex-col gap-1">
-                                   <span className="text-[11px] font-black text-slate-800 uppercase tracking-tight">Kegiatan:</span>
-                                   <p className="text-[13px] font-bold text-slate-500 leading-snug line-clamp-2">{journal.kegiatan}</p>
-                                </div>
-                                {journal.kendala && (
-                                   <div className="flex flex-col gap-1 mt-1">
-                                      <span className="text-[11px] font-black text-slate-800 uppercase tracking-tight">Kendala:</span>
-                                      <p className="text-[13px] font-bold text-slate-400 leading-snug line-clamp-2 italic">{journal.kendala}</p>
-                                   </div>
-                                )}
-                             </div>
-                          </td>
-                          <td className="px-4 py-8 text-center align-top">
-                             <Badge variant="outline" className={`border-none px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tight shadow-none ${
-                               journal.status === 'disetujui' ? 'bg-green-100 text-green-600' :
-                               journal.status === 'ditolak' ? 'bg-red-100 text-red-600' :
-                               'bg-orange-100 text-orange-600'
-                             }`}>
-                                {journal.status === 'menunggu' ? 'Belum Diverifikasi' : journal.status}
-                             </Badge>
-                          </td>
-                          <td className="px-4 py-6 align-top">
-                             <div className="pt-2">
-                                {journal.catatan_guru ? (
-                                   <div className="bg-slate-50 border border-slate-100 rounded-lg p-3 max-w-[200px]">
-                                      <p className="text-[11px] font-bold text-slate-500 leading-normal">{journal.catatan_guru}</p>
-                                   </div>
-                                ) : (
-                                   <span className="text-[12px] font-bold text-slate-300 italic">Belum ada catatan</span>
-                                )}
-                             </div>
-                          </td>
-                          <td className="px-8 py-6 text-right align-top pt-8">
-                             <div className="flex items-center justify-end gap-3 text-slate-400">
-                                <button 
-                                  onClick={() => {
-                                     setSelectedJournal(journal)
-                                     setIsModalOpen(true)
-                                  }}
-                                  className="hover:text-[#00BCD4] transition-colors" title="Lihat Detail"
+             {activeTab === 'jurnal' ? (
+               <table className="w-full text-left border-collapse">
+                 <thead>
+                    <tr className="bg-white/50">
+                       <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Siswa & DUDI</th>
+                       <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tanggal & Kegiatan</th>
+                       <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">Status</th>
+                       <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                    </tr>
+                 </thead>
+                 <tbody className="divide-y divide-slate-50">
+                    {loading ? (
+                      Array(3).fill(0).map((_, i) => (
+                        <tr key={i}><td colSpan={4} className="px-8 py-4"><Skeleton className="h-16 w-full rounded-2xl" /></td></tr>
+                      ))
+                    ) : filteredJournals.length > 0 ? (
+                      filteredJournals.map((journal) => (
+                        <tr key={journal.id} className="group hover:bg-slate-50/50 transition-colors">
+                           <td className="px-8 py-6">
+                              <div className="flex flex-col gap-1">
+                                 <span className="text-[15px] font-bold text-slate-800 tracking-tight">{journal.siswa.full_name}</span>
+                                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <MapPin className="w-3 h-3" />
+                                    {journal.dudi.nama_perusahaan}
+                                 </div>
+                              </div>
+                           </td>
+                           <td className="px-8 py-6">
+                              <div className="flex flex-col gap-1">
+                                 <div className="flex items-center gap-2 text-xs font-bold text-[#2563EB]">
+                                    <CalendarDays className="w-3.5 h-3.5" />
+                                    {(() => {
+                                      try {
+                                        const d = journal.tgl ? new Date(journal.tgl) : null;
+                                        return (d && !isNaN(d.getTime())) 
+                                          ? format(d, 'EEEE, d MMMM yyyy', { locale: localeId }) 
+                                          : '?';
+                                      } catch {
+                                        return '?';
+                                      }
+                                    })()}
+                                 </div>
+                                 <p className="text-sm text-slate-600 line-clamp-1 font-medium">{journal.kegiatan}</p>
+                              </div>
+                           </td>
+                           <td className="px-8 py-6 text-center">
+                              <Badge className={`border-none px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest ${
+                                journal.status === 'disetujui' ? 'bg-green-100 text-green-700' :
+                                journal.status === 'menunggu' ? 'bg-orange-100 text-orange-700' :
+                                'bg-red-100 text-red-700'
+                              }`}>
+                                 {journal.status}
+                              </Badge>
+                           </td>
+                           <td className="px-8 py-6 text-right">
+                              <button 
+                                onClick={() => {
+                                  setSelectedJournal(journal)
+                                  setIsModalOpen(true)
+                                }}
+                                className="inline-flex items-center gap-2 h-10 px-4 bg-slate-50 text-slate-600 rounded-xl font-bold text-[13px] hover:bg-[#2563EB] hover:text-white transition-all border border-slate-100"
+                              >
+                                 <Eye className="w-4 h-4" />
+                                 Detail
+                              </button>
+                           </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr><td colSpan={4} className="px-8 py-20 text-center text-slate-400 font-bold">Tidak ada jurnal untuk direview</td></tr>
+                    )}
+                 </tbody>
+               </table>
+             ) : (
+               <table className="w-full text-left border-collapse">
+                 <thead>
+                    <tr className="bg-white/50">
+                       <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Siswa</th>
+                       <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">DUDI</th>
+                       <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">Status</th>
+                       <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                    </tr>
+                 </thead>
+                 <tbody className="divide-y divide-slate-50">
+                    {loading ? (
+                       Array(3).fill(0).map((_, i) => (
+                        <tr key={i}><td colSpan={4} className="px-8 py-4"><Skeleton className="h-16 w-full rounded-2xl" /></td></tr>
+                      ))
+                    ) : filteredInternships.length > 0 ? (
+                      filteredInternships.map((item) => (
+                        <tr key={item.id} className="group hover:bg-slate-50/50 transition-colors">
+                           <td className="px-8 py-6">
+                              <div className="flex flex-col gap-1">
+                                 <span className="text-[15px] font-bold text-slate-800 tracking-tight">{item.siswa.full_name}</span>
+                                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{item.siswa.kelas} • {item.siswa.jurusan}</span>
+                              </div>
+                           </td>
+                           <td className="px-8 py-6">
+                              <div className="flex items-center gap-3">
+                                 <div className="p-2 bg-slate-50 rounded-lg">
+                                    <MapPin className="w-4 h-4 text-[#2563EB]" />
+                                 </div>
+                                 <span className="text-sm font-bold text-slate-700">{item.dudi.nama_perusahaan}</span>
+                              </div>
+                           </td>
+                           <td className="px-8 py-6 text-center">
+                              <Badge className="bg-orange-100 text-orange-700 border-none px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest">
+                                 MENUNGGU
+                              </Badge>
+                           </td>
+                           <td className="px-8 py-6 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <Button 
+                                  size="sm"
+                                  onClick={() => handleMagangAction(item.id, 'aktif')}
+                                  className="h-10 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold px-4 flex items-center gap-2"
                                 >
-                                   <Eye className="w-5 h-5" />
-                                </button>
-                                {journal.status === 'menunggu' && (
-                                   <>
-                                      <button 
-                                        onClick={() => handleAction(journal.id, 'disetujui')}
-                                        className="hover:text-green-500 transition-colors" title="Setujui"
-                                      >
-                                         <Check className="w-5 h-5" />
-                                      </button>
-                                      <button 
-                                        onClick={() => handleAction(journal.id, 'ditolak')}
-                                        className="hover:text-red-500 transition-colors" title="Tolak"
-                                      >
-                                         <X className="w-5 h-5" />
-                                      </button>
-                                   </>
-                                )}
-                             </div>
-                          </td>
-                       </tr>
-                     ))
-                   ) : (
-                     <tr>
-                        <td colSpan={6} className="py-24 text-center">
-                           <div className="flex flex-col items-center justify-center opacity-30">
-                              <AlertCircle className="w-12 h-12 mb-4" />
-                              <p className="font-black text-xl">Data tidak ditemukan</p>
-                           </div>
-                        </td>
-                     </tr>
-                   )}
-                </tbody>
-             </table>
+                                   <Check className="w-4 h-4" />
+                                   Terima
+                                </Button>
+                                <Button 
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleMagangAction(item.id, 'dibatalkan')}
+                                  className="h-10 bg-red-50 text-red-500 hover:bg-red-100 border-red-100 rounded-xl font-bold px-4 flex items-center gap-2"
+                                >
+                                   <X className="w-4 h-4" />
+                                   Tolak
+                                </Button>
+                              </div>
+                           </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr><td colSpan={4} className="px-8 py-20 text-center text-slate-400 font-bold">Tidak ada permohonan magang baru</td></tr>
+                    )}
+                 </tbody>
+               </table>
+             )}
           </div>
 
           {/* Pagination Footer */}
-          <div className="px-8 py-6 border-t border-slate-50 flex flex-col md:flex-row items-center justify-between gap-4">
-             <span className="text-[13px] font-bold text-slate-500">
-                Menampilkan 1 sampai {filteredJournals.length} dari {filteredJournals.length} entri
+          <div className="px-8 py-6 border-t border-slate-50 bg-slate-50/30 flex flex-col md:flex-row items-center justify-between gap-4">
+             <span className="text-[13px] font-bold text-slate-400">
+                Menampilkan <span className="text-slate-700">{activeTab === 'jurnal' ? filteredJournals.length : filteredInternships.length}</span> {activeTab === 'jurnal' ? 'jurnal bimbingan' : 'permohonan magang'}
              </span>
              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-300 pointer-events-none">
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-slate-300 pointer-events-none">
                    <ChevronsLeft className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-300 pointer-events-none">
-                   <ChevronLeft className="w-4 h-4" />
-                </Button>
                 <div className="flex items-center gap-1">
-                   <Button className="h-8 w-8 rounded-lg bg-[#00BCD4] text-white font-black text-xs p-0 flex items-center justify-center">1</Button>
+                   <Button className="h-9 w-9 rounded-xl bg-[#2563EB] text-white font-bold text-xs shadow-lg shadow-blue-600/20 shadow-sm transition-all active:scale-95">1</Button>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400">
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-slate-400 hover:bg-white hover:shadow-sm">
                    <ChevronRight className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400">
-                   <ChevronsRight className="w-4 h-4" />
                 </Button>
              </div>
           </div>
       </div>
-
+      
       <JournalApprovalModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

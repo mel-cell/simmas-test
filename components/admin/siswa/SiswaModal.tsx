@@ -11,7 +11,9 @@ import {
   MapPin, 
   Building2, 
   UserCheck,
-  RefreshCw
+  RefreshCw,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { SiswaData } from '@/types/admin'
@@ -30,6 +32,10 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
   const [teachers, setTeachers] = useState<{ id: string, nama: string }[]>([])
   const [dudis, setDudis] = useState<{ id: string, name: string }[]>([])
   
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+  
   const [formData, setFormData] = useState({
     nis: '',
     nama: '',
@@ -40,7 +46,9 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
     alamat: '',
     status: 'aktif',
     guru_id: '',
-    dudi_id: ''
+    dudi_id: '',
+    password: '',
+    confirmPassword: ''
   })
 
   useEffect(() => {
@@ -54,10 +62,12 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
           jurusan: siswa.jurusan,
           email: siswa.email,
           nohp: siswa.nohp,
-          alamat: '', // We didn't fetch address in list, but let's keep it empty for now
+          alamat: (siswa as SiswaData & { alamat?: string }).alamat || '',
           status: siswa.status,
           guru_id: siswa.pembimbingId || '',
-          dudi_id: siswa.dudiId || ''
+          dudi_id: siswa.dudiId || '',
+          password: '',
+          confirmPassword: ''
         })
       } else {
         setFormData({
@@ -70,9 +80,12 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
           alamat: '',
           status: 'aktif',
           guru_id: '',
-          dudi_id: ''
+          dudi_id: '',
+          password: '',
+          confirmPassword: ''
         })
       }
+      setPasswordError('')
     }
   }, [isOpen, siswa])
 
@@ -92,20 +105,44 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Validation
+    if (!siswa && !formData.password) {
+      setPasswordError('Password harus diisi untuk siswa baru')
+      return
+    }
+    if (formData.password && formData.password.length < 6) {
+      setPasswordError('Password minimal 6 karakter')
+      return
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setPasswordError('Konfirmasi password tidak cocok')
+      return
+    }
+
     try {
       setLoading(true)
       let res
+      
+      const payload = {
+        ...formData,
+        nis: formData.nis.trim(),
+        nama: formData.nama.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password || undefined
+      }
+
       if (siswa) {
-        res = await api.admin.updateStudent(siswa.id, formData)
+        res = await api.admin.updateStudent(siswa.id, payload)
       } else {
-        res = await api.admin.createStudent(formData)
+        res = await api.admin.createStudent(payload)
       }
 
       if (res.success) {
         onSuccess()
         onClose()
       } else {
-        alert("Gagal menyimpan data siswa. Silakan cek konsol untuk detail error.")
+        alert(res.error || "Gagal menyimpan data siswa. Silakan cek konsol untuk detail error.")
       }
     } catch (err: unknown) {
       console.error('Failed to save student:', err)
@@ -131,8 +168,8 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
         {/* Header */}
         <div className="p-6 sm:p-8 border-b border-slate-50 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#00BCD4]/10 flex items-center justify-center">
-              <User className="w-6 h-6 text-[#00BCD4]" />
+            <div className="w-12 h-12 rounded-2xl bg-[#2563EB]/10 flex items-center justify-center">
+              <User className="w-6 h-6 text-[#2563EB]" />
             </div>
             <div>
               <h3 className="text-[20px] font-bold text-slate-800 leading-tight">
@@ -157,13 +194,13 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* NIS */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Hash className="w-4 h-4 text-[#00BCD4]" /> NIS
+                <Hash className="w-4 h-4 text-[#2563EB]" /> NIS
               </label>
               <input 
                 required
                 type="text"
                 placeholder="Masukkan NIS"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.nis}
                 onChange={(e) => setFormData({ ...formData, nis: e.target.value })}
               />
@@ -172,13 +209,13 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* Nama Lengkap */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <User className="w-4 h-4 text-[#00BCD4]" /> Nama Lengkap
+                <User className="w-4 h-4 text-[#2563EB]" /> Nama Lengkap
               </label>
               <input 
                 required
                 type="text"
                 placeholder="Masukkan nama lengkap"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.nama}
                 onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
               />
@@ -187,11 +224,11 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* Kelas */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-[#00BCD4]" /> Kelas
+                <BookOpen className="w-4 h-4 text-[#2563EB]" /> Kelas
               </label>
               <select 
                 required
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
                 value={formData.kelas}
                 onChange={(e) => setFormData({ ...formData, kelas: e.target.value })}
               >
@@ -205,11 +242,11 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* Jurusan */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <GraduationCap className="w-4 h-4 text-[#00BCD4]" /> Jurusan
+                <GraduationCap className="w-4 h-4 text-[#2563EB]" /> Jurusan
               </label>
               <select 
                 required
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
                 value={formData.jurusan}
                 onChange={(e) => setFormData({ ...formData, jurusan: e.target.value })}
               >
@@ -223,13 +260,13 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* Email */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Mail className="w-4 h-4 text-[#00BCD4]" /> Email
+                <Mail className="w-4 h-4 text-[#2563EB]" /> Email
               </label>
               <input 
                 required
                 type="email"
                 placeholder="email@example.com"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
@@ -238,13 +275,13 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* Telepon */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Phone className="w-4 h-4 text-[#00BCD4]" /> Telepon
+                <Phone className="w-4 h-4 text-[#2563EB]" /> Telepon
               </label>
               <input 
                 required
                 type="tel"
                 placeholder="08xxxxxxxxx"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.nohp}
                 onChange={(e) => setFormData({ ...formData, nohp: e.target.value })}
               />
@@ -253,11 +290,11 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* Status */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-[#00BCD4]" /> Status
+                <RefreshCw className="w-4 h-4 text-[#2563EB]" /> Status
               </label>
               <select 
                 required
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               >
@@ -271,10 +308,10 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* Guru Pembimbing */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <UserCheck className="w-4 h-4 text-[#00BCD4]" /> Guru Pembimbing (opsional)
+                <UserCheck className="w-4 h-4 text-[#2563EB]" /> Guru Pembimbing (opsional)
               </label>
               <select 
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
                 value={formData.guru_id}
                 onChange={(e) => setFormData({ ...formData, guru_id: e.target.value })}
                 disabled={optionsLoading}
@@ -289,10 +326,10 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* DUDI */}
             <div className="md:col-span-2 space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-[#00BCD4]" /> DUDI (opsional)
+                <Building2 className="w-4 h-4 text-[#2563EB]" /> DUDI (opsional)
               </label>
               <select 
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
                 value={formData.dudi_id}
                 onChange={(e) => setFormData({ ...formData, dudi_id: e.target.value })}
                 disabled={optionsLoading}
@@ -307,15 +344,63 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             {/* Alamat */}
             <div className="md:col-span-2 space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[#00BCD4]" /> Alamat
+                <MapPin className="w-4 h-4 text-[#2563EB]" /> Alamat
               </label>
               <textarea 
                 rows={3}
                 placeholder="Masukkan alamat lengkap"
-                className="w-full p-5 bg-slate-50 border border-slate-100 rounded-[24px] text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all resize-none"
+                className="w-full p-5 bg-slate-50 border border-slate-100 rounded-[24px] text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all resize-none"
                 value={formData.alamat}
                 onChange={(e) => setFormData({ ...formData, alamat: e.target.value })}
               />
+            </div>
+
+            {/* Password Fields */}
+            <div className="space-y-2 relative">
+                <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+                   <div className="w-4 h-4 text-[#2563EB] flex items-center justify-center font-bold">***</div> Password {siswa ? '(Opsional)' : <span className="text-red-500">*</span>}
+                </label>
+                <div className="relative">
+                    <input 
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder={siswa ? "Kosongkan jika tidak diubah" : "Masukkan password"}
+                        className="w-full h-12 px-5 pr-12 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    />
+                    <button
+                        type="button"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? <EyeOff className="w-5 h-5 truncate" /> : <Eye className="w-5 h-5 truncate" />}
+                    </button>
+                </div>
+            </div>
+
+            <div className="space-y-2 relative">
+                <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+                   <div className="w-4 h-4 text-[#2563EB] flex items-center justify-center font-bold">***</div> Konfirmasi Password
+                </label>
+                <div className="relative">
+                    <input 
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Ulangi password"
+                        className="w-full h-12 px-5 pr-12 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    />
+                    <button
+                        type="button"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                        {showConfirmPassword ? <EyeOff className="w-5 h-5 truncate" /> : <Eye className="w-5 h-5 truncate" />}
+                    </button>
+                </div>
+                {passwordError && (
+                    <p className="text-[11px] text-red-500 mt-1 font-bold pl-1">{passwordError}</p>
+                )}
             </div>
           </div>
         </form>
@@ -332,7 +417,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
           <button 
             onClick={handleSubmit}
             disabled={loading}
-            className="px-8 py-3 bg-[#00BCD4] text-white rounded-2xl font-bold text-[14px] hover:bg-[#00acc1] transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-50 flex items-center gap-2"
+            className="px-8 py-3 bg-[#2563EB] text-white rounded-2xl font-bold text-[14px] hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
           >
             {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
             {siswa ? 'Simpan Perubahan' : 'Tambah Siswa'}

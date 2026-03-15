@@ -9,7 +9,7 @@ import {
   Loader2,
   CheckCircle2
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -25,6 +25,24 @@ export default function BuatJurnalBaru() {
     kegiatan: '',
     kendala: ''
   })
+  const [checking, setChecking] = useState(true)
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const res = await api.siswa.getDashboard()
+        if (res.magang?.status !== 'aktif') {
+          alert('Anda tidak memiliki akses untuk membuat jurnal karena status magang belum aktif.')
+          router.push('/siswa/jurnal')
+        }
+      } catch (error) {
+        console.error('Failed to check status:', error)
+      } finally {
+        setChecking(false)
+      }
+    }
+    checkStatus()
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent, status: 'draft' | 'menunggu') => {
     e.preventDefault()
@@ -46,6 +64,15 @@ export default function BuatJurnalBaru() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (checking) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-4" />
+        <p className="text-slate-500 font-bold">Memverifikasi Status Magang...</p>
+      </div>
+    )
   }
 
   if (success) {

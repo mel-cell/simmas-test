@@ -71,7 +71,7 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
         onSuccess()
         onClose()
       } else {
-        alert("Gagal menyimpan data DUDI. Silakan cek konsol untuk detail error.")
+        alert(res.error || "Gagal menyimpan data DUDI. Silakan cek konsol untuk detail error.")
       }
     } catch (err: unknown) {
       console.error('Failed to save DUDI:', err)
@@ -97,8 +97,8 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
         {/* Header */}
         <div className="p-6 sm:p-8 border-b border-slate-50 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#00BCD4]/10 flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-[#00BCD4]" />
+            <div className="w-12 h-12 rounded-2xl bg-[#2563EB]/10 flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-[#2563EB]" />
             </div>
             <div>
               <h3 className="text-[20px] font-bold text-slate-800 leading-tight">
@@ -123,13 +123,13 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
             {/* Nama Perusahaan */}
             <div className="md:col-span-2 space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-[#00BCD4]" /> Nama Perusahaan
+                <Building2 className="w-4 h-4 text-[#2563EB]" /> Nama Perusahaan
               </label>
               <input 
                 required
                 type="text"
                 placeholder="Masukkan nama perusahaan"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.namaPerusahaan}
                 onChange={(e) => setFormData({ ...formData, namaPerusahaan: e.target.value })}
               />
@@ -138,13 +138,13 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
             {/* Penanggung Jawab */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <User className="w-4 h-4 text-[#00BCD4]" /> Penanggung Jawab
+                <User className="w-4 h-4 text-[#2563EB]" /> Penanggung Jawab
               </label>
               <input 
                 required
                 type="text"
                 placeholder="Nama pemimpin / pembimbing DUDI"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.penanggungJawab}
                 onChange={(e) => setFormData({ ...formData, penanggungJawab: e.target.value })}
               />
@@ -153,11 +153,11 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
             {/* Status */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-[#00BCD4]" /> Status Kerjasama
+                <RefreshCw className="w-4 h-4 text-[#2563EB]" /> Status Kerjasama
               </label>
               <select 
                 required
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all appearance-none"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all appearance-none"
                 value={formData.status ? 'aktif' : 'tidak-aktif'}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value === 'aktif' })}
               >
@@ -169,12 +169,12 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
             {/* Email */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Mail className="w-4 h-4 text-[#00BCD4]" /> Email (Opsional)
+                <Mail className="w-4 h-4 text-[#2563EB]" /> Email (Opsional)
               </label>
               <input 
                 type="email"
                 placeholder="email@perusahaan.com"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
@@ -183,13 +183,13 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
             {/* Telepon */}
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <Phone className="w-4 h-4 text-[#00BCD4]" /> No. Telepon Induk
+                <Phone className="w-4 h-4 text-[#2563EB]" /> No. Telepon Induk
               </label>
               <input 
                 required
                 type="tel"
                 placeholder="08xxxxxxxxx / 021xxxx"
-                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all"
+                className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-2xl text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                 value={formData.noTelp}
                 onChange={(e) => setFormData({ ...formData, noTelp: e.target.value })}
               />
@@ -198,13 +198,13 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
             {/* Alamat */}
             <div className="md:col-span-2 space-y-2">
               <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[#00BCD4]" /> Alamat Lengkap
+                <MapPin className="w-4 h-4 text-[#2563EB]" /> Alamat Lengkap
               </label>
               <textarea 
                 required
                 rows={3}
                 placeholder="Masukkan alamat lengkap lokasi DUDI"
-                className="w-full p-5 bg-slate-50 border border-slate-100 rounded-[24px] text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#00BCD4]/10 focus:border-[#00BCD4] transition-all resize-none"
+                className="w-full p-5 bg-slate-50 border border-slate-100 rounded-[24px] text-[14px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all resize-none"
                 value={formData.alamat}
                 onChange={(e) => setFormData({ ...formData, alamat: e.target.value })}
               />
@@ -224,7 +224,7 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
           <button 
             onClick={handleSubmit}
             disabled={loading}
-            className="px-8 py-3 bg-[#00BCD4] text-white rounded-2xl font-bold text-[14px] hover:bg-[#00acc1] transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-50 flex items-center gap-2"
+            className="px-8 py-3 bg-[#2563EB] text-white rounded-2xl font-bold text-[14px] hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
           >
             {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
             {dudi ? 'Simpan Perubahan' : 'Tambah Perusahaan'}

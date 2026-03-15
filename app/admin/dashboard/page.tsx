@@ -82,7 +82,7 @@ export default function AdminDashboard() {
         />
         <StatCard 
           loading={loading}
-          title="Siswa Magang" 
+          title="Aktif Magang" 
           value={stats?.siswaMagang || 0} 
           description="Sedang aktif menjalani magang" 
           icon={GraduationCap} 
@@ -150,14 +150,42 @@ export default function AdminDashboard() {
                           <div className="flex items-center gap-2">
                             <CalendarDays className="w-4 h-4 text-[#94A3B8]" />
                             <span className="text-[12px] font-medium text-[#64748B]">
-                              {format(new Date(item.startDate), 'dd MMM')} - {format(new Date(item.endDate), 'dd MMM yyyy')}
+                              {(() => {
+                                try {
+                                  const start = item.startDate ? new Date(item.startDate) : null;
+                                  const end = item.endDate ? new Date(item.endDate) : null;
+                                  const startStr = (start && !isNaN(start.getTime())) ? format(start, 'dd MMM') : '?';
+                                  const endStr = (end && !isNaN(end.getTime())) ? format(end, 'dd MMM yyyy') : '?';
+                                  return `${startStr} - ${endStr}`;
+                                  } catch {
+                                   return '? - ?';
+                                 }
+                               })()}
                             </span>
                           </div>
                         </td>
                         <td className="py-4 text-center">
-                          <span className="inline-flex px-3 py-1 bg-[#EFF6FF] text-[#2563EB] border border-[#DBEAFE] rounded-full text-[11px] font-bold tracking-wide">
-                            Aktif
-                          </span>
+                          {(() => {
+                            let style = "bg-[#EFF6FF] text-[#2563EB] border-[#DBEAFE]"; // Default: Aktif
+                            let label = item.status === 'aktif' ? 'Aktif' : item.status;
+
+                            if (item.status === 'menunggu') {
+                              style = "bg-[#FFF7ED] text-[#EA580C] border-[#FFEDD5]";
+                              label = "Menunggu";
+                            } else if (item.status === 'selesai') {
+                              style = "bg-[#F0FDF4] text-[#16A34A] border-[#DCFCE7]";
+                              label = "Selesai";
+                            } else if (item.status === 'dibatalkan') {
+                              style = "bg-[#FEF2F2] text-[#DC2626] border-[#FEE2E2]";
+                              label = "Dibatalkan";
+                            }
+
+                            return (
+                              <span className={`inline-flex px-3 py-1 rounded-full text-[11px] font-bold tracking-wide border capitalize ${style}`}>
+                                {item.status === 'aktif' ? 'Aktif Magang' : label}
+                              </span>
+                            );
+                          })()}
                         </td>
                       </tr>
                     ))
@@ -206,7 +234,7 @@ export default function AdminDashboard() {
                   let badgeStyle = "bg-[#EFF6FF] text-[#2563EB] border-[#DBEAFE]"
                   if (log.status === 'Disetujui') {
                     badgeStyle = "bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]"
-                  } else if (log.status === 'Ditolak') {
+                   } else if (log.status === 'Ditolak') {
                     badgeStyle = "bg-[#FEF2F2] text-[#DC2626] border-[#FECACA]"
                   }
                   
@@ -223,7 +251,16 @@ export default function AdminDashboard() {
                           <div className="flex items-center gap-1.5 mt-0.5">
                              <CalendarDays className="w-3.5 h-3.5 text-[#94A3B8]" />
                              <p className="text-[12px] font-medium text-[#94A3B8]">
-                               {format(new Date(log.tanggal), 'eee, dd MMM yyyy', { locale: id })}
+                               {(() => {
+                                 try {
+                                   const date = log.tanggal ? new Date(log.tanggal) : null;
+                                   return (date && !isNaN(date.getTime())) 
+                                     ? format(date, 'eee, dd MMM yyyy', { locale: id }) 
+                                     : '?';
+                                 } catch {
+                                   return '?';
+                                 }
+                               })()}
                              </p>
                           </div>
                           {log.kendala && (
@@ -299,7 +336,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="mt-6 pt-4 border-t border-[#F1F5F9] flex justify-between items-center">
-              <span className="text-[13px] font-medium text-[#64748B]">Total DUDI Partner</span>
+              <span className="text-[13px] font-medium text-[#64748B]">DUDI Aktif</span>
               <span className="text-[16px] font-extrabold text-[#0F172A]">{activeDudis.length}</span>
             </div>
           </div>

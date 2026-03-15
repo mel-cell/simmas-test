@@ -47,6 +47,7 @@ export type RecentMagang = {
   startDate: string
   endDate: string
   status: 'aktif' | 'selesai' | 'dibatalkan' | 'menunggu' | string
+  catatan?: string | null
 }
 
 export type RecentLogbook = {
@@ -76,7 +77,8 @@ export type SiswaData = {
   jurusan: string
   email: string
   nohp: string
-  status: 'magang' | 'selesai' | 'aktif' | 'non-aktif' | string
+  status: 'aktif' | 'non-aktif' | string // Status Akun
+  statusMagang: 'aktif' | 'selesai' | 'menunggu' | 'belum' | string // Status Magang
   pembimbing: string
   dudi: string
   alamat?: string
@@ -158,6 +160,7 @@ export interface SiswaInput {
   alamat?: string
   guru_id?: string | null
   dudi_id?: string | null
+  password?: string
 }
 
 export interface GuruInput {
@@ -168,6 +171,7 @@ export interface GuruInput {
   nohp: string
   status: string
   alamat?: string
+  password?: string
 }
 
 export interface DudiInput {

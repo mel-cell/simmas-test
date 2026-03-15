@@ -1,4 +1,6 @@
 'use client'
+// Modified for trigger recompile
+
 
 import { 
   LayoutDashboard, 
@@ -39,7 +41,7 @@ const adminNavItems = [
 const guruNavItems = [
   { title: 'Dashboard', subtitle: 'Ringkasan sistem', url: '/guru/dashboard', icon: LayoutDashboard },
   { title: 'Siswa Bimbingan', subtitle: 'Manajemen magang', url: '/guru/magang', icon: Users },
-  { title: 'Approval Jurnal', subtitle: 'Review laporan', url: '/guru/approval', icon: BookOpen },
+  { title: 'Approval Center', subtitle: 'Review & verifikasi', url: '/guru/approval', icon: BookOpen },
 ]
 
 const siswaNavItems = [

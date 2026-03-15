@@ -1,9 +1,10 @@
-import { supabase } from '@/lib/supabase'
+import { createClient as createServerClient } from '@/lib/supabaseServer'
 import { UserProfileData, UserInput } from '@/types/admin'
 import { logActivity } from './activityLogger'
 
 export const usersAdminService = {
   getAllUsers: async (filters?: { query?: string, role?: string }): Promise<UserProfileData[]> => {
+    const supabase = await createServerClient()
     const { data, error } = await supabase.rpc('get_all_users_admin')
 
     if (error) {
@@ -37,68 +38,78 @@ export const usersAdminService = {
     }))
   },
 
-  createUser: async (data: UserInput): Promise<boolean> => {
-    // If we use create_generic_user_bypassing_auth 
-    const { data: newUserId, error } = await supabase.rpc('create_generic_user_bypassing_auth', {
-      p_email: data.email,
-      p_password: data.password || 'SimmasApp123!',
-      p_nama: data.fullName,
-      p_role: data.role,
-      p_is_verified: data.isVerified
-    })
+  createUser: async (data: UserInput): Promise<{ success: boolean, error?: string }> => {
+    try {
+      const { data: newUserId, error } = await (await createServerClient()).rpc('create_generic_user_bypassing_auth', {
+        p_email: data.email.trim().toLowerCase(),
+        p_password: data.password || 'SimmasApp123!',
+        p_nama: data.fullName.trim(),
+        p_role: data.role.toUpperCase(),
+        p_is_verified: data.isVerified
+      })
 
-    if (error) {
-      console.error('Error creating user via RPC:', error)
-      return false
+      if (error) {
+        return { success: false, error: error.message }
+      }
+
+      if (newUserId) {
+        await logActivity('Create', 'PENGGUNA', newUserId, data)
+        return { success: true }
+      }
+      return { success: false, error: 'Gagal membuat user' }
+    } catch (error) {
+      console.error('Error in createUser:', error)
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message || 'Terjadi kesalahan sistem' }
     }
-    
-    await logActivity('Create', 'PENGGUNA', newUserId as string, data)
-    return true
   },
 
-  updateUser: async (id: string, data: Partial<UserInput>): Promise<boolean> => {
-    // Requires email, nama, role, isVerified since we don't have patch support on the RPC yet
-    // we assume the caller provides all fields that were not changed.
-    if (!data.email || !data.fullName || !data.role) {
-      console.error('Update User failed: Missing required fields', { 
-        email: !!data.email, 
-        fullName: !!data.fullName, 
-        role: !!data.role 
-      });
-      return false;
-    }
-    
-    // update password separately if needed. If user wants to update password, we'd need another RPC,
-    // but the UI currently doesn't allow editing password on update, let's assume it doesn't. Admin can edit name/role/email.
-    const { error } = await supabase.rpc('update_user_bypassing_auth', {
-      p_user_id: id,
-      p_email: data.email,
-      p_nama: data.fullName,
-      p_role: data.role,
-      p_is_verified: data.isVerified === undefined ? true : data.isVerified,
-      p_password: data.password || null
-    })
+  updateUser: async (id: string, data: Partial<UserInput>): Promise<{ success: boolean, error?: string }> => {
+    try {
+      const supabase = await createServerClient()
+      
+      // Get current data
+      const { data: current } = await supabase.from('profiles').select('*').eq('id', id).single()
+      if (!current) return { success: false, error: 'User tidak ditemukan' }
 
-    if (error) {
-      console.error('Error updating user via RPC:', error)
-      return false
+      const { error } = await supabase.rpc('update_user_bypassing_auth', {
+        p_user_id: id,
+        p_email: data.email?.trim().toLowerCase() || current.email,
+        p_nama: data.fullName?.trim() || current.full_name,
+        p_role: data.role?.toUpperCase() || (current.role as string).toUpperCase(),
+        p_is_verified: data.isVerified ?? true,
+        p_password: data.password || null
+      })
+
+      if (error) {
+        return { success: false, error: error.message }
+      }
+
+      await logActivity('Update', 'PENGGUNA', id, data)
+      return { success: true }
+    } catch (error) {
+      console.error('Error in updateUser:', error)
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message || 'Terjadi kesalahan sistem' }
     }
-    
-    await logActivity('Update', 'PENGGUNA', id, data)
-    return true
   },
 
-  deleteUser: async (id: string): Promise<boolean> => {
-    const { error } = await supabase.rpc('delete_user_bypassing_auth', {
-      p_user_id: id
-    })
+  deleteUser: async (id: string): Promise<{ success: boolean, error?: string }> => {
+    try {
+      const supabase = await createServerClient()
+      const { error } = await supabase.rpc('delete_user_bypassing_auth', {
+        p_user_id: id
+      })
 
-    if (error) {
-      console.error('Error deleting user:', error)
-      return false
+      if (!error) {
+        await logActivity('Delete', 'PENGGUNA', id, { id })
+        return { success: true }
+      }
+      return { success: false, error: error.message }
+    } catch (error) {
+      console.error('Error in deleteUser:', error)
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message }
     }
-    
-    await logActivity('Delete', 'PENGGUNA', id, { id })
-    return true
   }
 }

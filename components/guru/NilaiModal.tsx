@@ -58,7 +58,7 @@ export function NilaiModal({ isOpen, onClose, onConfirm, magang }: NilaiModalPro
             Input Nilai Akhir
           </DialogTitle>
           <DialogDescription className="text-slate-500 font-bold text-sm">
-            Berikan nilai akhir untuk <span className="text-[#00BCD4]">{magang?.siswa?.full_name}</span>
+            Berikan nilai akhir untuk <span className="text-[#2563EB]">{magang?.siswa?.full_name}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -72,7 +72,7 @@ export function NilaiModal({ isOpen, onClose, onConfirm, magang }: NilaiModalPro
                 placeholder="Masukkan nilai.."
                 value={nilai}
                 onChange={(e) => setNilai(e.target.value)}
-                className="h-14 bg-slate-50 border-slate-100 rounded-2xl text-xl font-black text-[#00BCD4] focus:bg-white transition-all text-center"
+                className="h-14 bg-slate-50 border-slate-100 rounded-2xl text-xl font-black text-[#2563EB] focus:bg-white transition-all text-center"
              />
           </div>
         </div>
@@ -88,7 +88,7 @@ export function NilaiModal({ isOpen, onClose, onConfirm, magang }: NilaiModalPro
           <Button 
             onClick={handleSubmit}
             disabled={loading}
-            className="rounded-2xl h-12 px-10 bg-[#00BCD4] hover:bg-[#00ACC1] text-white font-black shadow-lg shadow-cyan-500/20"
+            className="rounded-2xl h-12 px-10 bg-[#2563EB] hover:bg-[#00ACC1] text-white font-black shadow-lg shadow-blue-600/20"
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : 'Simpan Nilai'}
           </Button>

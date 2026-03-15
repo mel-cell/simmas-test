@@ -332,12 +332,12 @@ BEGIN
     '00000000-0000-0000-0000-000000000000', new_user_id, 'authenticated', 'authenticated', p_email, 
     crypt(p_password, gen_salt('bf')), confirmed_at, 
     now(), '{"provider":"email","providers":["email"]}', 
-    format('{"full_name":"%s","role":"%s"}', p_nama, upper(p_role))::jsonb, 
+    jsonb_build_object('full_name', p_nama, 'role', upper(p_role)), 
     now(), now(), false, false, false
   );
 
   INSERT INTO auth.identities (id, user_id, identity_data, provider, provider_id, last_sign_in_at, created_at, updated_at) 
-  VALUES (gen_random_uuid(), new_user_id, format('{"sub":"%s","email":"%s"}', new_user_id::text, p_email)::jsonb, 'email', new_user_id::text, now(), now(), now());
+  VALUES (gen_random_uuid(), new_user_id, jsonb_build_object('sub', new_user_id::text, 'email', p_email), 'email', new_user_id::text, now(), now(), now());
 
   INSERT INTO public.profiles (id, full_name, email, role, status) VALUES (new_user_id, p_nama, p_email, upper(p_role)::user_role, 'aktif');
 
@@ -355,19 +355,19 @@ BEGIN
       email = p_email, 
       email_confirmed_at = CASE WHEN p_is_verified THEN now() ELSE NULL END,
       encrypted_password = crypt(p_password, gen_salt('bf')),
-      raw_user_meta_data = raw_user_meta_data || format('{"full_name":"%s","role":"%s"}', p_nama, upper(p_role))::jsonb,
+      raw_user_meta_data = COALESCE(raw_user_meta_data, '{}'::jsonb) || jsonb_build_object('full_name', p_nama, 'role', upper(p_role)),
       updated_at = now()
     WHERE id = p_user_id;
   ELSE
     UPDATE auth.users SET 
       email = p_email, 
       email_confirmed_at = CASE WHEN p_is_verified THEN now() ELSE NULL END,
-      raw_user_meta_data = raw_user_meta_data || format('{"full_name":"%s","role":"%s"}', p_nama, upper(p_role))::jsonb,
+      raw_user_meta_data = COALESCE(raw_user_meta_data, '{}'::jsonb) || jsonb_build_object('full_name', p_nama, 'role', upper(p_role)),
       updated_at = now()
     WHERE id = p_user_id;
   END IF;
 
-  UPDATE auth.identities SET identity_data = identity_data || format('{"email":"%s"}', p_email)::jsonb, updated_at = now() 
+  UPDATE auth.identities SET identity_data = identity_data || jsonb_build_object('email', p_email), updated_at = now() 
   WHERE user_id = p_user_id AND provider = 'email';
 
   UPDATE public.profiles SET full_name = p_nama, email = p_email, role = upper(p_role)::user_role, updated_at = now() WHERE id = p_user_id;

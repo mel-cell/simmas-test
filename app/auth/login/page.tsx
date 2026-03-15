@@ -20,14 +20,33 @@ export default function LoginPage() {
     setError(null)
 
     try {
-      const { profile } = await authService.signIn({ email, password })
+      const { profile } = await authService.signIn({ 
+        email: email.trim().toLowerCase(), 
+        password: password 
+      })
 
       if (profile?.role === 'ADMIN') router.push('/admin')
       else if (profile?.role === 'GURU') router.push('/guru')
       else router.push('/siswa')
       
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Gagal login. Periksa email dan password Anda.'
+      console.error('Login error detail:', err)
+      const error = err as { message?: string; status?: number }
+      
+      let message = 'Gagal masuk. Silakan periksa kembali email dan password Anda.'
+      
+      if (error.message === 'Invalid login credentials') {
+        message = 'Email atau password salah. Silakan coba lagi.'
+      } else if (error.message?.includes('Email not confirmed')) {
+        message = 'Email Anda belum dikonfirmasi. Silakan cek inbox email Anda.'
+      } else if (error.status === 429) {
+        message = 'Terlalu banyak percobaan masuk. Silakan tunggu beberapa saat lagi.'
+      } else if (error.message?.includes('User not found')) {
+        message = 'Akun tidak ditemukan. Silakan hubungi admin sekolah.'
+      } else if (error.message) {
+        message = error.message
+      }
+      
       setError(message)
     } finally {
       setLoading(false)

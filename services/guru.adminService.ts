@@ -1,9 +1,10 @@
-import { supabase } from '@/lib/supabase'
+import { createClient as createServerClient } from '@/lib/supabaseServer'
 import { TeacherStats, GuruData, GuruInput } from '@/types/admin'
 import { logActivity } from './activityLogger'
 
 export const guruAdminService = {
   getTeacherStats: async (): Promise<TeacherStats> => {
+    const supabase = await createServerClient()
     // 1. Total Guru
     const { count: total } = await supabase
       .from('profiles')
@@ -33,7 +34,8 @@ export const guruAdminService = {
     }
   },
 
-  getAllGuru: async (filters?: { query?: string, status?: string }): Promise<GuruData[]> => {
+  getAllGuru: async (filters?: { query?: string, status?: string, mataPelajaran?: string }): Promise<GuruData[]> => {
+    const supabase = await createServerClient()
     let query = supabase
       .from('profiles')
       .select(`
@@ -55,6 +57,10 @@ export const guruAdminService = {
 
     if (filters?.status && filters.status !== 'semua') {
       query = query.eq('status', filters.status)
+    }
+
+    if (filters?.mataPelajaran && filters.mataPelajaran !== 'semua') {
+      query = query.eq('jurusan', filters.mataPelajaran)
     }
 
     const { data, error } = await query.order('full_name')
@@ -88,72 +94,104 @@ export const guruAdminService = {
     }))
   },
 
-  createGuru: async (data: GuruInput): Promise<boolean> => {
+  createGuru: async (data: GuruInput): Promise<{ success: boolean, error?: string }> => {
     try {
-      const dummyPassword = data.nip + '!SimmasG123'
+      const supabase = await createServerClient()
+      const finalPassword = data.password || (data.nip.trim() + '!SimmasG123')
+      const email = data.email.trim().toLowerCase()
       
       const { data: newUserId, error } = await supabase.rpc('create_guru_bypassing_auth', {
-        p_email: data.email,
-        p_password: dummyPassword,
-        p_nama: data.nama,
-        p_nip: data.nip,
-        p_nohp: data.nohp,
+        p_email: email,
+        p_password: finalPassword,
+        p_nama: data.nama.trim(),
+        p_nip: data.nip.trim(),
+        p_nohp: data.nohp.trim(),
         p_mata_pelajaran: data.mataPelajaran,
-        p_alamat: data.alamat || null,
+        p_alamat: data.alamat || '',
         p_status: data.status || 'aktif'
       })
 
       if (error) {
-        console.error('Error creating teacher via RPC:', error)
-        return false
+        console.error('Error in createGuru RPC:', error)
+        return { success: false, error: error.message }
       }
 
-      await logActivity('Create', 'GURU', newUserId as string, data)
-      return true
+      if (newUserId) {
+        await logActivity('Create', 'GURU', newUserId, data)
+        return { success: true }
+      }
+      return { success: false, error: 'Gagal membuat data guru' }
     } catch (error) {
       console.error('Error in createGuru:', error)
-      return false
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message }
     }
   },
 
-  updateGuru: async (id: string, data: Partial<GuruInput>): Promise<boolean> => {
-    const { error: pError } = await supabase
-      .from('profiles')
-      .update({
-        nomor_induk: data.nip,
-        full_name: data.nama,
-        email: data.email,
-        no_telp: data.nohp,
-        jurusan: data.mataPelajaran,
-        alamat: data.alamat,
-        status: data.status || 'aktif'
+  updateGuru: async (id: string, data: Partial<GuruInput>): Promise<{ success: boolean, error?: string }> => {
+    try {
+      const supabase = await createServerClient()
+      const email = data.email ? data.email.trim().toLowerCase() : undefined
+      
+      const { data: current } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id)
+        .single()
+      
+      if (!current) return { success: false, error: 'Guru tidak ditemukan' }
+
+      const { error: rpcError } = await supabase.rpc('update_user_bypassing_auth', {
+        p_user_id: id,
+        p_email: email || current.email,
+        p_nama: data.nama?.trim() || current.full_name,
+        p_role: 'GURU',
+        p_is_verified: true,
+        p_password: data.password || null
       })
-      .eq('id', id)
-      .eq('role', 'GURU')
 
-    if (pError) {
-      console.error('Error updating profile:', pError)
-      return false
+      if (rpcError) {
+        console.error('Error in updateGuru RPC:', rpcError)
+        return { success: false, error: rpcError.message }
+      }
+
+      const updateProfileData: Record<string, string | null | undefined> = {}
+      if (data.nip !== undefined) updateProfileData.nomor_induk = data.nip.trim()
+      if (data.nohp !== undefined) updateProfileData.no_telp = data.nohp.trim()
+      if (data.mataPelajaran !== undefined) updateProfileData.jurusan = data.mataPelajaran
+      if (data.alamat !== undefined) updateProfileData.alamat = data.alamat
+      if (data.status !== undefined) updateProfileData.status = data.status
+
+      if (Object.keys(updateProfileData).length > 0) {
+        await supabase.from('profiles').update(updateProfileData).eq('id', id)
+      }
+
+      await logActivity('Update', 'GURU', id, data)
+      return { success: true }
+    } catch (error) {
+      console.error('Error in updateGuru:', error)
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message }
     }
-    
-    await logActivity('Update', 'GURU', id, data)
-    return true
   },
 
-  deleteGuru: async (id: string): Promise<boolean> => {
-    // Also set null to guru_id in magang where necessary
-    await supabase.from('magang').update({ guru_id: null }).eq('guru_id', id)
-    
-    const { error } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', id)
-      .eq('role', 'GURU')
+  deleteGuru: async (id: string): Promise<{ success: boolean, error?: string }> => {
+    try {
+      const supabase = await createServerClient()
+      const { error } = await supabase.rpc('delete_user_bypassing_auth', {
+        p_user_id: id
+      })
 
-    if (!error) {
-      await logActivity('Delete', 'GURU', id, { id })
+      if (!error) {
+        await logActivity('Delete', 'GURU', id, { id })
+        return { success: true }
+      }
+      console.error('Error in deleteGuru RPC:', error)
+      return { success: false, error: error.message }
+    } catch (error) {
+      console.error('Error in deleteGuru:', error)
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message }
     }
-
-    return !error
   }
 }

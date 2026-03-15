@@ -23,6 +23,7 @@ import { id as localeId } from 'date-fns/locale'
 import Link from 'next/link'
 import { JournalModal } from '@/components/siswa/JournalModal'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 export default function SiswaDashboard() {
   const [data, setData] = useState<SiswaDashboardResponse | null>(null)
@@ -70,7 +71,7 @@ export default function SiswaDashboard() {
   return (
     <div className="flex flex-col gap-6 max-w-[1500px] mx-auto w-full px-4 md:px-8 pb-10">
       {/* Welcome Banner */}
-      <div className="bg-[#007AFF] rounded-2xl p-6 md:p-10 text-white shadow-lg relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center">
+      <div className="bg-[#2563EB] rounded-2xl p-6 md:p-10 text-white shadow-lg relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
         <div className="relative z-10 flex flex-col gap-1">
           <h2 className="text-2xl md:text-4xl font-black italic tracking-tighter">Selamat Datang, {userName}! 👋</h2>
@@ -155,7 +156,7 @@ export default function SiswaDashboard() {
             <div className="px-8 py-5 border-b border-slate-50 bg-white flex items-center justify-between">
               <h3 className="font-extrabold text-[#0F172A] flex items-center gap-3 tracking-tight">
                 <div className="bg-blue-100 p-2 rounded-lg">
-                  <Building2 className="w-5 h-5 text-[#00A3FF]" />
+                  <Building2 className="w-5 h-5 text-[#2563EB]" />
                 </div>
                 Informasi Magang
               </h3>
@@ -232,23 +233,23 @@ export default function SiswaDashboard() {
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm flex flex-col">
             <div className="px-8 py-5 border-b border-slate-50 bg-white flex justify-between items-center">
               <h3 className="font-extrabold text-[#0F172A] flex items-center gap-3 tracking-tight">
-                <div className="bg-cyan-100 p-2 rounded-lg">
-                  <BookOpen className="w-5 h-5 text-cyan-600" />
+                <div className="bg-blue-100 p-2 rounded-lg">
+                  <BookOpen className="w-5 h-5 text-blue-700" />
                 </div>
                 Aktivitas Jurnal Terbaru
               </h3>
-              <Link href="/siswa/jurnal" className="text-xs font-black text-cyan-600 hover:text-cyan-700 tracking-widest uppercase flex items-center gap-1.5 group">
+              <Link href="/siswa/jurnal" className="text-xs font-black text-blue-700 hover:text-blue-700 tracking-widest uppercase flex items-center gap-1.5 group">
                 Lihat Semua <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
             
             <div className="flex flex-col p-8 gap-6">
               {recentJournals.length > 0 ? recentJournals.map((journal) => (
-                <div key={journal.id} className="group border border-slate-50 hover:border-cyan-100 bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl hover:shadow-cyan-500/5 transition-all flex flex-col gap-4 relative">
+                <div key={journal.id} className="group border border-slate-50 hover:border-blue-100 bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl hover:shadow-blue-600/5 transition-all flex flex-col gap-4 relative">
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex flex-col gap-3 flex-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black text-cyan-600 uppercase tracking-widest bg-cyan-50 px-3 py-1 rounded-lg border border-cyan-100/50">
+                        <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-lg border border-blue-100/50">
                           {format(new Date(journal.tgl), 'd MMMM yyyy', { locale: localeId })}
                         </span>
                         <span className={`text-[9px] font-black px-3 py-1 rounded-lg border uppercase tracking-[2px] ${
@@ -290,7 +291,7 @@ export default function SiswaDashboard() {
                   </div>
                   <Button 
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-[#007AFF] hover:bg-black text-white font-black tracking-tighter px-8 py-3.5 rounded-2xl transition-all flex items-center gap-3 shadow-lg shadow-blue-500/20 active:scale-95 text-sm uppercase h-auto"
+                    className="bg-[#2563EB] hover:bg-black text-white font-black tracking-tighter px-8 py-3.5 rounded-2xl transition-all flex items-center gap-3 shadow-lg shadow-blue-500/20 active:scale-95 text-sm uppercase h-auto"
                   >
                     <Plus className="w-5 h-5" />
                     Buat Jurnal Pertama
@@ -307,7 +308,7 @@ export default function SiswaDashboard() {
             <div className="px-8 py-5 border-b border-slate-50 bg-white">
               <h3 className="font-extrabold text-[#0F172A] flex items-center gap-3 tracking-tight">
                 <div className="bg-blue-50 p-2 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-[#00A3FF]" />
+                <TrendingUp className="w-5 h-5 text-[#2563EB]" />
                 </div>
                 Aksi Cepat
               </h3>
@@ -315,14 +316,21 @@ export default function SiswaDashboard() {
             
             <div className="p-8 flex flex-col gap-4">
               <Button 
-                onClick={() => setIsModalOpen(true)}
-                className="group w-full flex items-center justify-between bg-[#00A3FF] hover:bg-black text-white font-black px-6 py-4 rounded-2xl transition-all shadow-xl shadow-blue-500/10 active:scale-[0.98] text-sm uppercase tracking-tighter h-auto border-none"
+                onClick={() => {
+                  if (magang?.status === 'aktif') {
+                    setIsModalOpen(true)
+                  } else {
+                    toast.error('Anda belum memiliki program magang yang aktif.')
+                  }
+                }}
+                disabled={magang?.status !== 'aktif'}
+                className="group w-full flex items-center justify-between bg-[#2563EB] hover:bg-black text-white font-black px-6 py-4 rounded-2xl transition-all shadow-xl shadow-blue-500/10 active:scale-[0.98] text-sm uppercase tracking-tighter h-auto border-none disabled:opacity-50 disabled:bg-slate-300"
               >
                 <div className="flex items-center gap-3">
                   <Plus className="w-5 h-5" />
-                  Buat Jurnal Baru
+                  {magang?.status === 'aktif' ? 'Buat Jurnal Baru' : 'Belum Bisa Buat Jurnal'}
                 </div>
-                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                {magang?.status === 'aktif' && <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />}
               </Button>
               <Link href="/siswa/jurnal" className="group w-full flex items-center justify-between bg-white hover:bg-slate-50 text-[#0F172A] font-bold px-6 py-4 rounded-2xl transition-all border border-slate-100 shadow-sm active:scale-[0.98] text-sm tracking-tight">
                 <div className="flex items-center gap-3">
@@ -349,6 +357,7 @@ export default function SiswaDashboard() {
       <JournalModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+        magangInfo={magang}
         onSuccess={() => {
           // Refresh data
           async function refresh() {

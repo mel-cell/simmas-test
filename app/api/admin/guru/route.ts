@@ -5,11 +5,12 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('query') || ''
   const status = searchParams.get('status') || 'semua'
+  const mataPelajaran = searchParams.get('mataPelajaran') || 'semua'
 
   try {
     const [stats, teachers] = await Promise.all([
       guruAdminService.getTeacherStats(),
-      guruAdminService.getAllGuru({ query, status })
+      guruAdminService.getAllGuru({ query, status, mataPelajaran })
     ])
 
     return NextResponse.json({
@@ -28,11 +29,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const success = await guruAdminService.createGuru(body)
-    return NextResponse.json({ success })
+    const result = await guruAdminService.createGuru(body)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error creating guru:', error)
-    return NextResponse.json({ error: 'Gagal membuat data guru' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal membuat data guru' }, { status: 500 })
   }
 }
 
@@ -40,11 +41,11 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json()
     const { id, ...data } = body
-    const success = await guruAdminService.updateGuru(id, data)
-    return NextResponse.json({ success })
+    const result = await guruAdminService.updateGuru(id, data)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error updating guru:', error)
-    return NextResponse.json({ error: 'Gagal memperbarui data guru' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal memperbarui data guru' }, { status: 500 })
   }
 }
 
@@ -52,10 +53,10 @@ export async function DELETE(request: Request) {
   try {
     const body = await request.json()
     const { id } = body
-    const success = await guruAdminService.deleteGuru(id)
-    return NextResponse.json({ success })
+    const result = await guruAdminService.deleteGuru(id)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error deleting guru:', error)
-    return NextResponse.json({ error: 'Gagal menghapus data guru' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal menghapus data guru' }, { status: 500 })
   }
 }

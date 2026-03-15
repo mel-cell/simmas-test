@@ -71,7 +71,7 @@ export function JournalApprovalModal({ isOpen, onClose, onAction, journal }: Jou
       <DialogContent className="sm:max-w-3xl bg-white rounded-[24px] p-0 overflow-hidden border-none shadow-2xl font-sans">
         {/* Header with Icon */}
         <DialogHeader className="p-8 pb-5 flex flex-row items-center gap-4 relative">
-          <div className="w-12 h-12 rounded-xl bg-[#00BCD4] flex items-center justify-center shrink-0 shadow-lg shadow-cyan-500/20">
+          <div className="w-12 h-12 rounded-xl bg-[#2563EB] flex items-center justify-center shrink-0 shadow-lg shadow-blue-600/20">
              <FileText className="w-6 h-6 text-white" />
           </div>
           <div className="flex flex-col gap-0.5">
@@ -96,11 +96,11 @@ export function JournalApprovalModal({ isOpen, onClose, onAction, journal }: Jou
               {/* Left Side: Profile */}
               <div className="flex flex-col gap-4 flex-1">
                  <div className="flex items-center gap-3">
-                    <User className="w-4 h-4 text-[#00BCD4]" />
+                    <User className="w-4 h-4 text-[#2563EB]" />
                     <h3 className="text-[14px] font-black text-slate-800 uppercase tracking-tight">Informasi Siswa</h3>
                  </div>
                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-2xl bg-[#00BCD4] flex items-center justify-center overflow-hidden shadow-inner">
+                    <div className="w-16 h-16 rounded-2xl bg-[#2563EB] flex items-center justify-center overflow-hidden shadow-inner">
                        <User className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex flex-col">
@@ -124,7 +124,7 @@ export function JournalApprovalModal({ isOpen, onClose, onAction, journal }: Jou
                     <span className="text-[16px] font-black text-slate-800 leading-tight">{journal?.dudi?.nama_perusahaan}</span>
                     <span className="text-[12px] font-medium text-slate-400 leading-relaxed max-w-[200px]">{journal?.dudi?.alamat}</span>
                     <div className="mt-2 flex flex-col">
-                       <span className="text-[11px] font-black text-[#00BCD4] uppercase">PIC: {journal?.dudi?.pic || 'Maya Sari'}</span>
+                       <span className="text-[11px] font-black text-[#2563EB] uppercase">PIC: {journal?.dudi?.pic || 'Maya Sari'}</span>
                     </div>
                  </div>
               </div>

@@ -32,6 +32,8 @@ export default function JurnalSiswa() {
   const [statusFilter] = useState('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingJournal, setEditingJournal] = useState<SiswaJournal | null>(null)
+  const [magangStatus, setMagangStatus] = useState<string | null>(null)
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true)
 
   const fetchJournals = async () => {
     try {
@@ -46,7 +48,23 @@ export default function JurnalSiswa() {
   }
 
   useEffect(() => {
-    fetchJournals()
+    const initPage = async () => {
+      try {
+        setIsCheckingStatus(true)
+        const [journalsRes, dashboardRes] = await Promise.all([
+          api.siswa.getAllJournals(),
+          api.siswa.getDashboard()
+        ])
+        setJournals(journalsRes.journals)
+        setMagangStatus(dashboardRes.magang?.status || null)
+      } catch (error) {
+        console.error('Failed to initialize journal page:', error)
+      } finally {
+        setIsCheckingStatus(false)
+        setLoading(false)
+      }
+    }
+    initPage()
   }, [])
 
   const handleEdit = (journal: SiswaJournal) => {
@@ -85,7 +103,14 @@ export default function JurnalSiswa() {
     ditolak: journals.filter(j => j.status === 'ditolak').length
   }
 
-  const hasJournalToday = journals.some(j => isToday(new Date(j.tgl)))
+  const hasJournalToday = journals.some(j => {
+    try {
+      const date = j.tgl ? new Date(j.tgl) : null;
+      return date && !isNaN(date.getTime()) && isToday(date);
+    } catch {
+      return false;
+    }
+  })
 
   return (
     <div className="flex flex-col gap-6 max-w-[1600px] mx-auto w-full pb-10 px-4 md:px-8">
@@ -93,34 +118,47 @@ export default function JurnalSiswa() {
       <div className="flex items-center justify-between mt-4">
         <h1 className="text-3xl font-black text-[#1E293B] tracking-tight">Jurnal Harian Magang</h1>
         <Button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-[#00BCD4] hover:bg-[#00ACC1] text-white font-bold py-2 px-6 rounded-xl transition-all flex items-center gap-2 shadow-sm active:scale-95 text-sm h-11"
+          onClick={() => {
+            if (magangStatus !== 'aktif') {
+              alert('Anda belum bisa membuat jurnal karena status magang belum aktif.')
+              return
+            }
+            setIsModalOpen(true)
+          }}
+          disabled={magangStatus !== 'aktif' || isCheckingStatus}
+          className={`${magangStatus === 'aktif' ? 'bg-[#2563EB] hover:bg-[#00ACC1]' : 'bg-slate-300 cursor-not-allowed'} text-white font-bold py-2 px-6 rounded-xl transition-all flex items-center gap-2 shadow-sm active:scale-95 text-sm h-11`}
         >
           <Plus className="w-5 h-5" />
           Tambah Jurnal
         </Button>
       </div>
 
-      {/* Today's Alert Banner */}
-      {!hasJournalToday && (
-        <div className="bg-[#FFF9E7] border border-[#FFECB3] rounded-xl p-4 flex items-center justify-between gap-4 shadow-sm">
+      {/* Alert Banner Section */}
+      {(magangStatus !== 'aktif' || !hasJournalToday) && !loading && (
+        <div className={`rounded-xl p-4 flex items-center justify-between gap-4 shadow-sm ${magangStatus === 'aktif' ? 'bg-[#FFF9E7] border border-[#FFECB3]' : 'bg-red-50 border border-red-100'}`}>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#FEEBC8] rounded-xl flex items-center justify-center">
-              <FileText className="w-6 h-6 text-[#DD6B20]" />
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${magangStatus === 'aktif' ? 'bg-[#FEEBC8]' : 'bg-red-100'}`}>
+              <FileText className={`w-6 h-6 ${magangStatus === 'aktif' ? 'text-[#DD6B20]' : 'text-red-500'}`} />
             </div>
             <div>
-              <h3 className="text-[15px] font-bold text-[#744210]">Jangan Lupa Jurnal Hari Ini!</h3>
-              <p className="text-[#975A16] font-medium text-sm mt-0.5">
-                Anda belum membuat jurnal untuk hari ini. Dokumentasikan kegiatan magang Anda sekarang.
+              <h3 className={`text-[15px] font-bold ${magangStatus === 'aktif' ? 'text-[#744210]' : 'text-red-800'}`}>
+                {magangStatus === 'aktif' ? 'Jangan Lupa Jurnal Hari Ini!' : 'Akses Jurnal Terbatas'}
+              </h3>
+              <p className={`${magangStatus === 'aktif' ? 'text-[#975A16]' : 'text-red-600'} font-medium text-sm mt-0.5`}>
+                {magangStatus === 'aktif' 
+                  ? 'Anda belum membuat jurnal untuk hari ini. Dokumentasikan kegiatan magang Anda sekarang.'
+                  : 'Anda belum bisa membuat laporan harian karena penempatan magang Anda belum aktif atau masih dalam proses persetujuan.'}
               </p>
             </div>
           </div>
-          <Button 
-            onClick={() => setIsModalOpen(true)}
-            className="bg-[#E67E22] hover:bg-[#D35400] text-white font-bold py-2 px-6 rounded-lg transition-all text-sm h-10 active:scale-95"
-          >
-            Buat Sekarang
-          </Button>
+          {magangStatus === 'aktif' && (
+            <Button 
+              onClick={() => setIsModalOpen(true)}
+              className="bg-[#E67E22] hover:bg-[#D35400] text-white font-bold py-2 px-6 rounded-lg transition-all text-sm h-10 active:scale-95"
+            >
+              Buat Sekarang
+            </Button>
+          )}
         </div>
       )}
 
@@ -135,7 +173,7 @@ export default function JurnalSiswa() {
           <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-slate-500">{item.label}</span>
-              <div className={`text-${item.color === 'cyan' ? '[#00BCD4]' : item.color === 'blue-dark' ? '[#2B6CB0]' : item.color === 'red' ? '[#E53E3E]' : '[#3182CE]'}`}>
+              <div className={`text-${item.color === 'cyan' ? '[#2563EB]' : item.color === 'blue-dark' ? '[#2B6CB0]' : item.color === 'red' ? '[#E53E3E]' : '[#3182CE]'}`}>
                 <item.icon className="w-5 h-5" />
               </div>
             </div>
@@ -163,7 +201,7 @@ export default function JurnalSiswa() {
                 <input 
                   type="text"
                   placeholder="Cari kegiatan atau kendala..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 focus:bg-white focus:ring-4 focus:ring-[#00BCD4]/5 focus:border-[#00BCD4]/20 transition-all outline-none"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 focus:bg-white focus:ring-4 focus:ring-[#2563EB]/5 focus:border-[#2563EB]/20 transition-all outline-none"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -214,10 +252,28 @@ export default function JurnalSiswa() {
                     <td className="px-6 py-5">
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-slate-700">
-                          {format(new Date(journal.tgl), 'EEEE', { locale: localeId })}
+                          {(() => {
+                            try {
+                              const date = journal.tgl ? new Date(journal.tgl) : null;
+                              return (date && !isNaN(date.getTime())) 
+                                ? format(date, 'EEEE', { locale: localeId }) 
+                                : '?';
+                            } catch (e) {
+                              return '?';
+                            }
+                          })()}
                         </span>
                         <span className="text-[11px] font-medium text-slate-400">
-                          {format(new Date(journal.tgl), 'd MMM yyyy', { locale: localeId })}
+                          {(() => {
+                            try {
+                              const date = journal.tgl ? new Date(journal.tgl) : null;
+                              return (date && !isNaN(date.getTime())) 
+                                ? format(date, 'd MMM yyyy', { locale: localeId }) 
+                                : '?';
+                            } catch (e) {
+                              return '?';
+                            }
+                          })()}
                         </span>
                       </div>
                     </td>
@@ -253,7 +309,7 @@ export default function JurnalSiswa() {
                     </td>
                     <td className="px-6 py-5 text-right">
                        <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-[#00BCD4]">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-[#2563EB]">
                             <Eye className="w-4 h-4" />
                           </Button>
                           {journal.status !== 'disetujui' && (
@@ -306,7 +362,7 @@ export default function JurnalSiswa() {
               <Button disabled variant="ghost" size="icon" className="rounded-lg border border-slate-100 h-9 w-9">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <Button className="h-9 w-9 rounded-lg bg-[#00BCD4] text-white font-bold text-xs p-0 border-none">1</Button>
+              <Button className="h-9 w-9 rounded-lg bg-[#2563EB] text-white font-bold text-xs p-0 border-none">1</Button>
               <Button disabled variant="ghost" size="icon" className="rounded-lg border border-slate-100 h-9 w-9">
                 <ChevronRight className="w-4 h-4" />
               </Button>

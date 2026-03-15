@@ -6,11 +6,12 @@ export async function GET(request: Request) {
   const query = searchParams.get('query') || ''
   const status = searchParams.get('status') || 'semua'
   const kelas = searchParams.get('kelas') || 'semua'
+  const jurusan = searchParams.get('jurusan') || 'semua'
 
   try {
     const [stats, students] = await Promise.all([
       siswaAdminService.getStudentStats(),
-      siswaAdminService.getAllSiswa({ query, status, kelas })
+      siswaAdminService.getAllSiswa({ query, status, kelas, jurusan })
     ])
 
     return NextResponse.json({
@@ -29,11 +30,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const success = await siswaAdminService.createSiswa(body)
-    return NextResponse.json({ success })
+    const result = await siswaAdminService.createSiswa(body)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error creating student:', error)
-    return NextResponse.json({ error: 'Gagal membuat data siswa' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal membuat data siswa' }, { status: 500 })
   }
 }
 
@@ -41,11 +42,11 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json()
     const { id, ...data } = body
-    const success = await siswaAdminService.updateSiswa(id, data)
-    return NextResponse.json({ success })
+    const result = await siswaAdminService.updateSiswa(id, data)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error updating student:', error)
-    return NextResponse.json({ error: 'Gagal memperbarui data siswa' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal memperbarui data siswa' }, { status: 500 })
   }
 }
 
@@ -53,11 +54,10 @@ export async function DELETE(request: Request) {
   try {
     const body = await request.json()
     const { id } = body
-    const success = await siswaAdminService.deleteSiswa(id)
-    return NextResponse.json({ success })
+    const result = await siswaAdminService.deleteSiswa(id)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error deleting student:', error)
-
-    return NextResponse.json({ error: 'Gagal menghapus data siswa' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Gagal menghapus data siswa' }, { status: 500 })
   }
 }

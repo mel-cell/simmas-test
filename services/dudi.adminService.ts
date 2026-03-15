@@ -1,9 +1,10 @@
-import { supabase } from '@/lib/supabase'
+import { createClient as createServerClient } from '@/lib/supabaseServer'
 import { DudiStats, ActiveDudi, DudiInput } from '@/types/admin'
 import { logActivity } from './activityLogger'
 
 export const dudiAdminService = {
   getDudiStats: async (): Promise<DudiStats> => {
+    const supabase = await createServerClient()
     // 1. Total DUDI
     const { count: total } = await supabase
       .from('dudi')
@@ -33,6 +34,7 @@ export const dudiAdminService = {
   },
 
   getAllDudi: async (filters?: { query?: string, status?: string }): Promise<ActiveDudi[]> => {
+    const supabase = await createServerClient()
     let query = supabase
       .from('dudi')
       .select(`
@@ -84,8 +86,9 @@ export const dudiAdminService = {
     }))
   },
 
-  createDudi: async (data: DudiInput): Promise<boolean> => {
+  createDudi: async (data: DudiInput): Promise<{ success: boolean, error?: string }> => {
     try {
+      const supabase = await createServerClient()
       const { data: newDudi, error } = await supabase
         .from('dudi')
         .insert({
@@ -101,19 +104,21 @@ export const dudiAdminService = {
 
       if (error) {
         console.error('Error creating DUDI:', error)
-        return false
+        return { success: false, error: error.message }
       }
 
       await logActivity('Create', 'DUDI', newDudi?.id, data)
-      return true
+      return { success: true }
     } catch (error) {
       console.error('Error in createDudi:', error)
-      return false
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message }
     }
   },
 
-  updateDudi: async (id: string, data: Partial<DudiInput>): Promise<boolean> => {
+  updateDudi: async (id: string, data: Partial<DudiInput>): Promise<{ success: boolean, error?: string }> => {
     try {
+      const supabase = await createServerClient()
       const updateData: Record<string, unknown> = {}
       if (data.namaPerusahaan !== undefined) updateData.nama_perusahaan = data.namaPerusahaan
       if (data.alamat !== undefined) updateData.alamat = data.alamat
@@ -129,24 +134,21 @@ export const dudiAdminService = {
 
       if (error) {
         console.error('Error updating DUDI:', error)
-        return false
+        return { success: false, error: error.message }
       }
       
       await logActivity('Update', 'DUDI', id, updateData)
-      return true
+      return { success: true }
     } catch (error) {
       console.error('Error in updateDudi:', error)
-      return false
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message }
     }
   },
 
-  deleteDudi: async (id: string): Promise<boolean> => {
+  deleteDudi: async (id: string): Promise<{ success: boolean, error?: string }> => {
     try {
-      // the foreign key might be ON DELETE CASCADE for magang or we might need to handle it.
-      // Looking at the SQL, it's ON DELETE CASCADE for dudi_id in magang.
-      // So deleting DUDI will delete the magang records associated with it. Careful!
-      // But typically we should just delete the dudi. 
-
+      const supabase = await createServerClient()
       const { error } = await supabase
         .from('dudi')
         .delete()
@@ -154,14 +156,15 @@ export const dudiAdminService = {
 
       if (error) {
         console.error('Error deleting DUDI:', error)
-        return false
+        return { success: false, error: error.message }
       }
       
       await logActivity('Delete', 'DUDI', id, { id })
-      return true
+      return { success: true }
     } catch(error) {
       console.error('Error in deleteDudi:', error)
-      return false
+      const message = error instanceof Error ? error.message : String(error)
+      return { success: false, error: message }
     }
   }
 }
