@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { 
   Calendar as CalendarIcon, 
@@ -46,6 +47,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
   const [description, setDescription] = useState('')
   const [problems, setProblems] = useState('')
   const [file, setFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   
   const isEdit = !!journal
@@ -56,16 +58,26 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
         setDate(journal.tgl)
         setDescription(journal.kegiatan)
         setProblems(journal.kendala || '')
+        setPreviewUrl(journal.foto_url || null)
         setError(null)
       } else {
         setDate(new Date().toISOString().split('T')[0])
         setDescription('')
         setProblems('')
         setFile(null)
+        setPreviewUrl(null)
         setError(null)
       }
     }
   }, [isOpen, journal])
+
+  useEffect(() => {
+    if (file) {
+      const url = URL.createObjectURL(file)
+      setPreviewUrl(url)
+      return () => URL.revokeObjectURL(url)
+    }
+  }, [file])
 
   const isDescriptionValid = description.length >= 50
   const isFormValid = isDescriptionValid && date !== ''
@@ -82,6 +94,10 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
         const uploadedUrl = await uploadService.uploadFile(file, 'logbooks')
         if (uploadedUrl) {
           fotoUrl = uploadedUrl
+        } else {
+          toast.error('Gagal mengunggah foto. Pastikan bucket "logbooks" sudah dibuat & ukuran file < 5MB.')
+          setLoading(false)
+          return
         }
       }
 
@@ -241,7 +257,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
              <h3 className="text-sm font-medium text-slate-800 uppercase tracking-widest">Dokumentasi Pendukung</h3>
              <div className="flex flex-col gap-2 text-center">
                 <div 
-                   className={`relative border-2 border-dashed rounded-3xl p-8 flex flex-col items-center gap-4 transition-all ${file ? 'bg-green-50/30 border-green-200' : 'bg-slate-50 border-slate-100 hover:border-[#2563EB]/30 hover:bg-[#2563EB]/5'}`}
+                   className={`relative border-2 border-dashed rounded-3xl p-8 flex flex-col items-center gap-4 transition-all ${previewUrl ? 'bg-green-50/30 border-green-200' : 'bg-slate-50 border-slate-100 hover:border-[#2563EB]/30 hover:bg-[#2563EB]/5'}`}
                 >
                    <input 
                      type="file" 
@@ -249,18 +265,36 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
                      onChange={(e) => setFile(e.target.files?.[0] || null)}
                      accept="image/*,.pdf,.doc,.docx"
                    />
-                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm ${file ? 'bg-green-100 text-green-600' : 'bg-white text-slate-400'}`}>
-                      {file ? <CheckCircle2 className="w-8 h-8" /> : <Upload className="w-8 h-8" />}
-                   </div>
+                   
+                   {previewUrl && (previewUrl.includes('http') || previewUrl?.startsWith('blob:')) ? (
+                     <div className="relative w-full max-w-[240px] aspect-video rounded-2xl overflow-hidden shadow-md border-4 border-white">
+                        <Image 
+                          src={previewUrl} 
+                          alt="Preview" 
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
+                        <div className="absolute top-2 right-2 bg-green-500 text-white p-1 rounded-full z-10">
+                           <CheckCircle2 className="w-4 h-4" />
+                        </div>
+                     </div>
+                   ) : (
+                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm ${previewUrl ? 'bg-green-100 text-green-600' : 'bg-white text-slate-400'}`}>
+                        <Upload className="w-8 h-8" />
+                     </div>
+                   )}
+
                    <div className="flex flex-col gap-1">
                       <p className="text-sm font-medium text-slate-700">
-                        {file ? file.name : 'Pilih file dokumentasi'}
+                        {file ? file.name : (journal?.foto_url ? 'Dokumentasi terupload' : 'Pilih file dokumentasi')}
                       </p>
                       <p className="text-xs font-medium text-slate-400">
-                        PDF, DOC, DOCX, JPG, PNG (Max 5MB)
+                        {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : 'PDF, DOC, DOCX, JPG, PNG (Max 5MB)'}
                       </p>
                    </div>
-                   {!file && (
+                   
+                   {!file && !journal?.foto_url && (
                      <Button type="button" className="rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-medium h-10 px-8 transition-all text-sm shadow-md shadow-blue-500/10">
                         Browse File
                      </Button>

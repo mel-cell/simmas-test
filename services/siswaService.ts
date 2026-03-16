@@ -80,7 +80,8 @@ export const siswaService = {
             kegiatan: l.kegiatan,
             status: l.status === 'pending' ? 'menunggu' : (l.status === 'approved' ? 'disetujui' : (l.status === 'rejected' ? 'ditolak' : l.status)),
             catatan_guru: l.catatan_guru,
-            kendala: l.kendala
+            kendala: l.kendala,
+            foto_url: l.gambar_url
           })) as Logbook[]
       }
     }
@@ -118,7 +119,8 @@ export const siswaService = {
       kegiatan: l.kegiatan,
       status: l.status === 'pending' ? 'menunggu' : (l.status === 'approved' ? 'disetujui' : (l.status === 'rejected' ? 'ditolak' : l.status)),
       catatan_guru: l.catatan_guru,
-      kendala: l.kendala
+      kendala: l.kendala,
+      foto_url: l.gambar_url
     })) as Logbook[]
   },
 
@@ -143,7 +145,8 @@ export const siswaService = {
     return {
       ...data,
       tgl: data.tanggal,
-      status: data.status === 'pending' ? 'menunggu' : (data.status === 'approved' ? 'disetujui' : (data.status === 'rejected' ? 'ditolak' : data.status))
+      status: data.status === 'pending' ? 'menunggu' : (data.status === 'approved' ? 'disetujui' : (data.status === 'rejected' ? 'ditolak' : data.status)),
+      foto_url: data.gambar_url
     }
   },
 

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { 
   Plus, 
   Search,
@@ -278,15 +279,27 @@ export default function JurnalSiswa() {
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="flex flex-col gap-1">
-                        <p className="text-[13px] font-medium text-slate-700 leading-relaxed max-w-md">
-                          {journal.kegiatan}
-                        </p>
-                        {journal.kendala && (
-                          <span className="text-[11px] font-medium text-red-500 italic">
-                             Kendala: {journal.kendala}
-                          </span>
+                      <div className="flex gap-4">
+                        {journal.foto_url && (
+                          <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-sm shrink-0 border border-slate-100 group/img">
+                             <Image 
+                               src={journal.foto_url} 
+                               alt="Dokumentasi" 
+                               fill 
+                               className="object-cover group-hover/img:scale-110 transition-all cursor-zoom-in"
+                             />
+                          </div>
                         )}
+                        <div className="flex flex-col gap-1">
+                          <p className="text-[13px] font-medium text-slate-700 leading-relaxed max-w-md line-clamp-3">
+                            {journal.kegiatan}
+                          </p>
+                          {journal.kendala && (
+                            <span className="text-[11px] font-medium text-red-500 italic">
+                               Kendala: {journal.kendala}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-5 text-center">
