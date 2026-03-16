@@ -25,7 +25,7 @@ export function DeleteConfirmModal({ isOpen, onClose, onConfirm, title, message,
           <div className="w-16 h-16 rounded-3xl bg-red-50 flex items-center justify-center mb-6">
             <AlertTriangle className="w-8 h-8 text-red-500" />
           </div>
-          <h3 className="text-[20px] font-bold text-slate-800 mb-2">{title}</h3>
+          <h3 className="text-[20px] font-medium text-slate-800 mb-2">{title}</h3>
           <p className="text-[14px] text-slate-500 font-medium leading-relaxed">
             {message}
           </p>
@@ -33,14 +33,14 @@ export function DeleteConfirmModal({ isOpen, onClose, onConfirm, title, message,
         <div className="p-6 bg-slate-50/50 border-t border-slate-50 flex items-center gap-3">
           <button 
              onClick={onClose}
-            className="flex-1 px-6 py-3 bg-white text-slate-600 rounded-2xl font-bold text-[14px] hover:bg-slate-100 transition-all border border-slate-200"
+            className="flex-1 px-6 py-3 bg-white text-slate-600 rounded-2xl font-medium text-[14px] hover:bg-slate-100 transition-all border border-slate-200"
           >
             Batal
           </button>
           <button 
              onClick={onConfirm}
             disabled={loading}
-            className="flex-1 px-6 py-3 bg-red-600 text-white rounded-2xl font-bold text-[14px] hover:bg-red-700 transition-all shadow-lg shadow-red-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 px-6 py-3 bg-red-600 text-white rounded-2xl font-medium text-[14px] hover:bg-red-700 transition-all shadow-lg shadow-red-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
             Hapus

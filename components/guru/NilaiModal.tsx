@@ -57,7 +57,7 @@ export function NilaiModal({ isOpen, onClose, onConfirm, magang }: NilaiModalPro
           <DialogTitle className="text-2xl font-black text-slate-800 tracking-tight">
             Input Nilai Akhir
           </DialogTitle>
-          <DialogDescription className="text-slate-500 font-bold text-sm">
+          <DialogDescription className="text-slate-500 font-medium text-sm">
             Berikan nilai akhir untuk <span className="text-[#2563EB]">{magang?.siswa?.full_name}</span>
           </DialogDescription>
         </DialogHeader>

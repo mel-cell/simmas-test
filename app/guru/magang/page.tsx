@@ -125,8 +125,8 @@ export default function ManajemenMagangGuru() {
     <div className="flex flex-col gap-8 w-full pb-20 px-4 md:px-8 max-w-[1600px] mx-auto text-sans">
       {/* Header Section */}
       <div className="mt-6 flex flex-col gap-1">
-        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Manajemen Siswa Magang</h1>
-        <p className="text-slate-500 font-bold text-sm">Kelola magang, tinjau pendaftaran, dan beri nilai siswa bimbingan</p>
+        <h1 className="text-3xl font-medium text-slate-800 tracking-tight">Manajemen Siswa Magang</h1>
+        <p className="text-slate-500 font-medium text-sm">Kelola magang, tinjau pendaftaran, dan beri nilai siswa bimbingan</p>
       </div>
 
       {/* Stats Section */}
@@ -139,14 +139,14 @@ export default function ManajemenMagangGuru() {
         ].map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm flex flex-col gap-4 transition-all hover:shadow-md hover:border-[#2563EB]/10">
              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{stat.label}</span>
+                <span className="text-[11px] font-medium text-slate-400 uppercase tracking-widest">{stat.label}</span>
                 <div className={`${stat.color === 'blue' ? 'text-[#2563EB]' : 'text-' + stat.color + '-500'}`}>
                    <stat.icon className="w-5 h-5" />
                 </div>
              </div>
              <div>
-                <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{stat.value}</h3>
-                <p className="text-[11px] font-bold text-slate-400 mt-0.5">{stat.sub}</p>
+                <h3 className="text-3xl font-medium text-slate-800 tracking-tight">{stat.value}</h3>
+                <p className="text-[11px] font-medium text-slate-400 mt-0.5">{stat.sub}</p>
              </div>
           </div>
         ))}
@@ -158,7 +158,7 @@ export default function ManajemenMagangGuru() {
           <div className="p-8 border-b border-slate-50">
              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4 w-full md:w-auto">
-                   <h3 className="text-xl font-bold text-slate-800 tracking-tight whitespace-nowrap">Daftar Magang Siswa Bimbingan</h3>
+                   <h3 className="text-xl font-medium text-slate-800 tracking-tight whitespace-nowrap">Daftar Magang Siswa Bimbingan</h3>
                 </div>
 
                 <div className="flex items-center gap-4 w-full md:w-auto">
@@ -169,13 +169,13 @@ export default function ManajemenMagangGuru() {
                         placeholder="Cari siswa atau DUDI..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-600 outline-none focus:bg-white focus:ring-4 focus:ring-[#2563EB]/5 transition-all shadow-sm"
+                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-medium text-slate-600 outline-none focus:bg-white focus:ring-4 focus:ring-[#2563EB]/5 transition-all shadow-sm"
                       />
                    </form>
                    <Button 
                      variant="outline" 
                      onClick={() => setShowFilters(!showFilters)}
-                     className="h-12 px-6 rounded-2xl border-none bg-[#E11D48] text-white font-bold text-[13px] flex items-center gap-2 hover:bg-[#BE123C] transition-all shadow-sm active:scale-95 whitespace-nowrap"
+                     className="h-12 px-6 rounded-2xl border-none bg-[#E11D48] text-white font-medium text-[13px] flex items-center gap-2 hover:bg-[#BE123C] transition-all shadow-sm active:scale-95 whitespace-nowrap"
                    >
                        <Filter className="w-4 h-4" />
                        {showFilters ? 'Sembunyikan Filter' : 'Tampilkan Filter'}
@@ -188,11 +188,11 @@ export default function ManajemenMagangGuru() {
              {showFilters && (
                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-slate-50 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm mt-4">
                   <div className="flex flex-col gap-2">
-                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Status Magang</label>
+                     <label className="text-[11px] font-medium text-slate-400 uppercase tracking-widest ml-1">Status Magang</label>
                      <select 
                        value={statusFilter}
                        onChange={(e) => setStatusFilter(e.target.value)}
-                       className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-bold text-slate-700 outline-none focus:bg-white transition-all appearance-none cursor-pointer"
+                       className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium text-slate-700 outline-none focus:bg-white transition-all appearance-none cursor-pointer"
                      >
                         <option value="all">Semua Status</option>
                         <option value="aktif">Aktif</option>
@@ -202,11 +202,11 @@ export default function ManajemenMagangGuru() {
                      </select>
                   </div>
                   <div className="flex flex-col gap-2">
-                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tahun Magang</label>
+                     <label className="text-[11px] font-medium text-slate-400 uppercase tracking-widest ml-1">Tahun Magang</label>
                      <select 
                        value={yearFilter}
                        onChange={(e) => setYearFilter(e.target.value)}
-                       className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-bold text-slate-700 outline-none focus:bg-white transition-all appearance-none cursor-pointer"
+                       className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium text-slate-700 outline-none focus:bg-white transition-all appearance-none cursor-pointer"
                      >
                         <option value="all">Semua Tahun</option>
                         <option value="2024">2024</option>
@@ -215,11 +215,11 @@ export default function ManajemenMagangGuru() {
                      </select>
                   </div>
                   <div className="flex flex-col gap-2">
-                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Bulan Magang</label>
+                     <label className="text-[11px] font-medium text-slate-400 uppercase tracking-widest ml-1">Bulan Magang</label>
                      <select 
                        value={monthFilter}
                        onChange={(e) => setMonthFilter(e.target.value)}
-                       className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-bold text-slate-700 outline-none focus:bg-white transition-all appearance-none cursor-pointer"
+                       className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium text-slate-700 outline-none focus:bg-white transition-all appearance-none cursor-pointer"
                      >
                         <option value="all">Semua Bulan</option>
                         {Array.from({ length: 12 }, (_, i) => (
@@ -231,31 +231,31 @@ export default function ManajemenMagangGuru() {
                   </div>
 
                   <div className="md:col-span-3 flex flex-col gap-2">
-                     <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Rentang Tanggal Magang</label>
+                     <label className="text-[11px] font-medium text-slate-400 uppercase tracking-widest ml-1">Rentang Tanggal Magang</label>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
-                           <span className="text-[10px] font-bold text-slate-400 ml-1">Dari Tanggal</span>
+                           <span className="text-[10px] font-medium text-slate-400 ml-1">Dari Tanggal</span>
                            <input 
                              type="date"
                              value={dateRange.from}
                              onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
-                             className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-bold text-slate-700 outline-none focus:bg-white transition-all"
+                             className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium text-slate-700 outline-none focus:bg-white transition-all"
                            />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                           <span className="text-[10px] font-bold text-slate-400 ml-1">Sampai Tanggal</span>
+                           <span className="text-[10px] font-medium text-slate-400 ml-1">Sampai Tanggal</span>
                            <input 
                              type="date"
                              value={dateRange.to}
                              onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
-                             className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-bold text-slate-700 outline-none focus:bg-white transition-all"
+                             className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium text-slate-700 outline-none focus:bg-white transition-all"
                            />
                         </div>
                      </div>
                   </div>
                   
                   <div className="md:col-span-3 pt-4">
-                     <span className="text-[13px] font-bold text-slate-400">
+                     <span className="text-[13px] font-medium text-slate-400">
                         {filteredBimbingan.length} data ditemukan
                      </span>
                   </div>
@@ -268,11 +268,11 @@ export default function ManajemenMagangGuru() {
              <table className="w-full text-left border-collapse">
                 <thead>
                    <tr className="bg-white">
-                      <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Siswa</th>
-                      <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">DUDI</th>
-                      <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Periode</th>
-                      <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px] text-center">Status / Nilai</th>
-                      <th className="px-8 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px] text-right">Aksi</th>
+                      <th className="px-8 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px]">Siswa</th>
+                      <th className="px-8 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px]">DUDI</th>
+                      <th className="px-8 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px]">Periode</th>
+                      <th className="px-8 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px] text-center">Status / Nilai</th>
+                      <th className="px-8 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px] text-right">Aksi</th>
                    </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50 bg-white">
@@ -284,17 +284,17 @@ export default function ManajemenMagangGuru() {
                           </td>
                        </tr>
                      ))
-                   ) : bimbingan.length > 0 ? (
-                     bimbingan.map((item) => (
+                   ) : filteredBimbingan.length > 0 ? (
+                     filteredBimbingan.map((item) => (
                        <tr key={item.id} className="group hover:bg-slate-50/50 transition-colors">
                           <td className="px-8 py-6">
                              <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-[#2563EB] text-sm group-hover:bg-white transition-colors">
+                                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-medium text-[#2563EB] text-sm group-hover:bg-white transition-colors">
                                    {item.siswa.full_name.charAt(0)}
                                 </div>
                                 <div className="flex flex-col">
-                                   <span className="text-[15px] font-bold text-slate-800 tracking-tight">{item.siswa.full_name}</span>
-                                   <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{item.siswa.kelas} • {item.siswa.jurusan}</span>
+                                   <span className="text-[15px] font-medium text-slate-800 tracking-tight">{item.siswa.full_name}</span>
+                                   <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">{item.siswa.kelas} • {item.siswa.jurusan}</span>
                                 </div>
                              </div>
                           </td>
@@ -304,13 +304,13 @@ export default function ManajemenMagangGuru() {
                                    <MapPin className="w-4 h-4 text-[#2563EB]" />
                                 </div>
                                 <div className="flex flex-col">
-                                   <span className="text-sm font-bold text-slate-700">{item.dudi.nama_perusahaan}</span>
+                                   <span className="text-sm font-medium text-slate-700">{item.dudi.nama_perusahaan}</span>
                                    <span className="text-[11px] font-medium text-slate-400 line-clamp-1">{item.dudi.alamat}</span>
                                 </div>
                              </div>
                           </td>
                           <td className="px-8 py-6">
-                             <div className="flex items-center gap-2 text-[13px] font-bold text-slate-500">
+                             <div className="flex items-center gap-2 text-[13px] font-medium text-slate-500">
                                 <Calendar className="w-4 h-4 text-[#2563EB]/40" />
                                 {(() => {
                                   try {
@@ -329,18 +329,18 @@ export default function ManajemenMagangGuru() {
                              {item.status === 'selesai' ? (
                                item.nilai ? (
                                  <div className="flex flex-col items-center gap-1">
-                                   <Badge className="bg-blue-600 text-white border-none px-4 py-1.5 rounded-full text-[14px] font-black shadow-lg shadow-blue-600/20">
+                                   <Badge className="bg-blue-600 text-white border-none px-4 py-1.5 rounded-full text-[14px] font-medium shadow-lg shadow-blue-600/20">
                                      {item.nilai}
                                    </Badge>
-                                   <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">FINAL GRADE</span>
+                                   <span className="text-[9px] font-medium text-slate-300 uppercase tracking-widest">FINAL GRADE</span>
                                  </div>
                                ) : (
-                                 <Badge className="bg-blue-100 text-blue-700 border-none px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest">
+                                 <Badge className="bg-blue-100 text-blue-700 border-none px-3 py-1 rounded-lg text-[10px] font-medium uppercase tracking-widest">
                                    Selesai
                                  </Badge>
                                )
                              ) : (
-                               <Badge className={`border-none px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest ${
+                               <Badge className={`border-none px-3 py-1 rounded-lg text-[10px] font-medium uppercase tracking-widest ${
                                  item.status === 'aktif' ? 'bg-green-100 text-green-700' :
                                  item.status === 'menunggu' ? 'bg-orange-100 text-orange-700' :
                                  'bg-red-100 text-red-700'
@@ -357,7 +357,7 @@ export default function ManajemenMagangGuru() {
                                        setSelectedMagang(item)
                                        setIsNilaiModalOpen(true)
                                      }}
-                                     className="h-10 px-4 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-[12px] flex items-center gap-2 transition-all shadow-sm active:scale-95 shadow-blue-600/10"
+                                     className="h-10 px-4 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-medium text-[12px] flex items-center gap-2 transition-all shadow-sm active:scale-95 shadow-blue-600/10"
                                    >
                                       <Award className="w-4 h-4" />
                                       {item.nilai ? "Ubah Nilai" : "Beri Nilai"}
@@ -368,7 +368,7 @@ export default function ManajemenMagangGuru() {
                                        setSelectedMagang(item)
                                        setIsStatusModalOpen(true)
                                      }}
-                                     className="h-10 px-4 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-[12px] flex items-center gap-2 transition-all shadow-sm active:scale-95 shadow-blue-600/10"
+                                     className="h-10 px-4 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-medium text-[12px] flex items-center gap-2 transition-all shadow-sm active:scale-95 shadow-blue-600/10"
                                    >
                                       <CheckCircle2 className="w-4 h-4" />
                                       Status
@@ -396,7 +396,7 @@ export default function ManajemenMagangGuru() {
                         <td colSpan={5} className="py-24 text-center">
                            <div className="flex flex-col items-center justify-center opacity-30">
                               <Info className="w-12 h-12 mb-4" />
-                              <p className="font-bold text-xl">Data tidak ditemukan</p>
+                              <p className="font-medium text-xl">Data tidak ditemukan</p>
                            </div>
                         </td>
                      </tr>
@@ -406,15 +406,15 @@ export default function ManajemenMagangGuru() {
           </div>
 
           <div className="p-8 border-t border-slate-50 bg-slate-50/30 flex flex-col md:flex-row items-center justify-between gap-4">
-             <span className="text-xs font-bold text-slate-400 underline decoration-slate-200 decoration-2 underline-offset-4">
-                Menampilkan {bimbingan.length} siswa bimbingan
+             <span className="text-xs font-medium text-slate-400 underline decoration-slate-200 decoration-2 underline-offset-4">
+                Menampilkan {filteredBimbingan.length} siswa bimbingan
              </span>
              <div className="flex items-center gap-4">
-                <Button disabled variant="ghost" className="h-10 rounded-xl font-bold text-slate-400">Previous</Button>
+                <Button disabled variant="ghost" className="h-10 rounded-xl font-medium text-slate-400">Previous</Button>
                 <div className="flex items-center gap-2">
-                   <Button className="h-10 w-10 rounded-xl bg-[#2563EB] text-white font-bold text-sm shadow-lg shadow-blue-600/20">1</Button>
+                   <Button className="h-10 w-10 rounded-xl bg-[#2563EB] text-white font-medium text-sm shadow-lg shadow-blue-600/20">1</Button>
                 </div>
-                <Button disabled variant="ghost" className="h-10 rounded-xl font-bold text-slate-400">Next</Button>
+                <Button disabled variant="ghost" className="h-10 rounded-xl font-medium text-slate-400">Next</Button>
              </div>
           </div>
       </div>

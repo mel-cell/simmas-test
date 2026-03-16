@@ -125,7 +125,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
       
       <div className="relative bg-[#FAFAFA] w-full max-w-[500px] rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
         <div className="p-6 sm:p-8 bg-transparent flex flex-col pb-0 shrink-0">
-          <h3 className="text-[22px] font-bold text-slate-800 leading-tight">
+          <h3 className="text-[22px] font-medium text-slate-800 leading-tight">
             {user ? 'Edit User' : 'Tambah User Baru'}
           </h3>
           <p className="text-[14px] text-slate-500 mt-2 font-medium">
@@ -136,7 +136,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
         <form onSubmit={handleSubmit} className="overflow-y-auto p-6 sm:p-8 space-y-6 custom-scrollbar bg-transparent">
           
           <div className="space-y-2">
-            <label className="text-[14px] font-semibold text-[#475569]">
+            <label className="text-[14px] font-semimedium text-[#475569]">
               Nama Lengkap <span className="text-red-500">*</span>
             </label>
             <input 
@@ -150,7 +150,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
           </div>
 
           <div className="space-y-2">
-            <label className="text-[14px] font-semibold text-[#475569]">
+            <label className="text-[14px] font-semimedium text-[#475569]">
               Email <span className="text-red-500">*</span>
             </label>
             <input 
@@ -164,7 +164,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
           </div>
 
           <div className="space-y-2">
-            <label className="text-[14px] font-semibold text-[#475569]">
+            <label className="text-[14px] font-semimedium text-[#475569]">
               Role <span className="text-red-500">*</span>
             </label>
             <select 
@@ -180,7 +180,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
           </div>
 
           <div className="space-y-2 relative">
-            <label className="text-[14px] font-semibold text-[#475569]">
+            <label className="text-[14px] font-semimedium text-[#475569]">
               Password {user ? '' : <span className="text-red-500">*</span>}
             </label>
             <div className="relative">
@@ -203,7 +203,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
           </div>
 
           <div className="space-y-2 relative">
-            <label className="text-[14px] font-semibold text-[#475569]">
+            <label className="text-[14px] font-semimedium text-[#475569]">
               Konfirmasi Password {user ? '' : <span className="text-red-500">*</span>}
             </label>
             <div className="relative">
@@ -229,7 +229,7 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
           </div>
 
           <div className="space-y-2">
-            <label className="text-[14px] font-semibold text-[#475569]">
+            <label className="text-[14px] font-semimedium text-[#475569]">
               Email Verification
             </label>
             <select 
@@ -248,14 +248,14 @@ export function UserModal({ isOpen, onClose, onSuccess, user }: UserModalProps) 
           <button 
             type="button"
             onClick={onClose}
-            className="flex-1 px-6 py-3 bg-white text-[#475569] rounded-[14px] font-bold text-[14px] hover:bg-slate-50 transition-all border border-[#CBD5E1]"
+            className="flex-1 px-6 py-3 bg-white text-[#475569] rounded-[14px] font-medium text-[14px] hover:bg-slate-50 transition-all border border-[#CBD5E1]"
           >
             Batal
           </button>
           <button 
             onClick={handleSubmit}
             disabled={loading}
-            className="flex-1 px-6 py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-[14px] font-bold text-[14px] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
+            className="flex-1 px-6 py-3 bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-[14px] font-medium text-[14px] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
           >
              {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
             {user ? 'Update' : 'Simpan'}

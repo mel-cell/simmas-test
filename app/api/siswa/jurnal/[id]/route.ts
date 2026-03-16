@@ -13,7 +13,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const journal = await siswaService.getJournalDetail(id)
+    const journal = await siswaService.getJournalDetail(id, profileData.user.id)
     return NextResponse.json(journal)
   } catch (err) {
     console.error('Error fetching journal detail:', err)
@@ -33,7 +33,7 @@ export async function PATCH(
     }
 
     const body = await request.json()
-    const success = await siswaService.updateJournal(id, body)
+    const success = await siswaService.updateJournal(id, profileData.user.id, body)
     
     return NextResponse.json({ success })
   } catch (err: unknown) {
@@ -56,7 +56,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const success = await siswaService.deleteJournal(id)
+    const success = await siswaService.deleteJournal(id, profileData.user.id)
     return NextResponse.json({ success })
   } catch (err: unknown) {
     const error = err as Error

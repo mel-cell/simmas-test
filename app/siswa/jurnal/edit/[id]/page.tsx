@@ -109,7 +109,7 @@ export default function EditJurnal() {
       <div className="mb-8">
         <Link 
           href="/siswa/jurnal" 
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 font-bold text-sm transition-colors w-fit group"
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 font-medium text-sm transition-colors w-fit group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           KEMBALI KE DAFTAR
@@ -119,7 +119,7 @@ export default function EditJurnal() {
       <div className="flex flex-col gap-2 mb-10">
         <h2 className="text-4xl font-black text-slate-800 tracking-tighter uppercase">Edit Laporan Harian</h2>
         <div className="flex items-center gap-2">
-           <p className="text-slate-500 font-bold text-sm tracking-widest uppercase opacity-60">Status Sekarang:</p>
+           <p className="text-slate-500 font-medium text-sm tracking-widest uppercase opacity-60">Status Sekarang:</p>
            <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">{formData.status}</span>
         </div>
       </div>
@@ -133,10 +133,10 @@ export default function EditJurnal() {
               <Calendar className="w-4 h-4 text-blue-500" />
               Tanggal Kegiatan
             </label>
-            <div className="px-6 py-4 bg-slate-100 border-2 border-slate-100 rounded-2xl font-bold text-slate-400 cursor-not-allowed w-fit">
+            <div className="px-6 py-4 bg-slate-100 border-2 border-slate-100 rounded-2xl font-medium text-slate-400 cursor-not-allowed w-fit">
                {formData.tgl ? format(new Date(formData.tgl), 'd MMMM yyyy') : '-'}
             </div>
-            <p className="text-[10px] text-slate-400 font-bold italic">* Tanggal tidak dapat diubah setelah dibuat.</p>
+            <p className="text-[10px] text-slate-400 font-medium italic">* Tanggal tidak dapat diubah setelah dibuat.</p>
           </div>
 
           {/* Kegiatan */}
@@ -148,7 +148,7 @@ export default function EditJurnal() {
             <textarea 
               required
               placeholder="Jelaskan apa saja yang Anda lakukan hari ini..."
-              className="w-full h-48 px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-3xl font-semibold text-slate-700 focus:border-blue-500/20 focus:bg-white transition-all outline-none resize-none leading-relaxed"
+              className="w-full h-48 px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-3xl font-semimedium text-slate-700 focus:border-blue-500/20 focus:bg-white transition-all outline-none resize-none leading-relaxed"
               value={formData.kegiatan}
               onChange={(e) => setFormData({...formData, kegiatan: e.target.value})}
             />
@@ -162,7 +162,7 @@ export default function EditJurnal() {
             </label>
             <textarea 
               placeholder="Adakah kesulitan?"
-              className="w-full h-32 px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-3xl font-semibold text-slate-700 focus:border-orange-500/20 focus:bg-white transition-all outline-none resize-none leading-relaxed"
+              className="w-full h-32 px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-3xl font-semimedium text-slate-700 focus:border-orange-500/20 focus:bg-white transition-all outline-none resize-none leading-relaxed"
               value={formData.kendala}
               onChange={(e) => setFormData({...formData, kendala: e.target.value})}
             />
@@ -174,7 +174,7 @@ export default function EditJurnal() {
              type="button"
              disabled={saving || !formData.kegiatan}
              onClick={(e) => handleSubmit(e, 'draft')}
-             className="w-full md:w-fit group bg-white hover:bg-slate-50 text-slate-700 px-8 py-5 rounded-[32px] font-bold tracking-tight flex items-center justify-center gap-3 transition-all border border-slate-200 active:scale-[0.98] disabled:opacity-50"
+             className="w-full md:w-fit group bg-white hover:bg-slate-50 text-slate-700 px-8 py-5 rounded-[32px] font-medium tracking-tight flex items-center justify-center gap-3 transition-all border border-slate-200 active:scale-[0.98] disabled:opacity-50"
            >
              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5 text-slate-400" />}
              SIMPAN SEBAGAI DRAFT

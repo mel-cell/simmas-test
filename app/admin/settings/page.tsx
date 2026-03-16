@@ -100,7 +100,7 @@ export default function PengaturanSekolah() {
   }
 
   const InputLabel = ({ label, icon: Icon, required }: { label: string, icon?: React.ElementType, required?: boolean }) => (
-    <label className="flex items-center gap-2 text-[13px] font-bold text-slate-500 mb-2">
+    <label className="flex items-center gap-2 text-[13px] font-medium text-slate-500 mb-2">
       {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
       {label} {required && <span className="text-red-500">*</span>}
     </label>
@@ -110,7 +110,7 @@ export default function PengaturanSekolah() {
     <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-[24px] sm:text-[28px] font-bold text-slate-800 tracking-tight">Pengaturan Sekolah</h2>
+          <h2 className="text-[24px] sm:text-[28px] font-medium text-slate-800 tracking-tight">Pengaturan Sekolah</h2>
         </div>
       </div>
 
@@ -120,7 +120,7 @@ export default function PengaturanSekolah() {
         }`}>
           <div className="flex items-center gap-3">
              {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
-             <span className="text-[14px] font-bold">{message.text}</span>
+             <span className="text-[14px] font-medium">{message.text}</span>
           </div>
           <button onClick={() => setMessage(null)}><X className="w-4 h-4" /></button>
         </div>
@@ -136,14 +136,14 @@ export default function PengaturanSekolah() {
                 <div className="w-10 h-10 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
                   <Layout className="w-5 h-5 text-[#2563EB]" />
                 </div>
-                <h3 className="text-[18px] font-bold text-slate-800 tracking-tight">Informasi Sekolah</h3>
+                <h3 className="text-[18px] font-medium text-slate-800 tracking-tight">Informasi Sekolah</h3>
               </div>
 
               {!loading && (
                 !editing ? (
                   <button 
                      onClick={() => setEditing(true)}
-                    className="h-10 px-6 bg-[#2563EB] text-white rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                    className="h-10 px-6 bg-[#2563EB] text-white rounded-xl font-medium text-[13px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 active:scale-95"
                   >
                     <Edit2 className="w-4 h-4" />
                     Edit
@@ -152,14 +152,14 @@ export default function PengaturanSekolah() {
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => { setEditing(false); setFormData(settings || {}); }}
-                      className="h-10 px-5 bg-slate-100 text-slate-600 rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-slate-200 transition-all"
+                      className="h-10 px-5 bg-slate-100 text-slate-600 rounded-xl font-medium text-[13px] flex items-center gap-2 hover:bg-slate-200 transition-all"
                     >
                       Batal
                     </button>
                     <button 
                       onClick={handleSave}
                       disabled={saving}
-                      className="h-10 px-6 bg-[#2563EB] text-white rounded-xl font-bold text-[13px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all disabled:opacity-50 shadow-lg shadow-blue-600/20 active:scale-95"
+                      className="h-10 px-6 bg-[#2563EB] text-white rounded-xl font-medium text-[13px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all disabled:opacity-50 shadow-lg shadow-blue-600/20 active:scale-95"
                     >
                       {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                       Simpan
@@ -196,7 +196,7 @@ export default function PengaturanSekolah() {
                       ) : (
                          <div className="text-center">
                             <Layout className="w-6 h-6 text-slate-300 mx-auto mb-1" />
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Logo</span>
+                            <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Logo</span>
                          </div>
                       )}
                       {uploading && (
@@ -221,7 +221,7 @@ export default function PengaturanSekolah() {
                     <input 
                       disabled={!editing}
                       type="text" 
-                      className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-[16px] text-[14px] font-bold text-slate-800 disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
+                      className="w-full h-12 px-5 bg-slate-50 border border-slate-100 rounded-[16px] text-[14px] font-medium text-slate-800 disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all"
                       value={formData.namaSekolah || ''}
                       onChange={(e) => setFormData({ ...formData, namaSekolah: e.target.value })}
                     />
@@ -318,7 +318,7 @@ export default function PengaturanSekolah() {
                     <span className="text-[9px] font-black text-blue-600 uppercase tracking-wider">Live</span>
                   </div>
                 </div>
-                <p className="text-[12px] text-slate-400 font-bold -mt-0.5 text-left">Pratinjau bagaimana informasi sekolah ditampilkan</p>
+                <p className="text-[12px] text-slate-400 font-medium -mt-0.5 text-left">Pratinjau bagaimana informasi sekolah ditampilkan</p>
               </div>
           </div>
 
@@ -328,7 +328,7 @@ export default function PengaturanSekolah() {
               <div className="w-6 h-6 rounded-md bg-blue-50 flex items-center justify-center">
                 <Layout className="w-3.5 h-3.5 text-blue-500" />
               </div>
-              <span className="text-[13px] font-bold text-slate-700">Dashboard Header</span>
+              <span className="text-[13px] font-medium text-slate-700">Dashboard Header</span>
             </div>
               <div className="p-4 bg-blue-50/50 rounded-[20px] border border-blue-100/50 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center p-1.5 shrink-0 shadow-sm relative overflow-hidden">
@@ -342,7 +342,7 @@ export default function PengaturanSekolah() {
                   <h4 className={`text-[13px] font-black leading-tight truncate ${formData.namaSekolah ? 'text-slate-800' : 'text-slate-400 italic'}`}>
                     {formData.namaSekolah || 'Belum Diatur'}
                   </h4>
-                  <p className="text-[9px] text-slate-500 font-bold uppercase tracking-tight opacity-60">Sistem Informasi Magang</p>
+                  <p className="text-[9px] text-slate-500 font-medium uppercase tracking-tight opacity-60">Sistem Informasi Magang</p>
                 </div>
               </div>
             </div>
@@ -353,7 +353,7 @@ export default function PengaturanSekolah() {
                  <div className="w-6 h-6 rounded-md bg-emerald-50 flex items-center justify-center">
                   <FileText className="w-3.5 h-3.5 text-emerald-500" />
                  </div>
-                 <span className="text-[13px] font-bold text-slate-700">Header Rapor/Sertifikat</span>
+                 <span className="text-[13px] font-medium text-slate-700">Header Rapor/Sertifikat</span>
               </div>
               <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-1">
                  <div className="p-6 bg-white rounded-xl border border-slate-100 flex flex-col items-center shadow-sm">
@@ -367,10 +367,10 @@ export default function PengaturanSekolah() {
                     <h5 className={`text-[13px] font-black uppercase text-center leading-tight mb-1 ${formData.namaSekolah ? 'text-slate-900' : 'text-slate-400 italic'}`}>
                       {formData.namaSekolah || 'BELUM DIATUR'}
                     </h5>
-                    <p className={`text-[7px] font-bold max-w-[200px] text-center mb-0.5 leading-tight ${formData.alamatSekolah ? 'text-slate-500' : 'text-slate-400 italic'}`}>
+                    <p className={`text-[7px] font-medium max-w-[200px] text-center mb-0.5 leading-tight ${formData.alamatSekolah ? 'text-slate-500' : 'text-slate-400 italic'}`}>
                       {formData.alamatSekolah || 'Alamat belum diatur'}
                     </p>
-                    <p className="text-[7px] font-bold text-slate-400 mb-3 text-center">
+                    <p className="text-[7px] font-medium text-slate-400 mb-3 text-center">
                       Telp: {formData.telepon || '-'} | Email: {formData.email || '-'} | Web: {formData.website || '-'}
                     </p>
                     <div className="w-full h-[0.5px] bg-slate-300 mb-[1px]" />
@@ -386,7 +386,7 @@ export default function PengaturanSekolah() {
                  <div className="w-6 h-6 rounded-md bg-purple-50 flex items-center justify-center">
                   <Printer className="w-3.5 h-3.5 text-purple-500" />
                  </div>
-                 <span className="text-[13px] font-bold text-slate-700">Dokumen Cetak</span>
+                 <span className="text-[13px] font-medium text-slate-700">Dokumen Cetak</span>
               </div>
               <div className="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm">
                  <div className="flex gap-4 items-start mb-4">
@@ -401,31 +401,31 @@ export default function PengaturanSekolah() {
                       <h5 className={`text-[12px] font-black leading-tight uppercase mb-0.5 truncate ${formData.namaSekolah ? 'text-slate-900' : 'text-slate-400 italic'}`}>
                         {formData.namaSekolah || 'Belum Diatur'}
                       </h5>
-                      <p className="text-[9px] font-bold text-blue-600 uppercase tracking-wider">NPSN: {formData.npsn || '-'}</p>
+                      <p className="text-[9px] font-medium text-blue-600 uppercase tracking-wider">NPSN: {formData.npsn || '-'}</p>
                     </div>
                  </div>
                  <div className="space-y-1.5 border-t border-slate-50 pt-3">
-                    <div className={`flex items-start gap-2 text-[9px] font-bold leading-relaxed ${formData.alamatSekolah ? 'text-slate-500' : 'text-slate-400 italic'}`}>
+                    <div className={`flex items-start gap-2 text-[9px] font-medium leading-relaxed ${formData.alamatSekolah ? 'text-slate-500' : 'text-slate-400 italic'}`}>
                        <MapPin className="w-3 h-3 text-slate-300 shrink-0 mt-0.5" />
                        {formData.alamatSekolah || 'Alamat belum diatur'}
                     </div>
                     <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-                      <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-bold">
+                      <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-medium">
                          <Phone className="w-3 h-3 text-slate-300" />
                          {formData.telepon || '-'}
                       </div>
-                      <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-bold">
+                      <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-medium">
                          <Mail className="w-3 h-3 text-slate-300" />
                          {formData.email || '-'}
                       </div>
-                      <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-bold truncate">
+                      <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-medium truncate">
                          <Globe className="w-3 h-3 text-slate-300" />
                          {formData.website || '-'}
                       </div>
                     </div>
                     <div className="pt-2">
-                       <p className="text-[9px] font-bold text-slate-800">
-                          Kepala Sekolah: <span className="text-slate-500 font-bold">{formData.kepalaSekolah || '-'}</span>
+                       <p className="text-[9px] font-medium text-slate-800">
+                          Kepala Sekolah: <span className="text-slate-500 font-medium">{formData.kepalaSekolah || '-'}</span>
                        </p>
                     </div>
                  </div>
@@ -436,15 +436,15 @@ export default function PengaturanSekolah() {
             <div className="bg-[#EFF6FF] rounded-[24px] p-6 border border-[#DBEAFE] space-y-4">
                <h4 className="text-[14px] font-black text-blue-800">Informasi Penggunaan:</h4>
                <ul className="space-y-3">
-                  <li className="flex gap-3 text-[12px] text-blue-600 font-bold">
+                  <li className="flex gap-3 text-[12px] text-blue-600 font-medium">
                      <Layout className="w-4 h-4 shrink-0" />
                      <span>Dashboard: Logo dan nama sekolah ditampilkan di header navigasi</span>
                   </li>
-                  <li className="flex gap-3 text-[12px] text-blue-600 font-bold">
+                  <li className="flex gap-3 text-[12px] text-blue-600 font-medium">
                      <FileText className="w-4 h-4 shrink-0" />
                      <span>Rapor/Sertifikat: Informasi lengkap sebagai kop dokumen resmi</span>
                   </li>
-                  <li className="flex gap-3 text-[12px] text-blue-600 font-bold">
+                  <li className="flex gap-3 text-[12px] text-blue-600 font-medium">
                      <Printer className="w-4 h-4 shrink-0" />
                      <span>Dokumen Cetak: Footer atau header pada laporan yang dicetak</span>
                   </li>

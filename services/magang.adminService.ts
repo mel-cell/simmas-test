@@ -113,6 +113,25 @@ export const magangAdminService = {
       return { success: false, error: 'Siswa sudah terdaftar di penempatan lain yang sedang aktif atau menunggu.' }
     }
 
+    // 3. Cek Kuota DUDI
+    const { data: dudi } = await supabase
+      .from('dudi')
+      .select('kuota_maksimal')
+      .eq('id', data.dudi_id)
+      .maybeSingle()
+
+    if (dudi && dudi.kuota_maksimal && data.status === 'aktif') {
+      const { count: acceptedSiswa } = await supabase
+        .from('magang')
+        .select('*', { count: 'exact', head: true })
+        .eq('dudi_id', data.dudi_id)
+        .eq('status', 'aktif')
+
+      if (acceptedSiswa !== null && acceptedSiswa >= dudi.kuota_maksimal) {
+        return { success: false, error: 'Pembuatan gagal. Kuota penempatan magang aktif di DUDI ini sudah penuh.' }
+      }
+    }
+
     const guru_id = data.guru_id === '' ? null : data.guru_id;
 
     // 3. Insert Penempatan Baru
@@ -154,14 +173,62 @@ export const magangAdminService = {
     if (data.tgl_selesai !== undefined) updateData.tgl_selesai = data.tgl_selesai
     if (data.status !== undefined) updateData.status = data.status
 
-    // 1. Get current magang to know who the student is
+    // 1. Get current magang to know who the student is and current status/dudi
     let siswaId = data.siswa_id
-    if (!siswaId) {
-      const { data: current } = await supabase.from('magang').select('siswa_id').eq('id', id).single()
-      if (current) siswaId = current.siswa_id
+    let currentDudiId = data.dudi_id
+    let currentStatus
+    
+    const { data: current } = await supabase.from('magang').select('siswa_id, dudi_id, status').eq('id', id).single()
+    if (current) {
+      if (!siswaId) siswaId = current.siswa_id
+      if (currentDudiId === undefined) currentDudiId = current.dudi_id
+      currentStatus = current.status
     }
 
-    // 2. Perform Update
+    // 2. Cek Kuota DUDI jika mengubah ke status aktif (atau mengganti DUDI tapi tetap aktif)
+    const targetStatus = data.status || currentStatus
+    if (currentDudiId && targetStatus === 'aktif' && (currentStatus !== 'aktif' || data.dudi_id)) {
+      // Cek Double Plot untuk Siswa (Apakah punya 'aktif' / 'menunggu' lain selain ID ini?)
+      const { data: existingSiswaMagang } = await supabase
+        .from('magang')
+        .select('id')
+        .eq('siswa_id', siswaId)
+        .in('status', ['aktif', 'menunggu'])
+        .neq('id', id)
+        .maybeSingle()
+      
+      if (existingSiswaMagang) {
+        return { success: false, error: 'Update dibatalkan. Siswa bersangkutan sudah memiliki status magang aktif/menunggu di tempat lain.' }
+      }
+
+      // Cek Kuota DUDI
+      const { data: dudi } = await supabase
+        .from('dudi')
+        .select('kuota_maksimal')
+        .eq('id', currentDudiId)
+        .maybeSingle()
+
+      if (dudi && dudi.kuota_maksimal) {
+        let acceptedSiswaQuery = supabase
+          .from('magang')
+          .select('*', { count: 'exact', head: true })
+          .eq('dudi_id', currentDudiId)
+          .eq('status', 'aktif')
+          
+        if (currentStatus === 'aktif' && !data.dudi_id) {
+           // If they were already active at the SAME dudi, we exclude them from recount
+           acceptedSiswaQuery = acceptedSiswaQuery.neq('id', id)
+        }
+
+        const { count: acceptedSiswa } = await acceptedSiswaQuery
+
+        if (acceptedSiswa !== null && acceptedSiswa >= dudi.kuota_maksimal) {
+          return { success: false, error: 'Update dibatalkan. Kuota penempatan magang aktif di DUDI ini sudah penuh.' }
+        }
+      }
+    }
+
+    // 3. Perform Update
     const { error } = await supabase
       .from('magang')
       .update(updateData)

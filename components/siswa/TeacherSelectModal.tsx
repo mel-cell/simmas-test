@@ -81,7 +81,7 @@ export function TeacherSelectModal({
             <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center">
               <User className="w-6 h-6 text-blue-500" />
             </div>
-            <h3 className="text-xl font-bold text-slate-800 leading-tight">
+            <h3 className="text-xl font-medium text-slate-800 leading-tight">
               Pilih Guru Pembimbing
             </h3>
           </div>
@@ -96,7 +96,7 @@ export function TeacherSelectModal({
         {/* Info Area */}
         <div className="px-8 pt-6 pb-2 shrink-0">
           <p className="text-sm font-medium text-slate-500 leading-relaxed">
-            Pilih guru pembimbing yang akan mendampingi Anda selama magang di <span className="font-bold text-slate-800">{companyName}</span>
+            Pilih guru pembimbing yang akan mendampingi Anda selama magang di <span className="font-medium text-slate-800">{companyName}</span>
           </p>
         </div>
 
@@ -105,18 +105,18 @@ export function TeacherSelectModal({
           {fetching ? (
             <div className="py-20 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-              <p className="text-sm font-bold text-slate-400">Memuat daftar guru...</p>
+              <p className="text-sm font-medium text-slate-400">Memuat daftar guru...</p>
             </div>
           ) : error ? (
             <div className="py-20 text-center flex flex-col items-center gap-4">
               <AlertCircle className="w-12 h-12 text-red-100" />
-              <p className="text-sm font-bold text-slate-400">{error}</p>
+              <p className="text-sm font-medium text-slate-400">{error}</p>
               <Button onClick={loadTeachers} variant="outline" className="rounded-xl">Coba Lagi</Button>
             </div>
           ) : teachers.length === 0 ? (
             <div className="py-20 text-center flex flex-col items-center gap-4">
               <User className="w-12 h-12 text-slate-100" />
-              <p className="text-sm font-bold text-slate-400">Tidak ada guru pembimbing tersedia</p>
+              <p className="text-sm font-medium text-slate-400">Tidak ada guru pembimbing tersedia</p>
             </div>
           ) : (
             teachers.map((teacher) => (
@@ -136,19 +136,19 @@ export function TeacherSelectModal({
                 </div>
                 
                 <div className="flex flex-col gap-1 pr-8">
-                  <h4 className={`font-bold transition-colors ${selectedId === teacher.id ? 'text-blue-700' : 'text-slate-800'}`}>
+                  <h4 className={`font-medium transition-colors ${selectedId === teacher.id ? 'text-blue-700' : 'text-slate-800'}`}>
                     {teacher.full_name}
                   </h4>
                   <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400">
+                    <div className="flex items-center gap-1.5 text-[12px] font-semimedium text-slate-400">
                       <Hash className="w-3.5 h-3.5" />
                       NIP: {teacher.nomor_induk || '-'}
                     </div>
-                    <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400">
+                    <div className="flex items-center gap-1.5 text-[12px] font-semimedium text-slate-400">
                       <GraduationCap className="w-3.5 h-3.5" />
                       Mata Pelajaran: {teacher.jurusan || '-'}
                     </div>
-                    <div className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-400">
+                    <div className="flex items-center gap-1.5 text-[12px] font-semimedium text-slate-400">
                       <Mail className="w-3.5 h-3.5" />
                       {teacher.email}
                     </div>
@@ -171,14 +171,14 @@ export function TeacherSelectModal({
             type="button"
             variant="ghost"
             onClick={onClose}
-            className="flex-1 h-12 rounded-2xl font-bold text-slate-600 hover:bg-slate-200 border-none"
+            className="flex-1 h-12 rounded-2xl font-medium text-slate-600 hover:bg-slate-200 border-none"
           >
             Batal
           </Button>
           <Button 
             disabled={!selectedId || externalLoading}
             onClick={() => selectedId && onConfirm(selectedId)}
-            className="flex-1 h-12 rounded-2xl font-bold bg-blue-400 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2 border-none"
+            className="flex-1 h-12 rounded-2xl font-medium bg-blue-400 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2 border-none"
           >
             {externalLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />

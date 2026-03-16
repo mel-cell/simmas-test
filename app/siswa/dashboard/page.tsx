@@ -74,8 +74,8 @@ export default function SiswaDashboard() {
       <div className="bg-[#2563EB] rounded-2xl p-6 md:p-10 text-white shadow-lg relative overflow-hidden flex flex-col sm:flex-row justify-between items-start sm:items-center">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
         <div className="relative z-10 flex flex-col gap-1">
-          <h2 className="text-2xl md:text-4xl font-black italic tracking-tighter">Selamat Datang, {userName}! 👋</h2>
-          <p className="text-blue-100 font-bold text-sm md:text-lg opacity-90 flex items-center gap-2">
+          <h2 className="text-2xl md:text-4xl font-medium italic tracking-tighter">Selamat Datang, {userName}! 👋</h2>
+          <p className="text-blue-100 font-medium text-sm md:text-lg opacity-90 flex items-center gap-2">
             <span>{profile?.nomor_induk || 'NIS'}</span>
             <span className="opacity-40">•</span>
             <span>{profile?.kelas || 'Kelas'}</span>
@@ -83,7 +83,7 @@ export default function SiswaDashboard() {
             <span>{profile?.jurusan || 'Jurusan'}</span>
           </p>
         </div>
-        <div className="relative z-10 hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl mt-4 sm:mt-0 font-bold text-sm border border-white/20 shadow-xl shadow-black/5">
+        <div className="relative z-10 hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl mt-4 sm:mt-0 font-medium text-sm border border-white/20 shadow-xl shadow-black/5">
           <CalendarDays className="w-4 h-4 text-blue-200" />
           <span>{currentDate}</span>
         </div>
@@ -94,56 +94,56 @@ export default function SiswaDashboard() {
         {/* Total Jurnal */}
         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col gap-4 group hover:shadow-xl hover:shadow-blue-500/5 transition-all">
           <div className="flex justify-between items-start">
-            <span className="text-sm font-bold text-slate-500 tracking-tight">Total Jurnal</span>
+            <span className="text-sm font-medium text-slate-500 tracking-tight">Total Jurnal</span>
             <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center group-hover:bg-blue-500 group-hover:text-white transition-colors">
               <FileText className="w-5 h-5" />
             </div>
           </div>
           <div className="flex flex-col">
-            <h3 className="text-4xl font-black text-slate-800 tracking-tighter">{stats?.total || 0}</h3>
-            <span className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Jurnal yang dibuat</span>
+            <h3 className="text-4xl font-medium text-slate-800 tracking-tighter">{stats?.total || 0}</h3>
+            <span className="text-[11px] font-medium text-slate-400 mt-1 uppercase tracking-wider">Jurnal yang dibuat</span>
           </div>
         </div>
 
         {/* Disetujui */}
         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col gap-4 group hover:shadow-xl hover:shadow-green-500/5 transition-all">
           <div className="flex justify-between items-start">
-            <span className="text-sm font-bold text-slate-500 tracking-tight">Disetujui</span>
+            <span className="text-sm font-medium text-slate-500 tracking-tight">Disetujui</span>
             <div className="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-colors">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
           <div className="flex flex-col">
-            <h3 className="text-4xl font-black text-slate-800 tracking-tighter">{stats?.disetujui || 0}</h3>
-            <span className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Jurnal disetujui</span>
+            <h3 className="text-4xl font-medium text-slate-800 tracking-tighter">{stats?.disetujui || 0}</h3>
+            <span className="text-[11px] font-medium text-slate-400 mt-1 uppercase tracking-wider">Jurnal disetujui</span>
           </div>
         </div>
 
         {/* Pending */}
         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col gap-4 group hover:shadow-xl hover:shadow-yellow-500/5 transition-all">
           <div className="flex justify-between items-start">
-            <span className="text-sm font-bold text-slate-500 tracking-tight">Pending</span>
+            <span className="text-sm font-medium text-slate-500 tracking-tight">Pending</span>
             <div className="w-10 h-10 rounded-xl bg-yellow-50 text-yellow-600 flex items-center justify-center group-hover:bg-yellow-500 group-hover:text-white transition-colors">
               <Clock className="w-5 h-5" />
             </div>
           </div>
           <div className="flex flex-col">
-            <h3 className="text-4xl font-black text-slate-800 tracking-tighter">{stats?.pending || 0}</h3>
-            <span className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Menunggu verifikasi</span>
+            <h3 className="text-4xl font-medium text-slate-800 tracking-tighter">{stats?.pending || 0}</h3>
+            <span className="text-[11px] font-medium text-slate-400 mt-1 uppercase tracking-wider">Menunggu verifikasi</span>
           </div>
         </div>
 
         {/* Ditolak */}
         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col gap-4 group hover:shadow-xl hover:shadow-red-500/5 transition-all">
           <div className="flex justify-between items-start">
-            <span className="text-sm font-bold text-slate-500 tracking-tight">Ditolak</span>
+            <span className="text-sm font-medium text-slate-500 tracking-tight">Ditolak</span>
             <div className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-colors">
               <XCircle className="w-5 h-5" />
             </div>
           </div>
           <div className="flex flex-col">
-            <h3 className="text-4xl font-black text-slate-800 tracking-tighter">{stats?.ditolak || 0}</h3>
-            <span className="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wider">Jurnal ditolak</span>
+            <h3 className="text-4xl font-medium text-slate-800 tracking-tighter">{stats?.ditolak || 0}</h3>
+            <span className="text-[11px] font-medium text-slate-400 mt-1 uppercase tracking-wider">Jurnal ditolak</span>
           </div>
         </div>
       </div>
@@ -154,7 +154,7 @@ export default function SiswaDashboard() {
           {/* Informasi Magang */}
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
             <div className="px-8 py-5 border-b border-slate-50 bg-white flex items-center justify-between">
-              <h3 className="font-extrabold text-[#0F172A] flex items-center gap-3 tracking-tight">
+              <h3 className="font-medium text-[#0F172A] flex items-center gap-3 tracking-tight">
                 <div className="bg-blue-100 p-2 rounded-lg">
                   <Building2 className="w-5 h-5 text-[#2563EB]" />
                 </div>
@@ -166,38 +166,38 @@ export default function SiswaDashboard() {
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="flex flex-col gap-3">
-                       <span className="text-[10px] font-black text-slate-400 lg:text-[11px] uppercase tracking-widest">Penempatan DUDI</span>
+                       <span className="text-[10px] font-medium text-slate-400 lg:text-[11px] uppercase tracking-widest">Penempatan DUDI</span>
                        <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
                              <Building2 className="w-6 h-6 text-slate-400" />
                           </div>
                           <div className="flex flex-col gap-0.5">
-                             <span className="font-bold text-slate-800 text-lg tracking-tight">{magang.dudi?.nama_perusahaan || '-'}</span>
-                             <span className="text-xs text-slate-400 font-semibold line-clamp-1">{magang.dudi?.alamat || '-'}</span>
+                             <span className="font-medium text-slate-800 text-lg tracking-tight">{magang.dudi?.nama_perusahaan || '-'}</span>
+                             <span className="text-xs text-slate-400 font-semimedium line-clamp-1">{magang.dudi?.alamat || '-'}</span>
                           </div>
                        </div>
                     </div>
 
                     <div className="flex flex-col gap-3">
-                       <span className="text-[10px] font-black text-slate-400 lg:text-[11px] uppercase tracking-widest">Guru Pembimbing</span>
+                       <span className="text-[10px] font-medium text-slate-400 lg:text-[11px] uppercase tracking-widest">Guru Pembimbing</span>
                        <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
                              <UserSquare2 className="w-6 h-6 text-slate-400" />
                           </div>
                           <div className="flex flex-col gap-0.5">
-                             <span className="font-bold text-slate-800 text-lg tracking-tight">{magang.guru?.full_name || '-'}</span>
-                             <span className="text-xs text-slate-400 font-semibold">{magang.guru?.no_telp || '-'}</span>
+                             <span className="font-medium text-slate-800 text-lg tracking-tight">{magang.guru?.full_name || '-'}</span>
+                             <span className="text-xs text-slate-400 font-semimedium">{magang.guru?.no_telp || '-'}</span>
                           </div>
                        </div>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-slate-50">
-                    <div className="flex items-center gap-2 text-sm font-bold text-slate-600 bg-slate-50 px-4 py-2 rounded-xl">
+                    <div className="flex items-center gap-2 text-sm font-medium text-slate-600 bg-slate-50 px-4 py-2 rounded-xl">
                       <CalendarDays className="w-4 h-4 text-slate-400" />
                       {magang.tgl_mulai ? format(new Date(magang.tgl_mulai), 'd MMM y', { locale: localeId }) : '-'} - {magang.tgl_selesai ? format(new Date(magang.tgl_selesai), 'd MMM y', { locale: localeId }) : '-'}
                     </div>
-                    <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${
+                    <span className={`px-4 py-2 rounded-xl text-[10px] font-medium uppercase tracking-widest flex items-center gap-2 ${
                       magang.status === 'aktif' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-yellow-50 text-yellow-600 border border-yellow-100'
                     }`}>
                       <div className={`w-1.5 h-1.5 rounded-full ${magang.status === 'aktif' ? 'bg-green-500 animate-pulse' : 'bg-yellow-500'}`}></div>
@@ -207,10 +207,10 @@ export default function SiswaDashboard() {
 
                   <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 flex flex-col gap-3 relative overflow-hidden group mt-4">
                     <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500 group-hover:w-3 transition-all duration-300"></div>
-                    <h5 className="text-xs font-black text-blue-600 uppercase tracking-widest pl-2 flex items-center gap-2">
+                    <h5 className="text-xs font-medium text-blue-600 uppercase tracking-widest pl-2 flex items-center gap-2">
                        <Info className="w-4 h-4" /> Catatan Sistem:
                     </h5>
-                    <p className="text-sm font-bold text-slate-600 leading-relaxed pl-2  ">
+                    <p className="text-sm font-medium text-slate-600 leading-relaxed pl-2  ">
                       &quot;Pastikan mengisi jurnal harian setiap hari sesuai dengan kegiatan yang dilakukan di tempat magang.&quot;
                     </p>
                   </div>
@@ -221,8 +221,8 @@ export default function SiswaDashboard() {
                     <Building2 className="w-10 h-10" />
                   </div>
                   <div className="flex flex-col gap-1 max-w-xs">
-                    <h4 className="text-slate-800 font-bold text-lg tracking-tight">Belum ada data magang</h4>
-                    <p className="text-xs text-slate-400 font-semibold leading-relaxed">Silakan hubungi guru pembimbing Anda untuk informasi penempatan magang.</p>
+                    <h4 className="text-slate-800 font-medium text-lg tracking-tight">Belum ada data magang</h4>
+                    <p className="text-xs text-slate-400 font-semimedium leading-relaxed">Silakan hubungi guru pembimbing Anda untuk informasi penempatan magang.</p>
                   </div>
                 </div>
               )}
@@ -232,13 +232,13 @@ export default function SiswaDashboard() {
           {/* Aktivitas Jurnal Terbaru */}
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm flex flex-col">
             <div className="px-8 py-5 border-b border-slate-50 bg-white flex justify-between items-center">
-              <h3 className="font-extrabold text-[#0F172A] flex items-center gap-3 tracking-tight">
+              <h3 className="font-medium text-[#0F172A] flex items-center gap-3 tracking-tight">
                 <div className="bg-blue-100 p-2 rounded-lg">
                   <BookOpen className="w-5 h-5 text-blue-700" />
                 </div>
                 Aktivitas Jurnal Terbaru
               </h3>
-              <Link href="/siswa/jurnal" className="text-xs font-black text-blue-700 hover:text-blue-700 tracking-widest uppercase flex items-center gap-1.5 group">
+              <Link href="/siswa/jurnal" className="text-xs font-medium text-blue-700 hover:text-blue-700 tracking-widest uppercase flex items-center gap-1.5 group">
                 Lihat Semua <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -249,10 +249,10 @@ export default function SiswaDashboard() {
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex flex-col gap-3 flex-1">
                       <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-lg border border-blue-100/50">
+                        <span className="text-[10px] font-medium text-blue-700 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-lg border border-blue-100/50">
                           {format(new Date(journal.tgl), 'd MMMM yyyy', { locale: localeId })}
                         </span>
-                        <span className={`text-[9px] font-black px-3 py-1 rounded-lg border uppercase tracking-[2px] ${
+                        <span className={`text-[9px] font-medium px-3 py-1 rounded-lg border uppercase tracking-[2px] ${
                           journal.status === 'disetujui'
                             ? 'text-green-600 bg-green-50 border-green-100' 
                             : journal.status === 'ditolak'
@@ -262,7 +262,7 @@ export default function SiswaDashboard() {
                           {journal.status}
                         </span>
                       </div>
-                      <h4 className="text-base font-bold text-slate-800 leading-relaxed mt-1">
+                      <h4 className="text-base font-medium text-slate-800 leading-relaxed mt-1">
                         {journal.kegiatan}
                       </h4>
                     </div>
@@ -272,10 +272,10 @@ export default function SiswaDashboard() {
                     <div className="bg-slate-50 rounded-2xl p-4 overflow-hidden relative">
                       <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-300"></div>
                       <div className="flex flex-col gap-2 pl-2">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest flex items-center gap-2">
                           <CheckCircle2 className="w-3.5 h-3.5" /> Catatan Guru Pembimbing
                         </span>
-                        <p className="text-sm font-semibold text-slate-600   leading-relaxed">&quot;{journal.catatan_guru}&quot;</p>
+                        <p className="text-sm font-semimedium text-slate-600   leading-relaxed">&quot;{journal.catatan_guru}&quot;</p>
                       </div>
                     </div>
                   )}
@@ -286,12 +286,12 @@ export default function SiswaDashboard() {
                     <BookOpen className="w-10 h-10" />
                   </div>
                   <div className="flex flex-col gap-1 max-w-xs">
-                    <h4 className="text-slate-800 font-bold text-lg tracking-tight">Belum ada jurnal</h4>
-                    <p className="text-xs text-slate-400 font-semibold leading-relaxed">Mulai dokumentasikan kegiatan magang Anda hari ini.</p>
+                    <h4 className="text-slate-800 font-medium text-lg tracking-tight">Belum ada jurnal</h4>
+                    <p className="text-xs text-slate-400 font-semimedium leading-relaxed">Mulai dokumentasikan kegiatan magang Anda hari ini.</p>
                   </div>
                   <Button 
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-[#2563EB] hover:bg-black text-white font-black tracking-tighter px-8 py-3.5 rounded-2xl transition-all flex items-center gap-3 shadow-lg shadow-blue-500/20 active:scale-95 text-sm uppercase h-auto"
+                    className="bg-[#2563EB] hover:bg-black text-white font-medium tracking-tighter px-8 py-3.5 rounded-2xl transition-all flex items-center gap-3 shadow-lg shadow-blue-500/20 active:scale-95 text-sm uppercase h-auto"
                   >
                     <Plus className="w-5 h-5" />
                     Buat Jurnal Pertama
@@ -306,7 +306,7 @@ export default function SiswaDashboard() {
         <div className="flex flex-col gap-6 sticky top-24">
           <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm flex flex-col overflow-hidden transition-all hover:shadow-2xl hover:shadow-black/5">
             <div className="px-8 py-5 border-b border-slate-50 bg-white">
-              <h3 className="font-extrabold text-[#0F172A] flex items-center gap-3 tracking-tight">
+              <h3 className="font-medium text-[#0F172A] flex items-center gap-3 tracking-tight">
                 <div className="bg-blue-50 p-2 rounded-lg">
                 <TrendingUp className="w-5 h-5 text-[#2563EB]" />
                 </div>
@@ -324,7 +324,7 @@ export default function SiswaDashboard() {
                   }
                 }}
                 disabled={magang?.status !== 'aktif'}
-                className="group w-full flex items-center justify-between bg-[#2563EB] hover:bg-black text-white font-black px-6 py-4 rounded-2xl transition-all shadow-xl shadow-blue-500/10 active:scale-[0.98] text-sm uppercase tracking-tighter h-auto border-none disabled:opacity-50 disabled:bg-slate-300"
+                className="group w-full flex items-center justify-between bg-[#2563EB] hover:bg-black text-white font-medium px-6 py-4 rounded-2xl transition-all shadow-xl shadow-blue-500/10 active:scale-[0.98] text-sm uppercase tracking-tighter h-auto border-none disabled:opacity-50 disabled:bg-slate-300"
               >
                 <div className="flex items-center gap-3">
                   <Plus className="w-5 h-5" />
@@ -332,7 +332,7 @@ export default function SiswaDashboard() {
                 </div>
                 {magang?.status === 'aktif' && <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />}
               </Button>
-              <Link href="/siswa/jurnal" className="group w-full flex items-center justify-between bg-white hover:bg-slate-50 text-[#0F172A] font-bold px-6 py-4 rounded-2xl transition-all border border-slate-100 shadow-sm active:scale-[0.98] text-sm tracking-tight">
+              <Link href="/siswa/jurnal" className="group w-full flex items-center justify-between bg-white hover:bg-slate-50 text-[#0F172A] font-medium px-6 py-4 rounded-2xl transition-all border border-slate-100 shadow-sm active:scale-[0.98] text-sm tracking-tight">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
                     <BookOpen className="w-4 h-4" />
@@ -341,7 +341,7 @@ export default function SiswaDashboard() {
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-slate-800 transition-colors" />
               </Link>
-              <Link href="/siswa/magang" className="group w-full flex items-center justify-between bg-white hover:bg-slate-50 text-[#0F172A] font-bold px-6 py-4 rounded-2xl transition-all border border-slate-100 shadow-sm active:scale-[0.98] text-sm tracking-tight">
+              <Link href="/siswa/magang" className="group w-full flex items-center justify-between bg-white hover:bg-slate-50 text-[#0F172A] font-medium px-6 py-4 rounded-2xl transition-all border border-slate-100 shadow-sm active:scale-[0.98] text-sm tracking-tight">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
                     <Info className="w-4 h-4" />

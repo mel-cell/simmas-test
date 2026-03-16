@@ -101,7 +101,7 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
               <Building2 className="w-6 h-6 text-[#2563EB]" />
             </div>
             <div>
-              <h3 className="text-[20px] font-bold text-slate-800 leading-tight">
+              <h3 className="text-[20px] font-medium text-slate-800 leading-tight">
                 {dudi ? 'Edit Perusahaan' : 'Tambah Perusahaan'}
               </h3>
               <p className="text-[13px] text-slate-400 mt-1 font-medium">
@@ -122,7 +122,7 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             {/* Nama Perusahaan */}
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-[#2563EB]" /> Nama Perusahaan
               </label>
               <input 
@@ -137,7 +137,7 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
 
             {/* Penanggung Jawab */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <User className="w-4 h-4 text-[#2563EB]" /> Penanggung Jawab
               </label>
               <input 
@@ -152,7 +152,7 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
 
             {/* Status */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-[#2563EB]" /> Status Kerjasama
               </label>
               <select 
@@ -168,7 +168,7 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
 
             {/* Email */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#2563EB]" /> Email (Opsional)
               </label>
               <input 
@@ -182,7 +182,7 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
 
             {/* Telepon */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#2563EB]" /> No. Telepon Induk
               </label>
               <input 
@@ -197,7 +197,7 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
 
             {/* Alamat */}
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-[#2563EB]" /> Alamat Lengkap
               </label>
               <textarea 
@@ -217,14 +217,14 @@ export function DudiModal({ isOpen, onClose, onSuccess, dudi }: DudiModalProps) 
           <button 
             type="button"
             onClick={onClose}
-            className="px-6 py-3 bg-white text-slate-600 rounded-2xl font-bold text-[14px] hover:bg-slate-100 transition-all border border-slate-200"
+            className="px-6 py-3 bg-white text-slate-600 rounded-2xl font-medium text-[14px] hover:bg-slate-100 transition-all border border-slate-200"
           >
             Batal
           </button>
           <button 
             onClick={handleSubmit}
             disabled={loading}
-            className="px-8 py-3 bg-[#2563EB] text-white rounded-2xl font-bold text-[14px] hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
+            className="px-8 py-3 bg-[#2563EB] text-white rounded-2xl font-medium text-[14px] hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
           >
             {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
             {dudi ? 'Simpan Perubahan' : 'Tambah Perusahaan'}

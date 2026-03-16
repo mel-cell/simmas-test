@@ -1,9 +1,19 @@
 import { supabase } from '@/lib/supabase'
 
-export const logActivity = async <T>(action: string, entityType: string, entityId?: string | null, details?: T) => {
+export const logActivity = async <T>(
+  action: string, 
+  entityType: string, 
+  entityId?: string | null, 
+  details?: T,
+  passedUserId?: string | null
+) => {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    const userId = user?.id || null
+    let userId = passedUserId
+    
+    if (!userId) {
+       const { data: { user } } = await supabase.auth.getUser()
+       userId = user?.id || null
+    }
 
     // Ensure entityId is a valid UUID, otherwise pass null since DB expects UUID
     const isValidUUID = entityId && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(entityId);

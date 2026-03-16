@@ -44,21 +44,34 @@ export const approvalGuruService = {
     })
   },
 
-  approveJournal: async (id: string, status: 'disetujui' | 'ditolak', notes?: string) => {
+  approveJournal: async (id: string, guruId: string, status: 'disetujui' | 'ditolak', notes?: string) => {
     const supabase = await createServerClient()
     
+    // 0. Verify that this journal belongs to a magang where the guru is the pembimbing
+    const { data: logbook } = await supabase
+      .from('logbooks')
+      .select('*, magang!inner(guru_id)')
+      .eq('id', id)
+      .single()
+
+    if (!logbook || (logbook.magang as any).guru_id !== guruId) {
+      throw new Error('Unauthorized: Anda bukan pembimbing untuk jurnal ini.')
+    }
+
     const dbStatus = status === 'disetujui' ? 'approved' : 'rejected'
 
     const { error } = await supabase
       .from('logbooks')
       .update({
         status: dbStatus,
-        catatan_guru: notes || null
+        catatan_guru: notes || null,
+        approved_by: guruId,
+        approved_at: new Date().toISOString()
       })
       .eq('id', id)
 
     if (!error) {
-      await logActivity('Approval', 'LOGBOOK', id, { status, notes })
+      await logActivity('Approval', 'LOGBOOK', id, { status, notes }, guruId)
     }
 
     return !error

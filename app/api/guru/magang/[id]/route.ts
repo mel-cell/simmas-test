@@ -20,7 +20,7 @@ export async function PATCH(
 
     let success = false
     if (type === 'status') {
-      success = await magangGuruService.updateMagangStatus(id, {
+      success = await magangGuruService.updateMagangStatus(id, profileData.user.id, {
         status: data.status,
         tgl_mulai: data.tgl_mulai,
         tgl_selesai: data.tgl_selesai,
@@ -31,7 +31,7 @@ export async function PATCH(
       if (isNaN(nilai) || nilai < 0 || nilai > 100) {
         return NextResponse.json({ error: 'Nilai harus antara 0-100' }, { status: 400 })
       }
-      success = await magangGuruService.inputNilai(id, nilai)
+      success = await magangGuruService.inputNilai(id, profileData.user.id, nilai)
     } else {
       return NextResponse.json({ error: 'Tipe update tidak valid' }, { status: 400 })
     }

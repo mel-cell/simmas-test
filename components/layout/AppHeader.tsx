@@ -72,7 +72,7 @@ export function AppHeader() {
             </div>
           ) : (
              <>
-               <h1 className="text-[15px] font-bold text-[#0F172A] leading-tight flex items-center gap-2">
+               <h1 className="text-[15px] font-medium text-[#0F172A] leading-tight flex items-center gap-2">
                  {settings?.namaSekolah || 'SMK Negeri 1 Surabaya'}
                </h1>
                <p className="text-[12px] text-[#64748B] font-medium mt-0.5">Sistem Manajemen Magang Siswa</p>
@@ -91,8 +91,8 @@ export function AppHeader() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[300px] sm:w-[320px] rounded-2xl p-0 overflow-hidden shadow-lg border border-[#E2E8F0] mt-2 bg-white z-50">
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#F1F5F9] bg-[#F8FAFC]">
-              <span className="font-bold text-[14px] text-[#0F172A]">Notifikasi</span>
-              <span className="px-2 py-0.5 rounded-md bg-[#DBEAFE] text-[#1E40AF] text-[10px] font-bold">0</span>
+              <span className="font-medium text-[14px] text-[#0F172A]">Notifikasi</span>
+              <span className="px-2 py-0.5 rounded-md bg-[#DBEAFE] text-[#1E40AF] text-[10px] font-medium">0</span>
             </div>
             <div className="flex flex-col items-center justify-center py-12 px-6">
               <div className="w-12 h-12 rounded-full bg-[#F1F5F9] flex items-center justify-center mb-3">
@@ -108,11 +108,11 @@ export function AppHeader() {
         {/* User Profile Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger id="user-profile-trigger" className="flex items-center gap-3 cursor-pointer group border-none bg-transparent outline-none p-1 hover:bg-[#F8FAFC] rounded-full transition-all pr-3">
-            <div className="w-9 h-9 bg-[#2563EB] rounded-full flex items-center justify-center text-white shrink-0 shadow-sm transition-transform group-hover:scale-105 font-bold text-sm">
+            <div className="w-9 h-9 bg-[#2563EB] rounded-full flex items-center justify-center text-white shrink-0 shadow-sm transition-transform group-hover:scale-105 font-medium text-sm">
                {initial}
             </div>
             <div className="text-start hidden lg:flex flex-col">
-              <p className="text-[13px] font-bold text-[#0F172A] leading-tight truncate max-w-[120px]">{userName}</p>
+              <p className="text-[13px] font-medium text-[#0F172A] leading-tight truncate max-w-[120px]">{userName}</p>
               <p className="text-[11px] text-[#64748B] font-medium mt-0.5">
                 {userRole === 'SISWA' && profile?.nomor_induk 
                   ? `${profile.nomor_induk} • ${profile.kelas || ''}` 
@@ -122,7 +122,7 @@ export function AppHeader() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[220px] rounded-2xl p-0 overflow-hidden shadow-xl border border-[#E2E8F0] mt-2 bg-white z-50">
             <div className="px-5 py-4 bg-[#F8FAFC] border-b border-[#F1F5F9]">
-              <p className="text-[14px] font-bold text-[#0F172A] truncate">{userName}</p>
+              <p className="text-[14px] font-medium text-[#0F172A] truncate">{userName}</p>
               <p className="text-[12px] text-[#64748B] font-medium mt-1">
                 {userRole === 'SISWA' && profile?.nomor_induk 
                   ? `${profile.nomor_induk} • ${profile.kelas || ''} ${profile.jurusan || ''}`
@@ -135,7 +135,7 @@ export function AppHeader() {
                 className="flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 hover:text-red-700 cursor-pointer rounded-xl group transition-all"
               >
                 <LogOut className="w-4 h-4 transition-colors" />
-                <span className="font-semibold text-[13px]">Keluar</span>
+                <span className="font-semimedium text-[13px]">Keluar</span>
               </DropdownMenuItem>
             </div>
           </DropdownMenuContent>

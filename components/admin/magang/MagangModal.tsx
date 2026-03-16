@@ -128,7 +128,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
               <Briefcase className="w-6 h-6 text-[#2563EB]" />
             </div>
             <div>
-              <h3 className="text-[20px] font-bold text-slate-800 leading-tight">
+              <h3 className="text-[20px] font-medium text-slate-800 leading-tight">
                 {internship ? 'Edit Penempatan Magang' : 'Tambah Magang Baru'}
               </h3>
               <p className="text-[13px] text-slate-400 mt-1 font-medium">
@@ -150,7 +150,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
             
             {/* Siswa */}
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <GraduationCap className="w-4 h-4 text-[#2563EB]" /> Siswa
               </label>
               <select 
@@ -168,7 +168,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
 
             {/* DUDI */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-[#2563EB]" /> DUDI (Perusahaan)
               </label>
               <select 
@@ -186,7 +186,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
 
             {/* Guru Pembimbing */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <User className="w-4 h-4 text-[#2563EB]" /> Guru Pembimbing
               </label>
               <select 
@@ -203,7 +203,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
 
             {/* Tanggal Mulai */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-[#2563EB]" /> Tanggal Mulai
               </label>
               <input 
@@ -217,7 +217,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
 
             {/* Tanggal Selesai */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-[#2563EB]" /> Tanggal Selesai
               </label>
               <input 
@@ -231,7 +231,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
 
             {/* Status */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-[#2563EB]" /> Status Magang
               </label>
               <select 
@@ -249,7 +249,7 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
 
             {/* Catatan */}
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Briefcase className="w-4 h-4 text-[#2563EB]" /> Catatan Tambahan
               </label>
               <textarea 
@@ -269,14 +269,14 @@ export function MagangModal({ isOpen, onClose, onSuccess, internship }: MagangMo
           <button 
             type="button"
             onClick={onClose}
-            className="px-6 py-3 bg-white text-slate-600 rounded-2xl font-bold text-[14px] hover:bg-slate-100 transition-all border border-slate-200"
+            className="px-6 py-3 bg-white text-slate-600 rounded-2xl font-medium text-[14px] hover:bg-slate-100 transition-all border border-slate-200"
           >
             Batal
           </button>
           <button 
             onClick={handleSubmit}
             disabled={loading}
-            className="px-8 py-3 bg-[#2563EB] text-white rounded-2xl font-bold text-[14px] hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
+            className="px-8 py-3 bg-[#2563EB] text-white rounded-2xl font-medium text-[14px] hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
           >
             {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
             {internship ? 'Simpan Perubahan' : 'Tambah Magang'}

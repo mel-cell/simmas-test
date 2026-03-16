@@ -65,13 +65,13 @@ export default function LoginPage() {
             <div className="w-10 h-10 bg-white/20 border border-white/30 rounded-xl flex items-center justify-center backdrop-blur-sm group-hover:bg-white/30 transition-colors">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-white tracking-tight">SIMMAS</span>
+            <span className="text-2xl font-medium text-white tracking-tight">SIMMAS</span>
           </Link>
         </div>
 
         <div className="relative z-10">
           <p className="text-white/60 text-sm font-medium tracking-widest uppercase mb-6">Sistem Management Magang Siswa</p>
-          <h2 className="text-4xl font-extrabold text-white leading-tight mb-6 tracking-tight">
+          <h2 className="text-4xl font-extramedium text-white leading-tight mb-6 tracking-tight">
             Platform Magang <br/> Siswa SMK Modern
           </h2>
           <p className="text-white/70 text-base leading-relaxed mb-10 max-w-sm">
@@ -98,7 +98,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
             <span className="text-xs text-white/70">UKK SMK Project</span>
             <span className="text-white/40">·</span>
-            <span className="text-xs font-semibold text-white">Powered by UBIG</span>
+            <span className="text-xs font-semimedium text-white">Powered by UBIG</span>
           </div>
         </div>
       </div>
@@ -111,12 +111,12 @@ export default function LoginPage() {
             <div className="w-9 h-9 bg-[#2563EB] rounded-xl flex items-center justify-center">
               <GraduationCap className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-[#0F172A] tracking-tight">SIMMAS</span>
+            <span className="text-xl font-medium text-[#0F172A] tracking-tight">SIMMAS</span>
           </div>
 
           <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-8">
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-[#0F172A] mb-1.5 tracking-tight">Selamat Datang</h1>
+              <h1 className="text-2xl font-medium text-[#0F172A] mb-1.5 tracking-tight">Selamat Datang</h1>
               <p className="text-sm text-[#475569]">Masuk ke akun SIMMAS Anda untuk melanjutkan.</p>
             </div>
 
@@ -188,7 +188,7 @@ export default function LoginPage() {
               <button 
                 type="submit" 
                 disabled={loading}
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap px-4 py-2 w-full h-11 rounded-lg bg-[#2563EB] hover:bg-[#1E40AF] text-white font-semibold text-sm shadow-sm transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed group mt-2"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap px-4 py-2 w-full h-11 rounded-lg bg-[#2563EB] hover:bg-[#1E40AF] text-white font-semimedium text-sm shadow-sm transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed group mt-2"
               >
                 <span className="flex items-center justify-center gap-2">
                   {loading ? (

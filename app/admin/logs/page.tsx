@@ -168,7 +168,7 @@ export default function ActivityLogs() {
     }
 
     return (
-      <span className="text-[14px] sm:text-[15px] font-bold text-slate-800 leading-snug">
+      <span className="text-[14px] sm:text-[15px] font-medium text-slate-800 leading-snug">
         {titlePrefix}
         {detailStr && <span className="text-slate-500 font-medium">{detailStr}</span>}
       </span>
@@ -179,12 +179,12 @@ export default function ActivityLogs() {
     <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-[24px] sm:text-[28px] font-bold text-slate-800 tracking-tight">Log Aktivitas</h2>
+          <h2 className="text-[24px] sm:text-[28px] font-medium text-slate-800 tracking-tight">Log Aktivitas</h2>
           <p className="text-[13px] sm:text-[14px] text-slate-500 mt-1 font-medium italic sm:not-italic">Pantau seluruh perubahan data di sistem secara real-time</p>
         </div>
         <button 
           onClick={handleClearLogs}
-          className="h-10 px-4 bg-red-600 text-white rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 hover:bg-red-700 transition-all border border-red-500/20 shadow-none sm:w-auto w-full"
+          className="h-10 px-4 bg-red-600 text-white rounded-xl font-medium text-[13px] flex items-center justify-center gap-2 hover:bg-red-700 transition-all border border-red-500/20 shadow-none sm:w-auto w-full"
         >
           <Trash2 className="w-4 h-4" />
           Bersihkan Semua Log
@@ -229,7 +229,7 @@ export default function ActivityLogs() {
 
       {/* Filter Section */}
       <div className="bg-white rounded-2xl border border-slate-100 p-5 sm:p-6 lg:p-8 shadow-none">
-        <label className="flex items-center gap-2 text-[15px] font-bold text-slate-800 mb-5">
+        <label className="flex items-center gap-2 text-[15px] font-medium text-slate-800 mb-5">
           <Filter className="w-4 h-4 text-[#2563EB]" />
           Filter pencarian
         </label>
@@ -285,10 +285,10 @@ export default function ActivityLogs() {
               <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">
                 <History className="w-5 h-5 text-[#2563EB]" />
               </div>
-              <h3 className="text-[18px] font-bold text-slate-800">Garis Waktu Aktivitas</h3>
+              <h3 className="text-[18px] font-medium text-slate-800">Garis Waktu Aktivitas</h3>
            </div>
            {!loading && (
-              <span className="px-3 py-1 bg-[#EEF2FF] text-[#4F46E5] text-[12px] font-bold rounded-full border border-[#E0E7FF]">
+              <span className="px-3 py-1 bg-[#EEF2FF] text-[#4F46E5] text-[12px] font-medium rounded-full border border-[#E0E7FF]">
                 {logs.length} entri ditemukan
               </span>
            )}
@@ -309,7 +309,7 @@ export default function ActivityLogs() {
         ) : logs.length === 0 ? (
           <div className="bg-white rounded-[32px] py-20 flex flex-col items-center justify-center text-slate-300 border border-slate-100 shadow-sm">
             <RefreshCw className="w-16 h-16 mb-4 opacity-10 animate-spin-slow" />
-            <p className="text-[16px] font-bold text-slate-400 tracking-tight">Belum ada catatan aktivitas sistem.</p>
+            <p className="text-[16px] font-medium text-slate-400 tracking-tight">Belum ada catatan aktivitas sistem.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -338,19 +338,19 @@ export default function ActivityLogs() {
                       </span>
 
                       {/* Action Label */}
-                      <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-400">
+                      <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
                         <span className="text-slate-400/60">Action:</span>
                         <span className="text-slate-500/80 uppercase tracking-wide">{log.action}</span>
                       </div>
 
                       {/* User Info */}
-                      <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-400/80">
+                      <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400/80">
                         <User className="w-3.5 h-3.5 opacity-50" />
                         <span className="text-slate-500/80">{log.userName}</span>
                       </div>
 
                       {/* Time Info */}
-                      <div className="flex items-center gap-1.5 text-[12px] font-bold text-slate-400/80">
+                      <div className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400/80">
                         <Calendar className="w-3.5 h-3.5 opacity-50" />
                         <span className="text-slate-500/80 uppercase">
                           {new Date(log.createdAt).toLocaleString('id-ID', {

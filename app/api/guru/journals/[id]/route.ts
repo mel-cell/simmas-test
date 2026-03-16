@@ -22,7 +22,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Status tidak valid' }, { status: 400 })
     }
 
-    const success = await approvalGuruService.approveJournal(id, status, notes)
+    const success = await approvalGuruService.approveJournal(id, profileData.user.id, status, notes)
     return NextResponse.json({ success })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Gagal update status jurnal'

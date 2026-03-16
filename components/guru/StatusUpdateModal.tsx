@@ -63,7 +63,7 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
           <DialogTitle className="text-2xl font-black text-slate-800 tracking-tight">
             Update Status Magang
           </DialogTitle>
-          <DialogDescription className="text-slate-500 font-bold text-sm">
+          <DialogDescription className="text-slate-500 font-medium text-sm">
             Atur status dan periode magang untuk siswa <span className="text-[#2563EB]">{magang?.siswa?.full_name}</span>
           </DialogDescription>
         </DialogHeader>
@@ -74,7 +74,7 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
             <select 
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-bold text-slate-700 outline-none focus:ring-4 focus:ring-[#2563EB]/5 focus:border-[#2563EB]/30 transition-all appearance-none"
+              className="h-12 w-full bg-slate-50 border border-slate-100 rounded-xl px-4 font-medium text-slate-700 outline-none focus:ring-4 focus:ring-[#2563EB]/5 focus:border-[#2563EB]/30 transition-all appearance-none"
             >
               <option value="aktif">Aktif (Sedang Berlangsung)</option>
               <option value="selesai">Selesai (Tuntas)</option>
@@ -92,7 +92,7 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
                    type="date"
                    value={startDate}
                    onChange={(e) => setStartDate(e.target.value)}
-                   className="h-12 pl-11 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-700"
+                   className="h-12 pl-11 bg-slate-50 border-slate-100 rounded-xl font-medium text-slate-700"
                  />
               </div>
             </div>
@@ -104,7 +104,7 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
                    type="date"
                    value={endDate}
                    onChange={(e) => setEndDate(e.target.value)}
-                   className="h-12 pl-11 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-700"
+                   className="h-12 pl-11 bg-slate-50 border-slate-100 rounded-xl font-medium text-slate-700"
                  />
               </div>
             </div>
@@ -116,7 +116,7 @@ export function StatusUpdateModal({ isOpen, onClose, onConfirm, magang }: Status
               placeholder="Opsional: Catatan untuk siswa..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="min-h-[100px] bg-slate-50 border-slate-100 rounded-xl p-4 font-bold text-slate-700 shadow-none focus:ring-4 focus:ring-[#2563EB]/5"
+              className="min-h-[100px] bg-slate-50 border-slate-100 rounded-xl p-4 font-medium text-slate-700 shadow-none focus:ring-4 focus:ring-[#2563EB]/5"
             />
           </div>
         </div>

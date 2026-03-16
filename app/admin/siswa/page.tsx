@@ -95,7 +95,7 @@ export default function ManajemenSiswa() {
     <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12 text-slate-800">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-[28px] font-bold text-slate-800 tracking-tight">Manajemen Siswa</h2>
+          <h2 className="text-[28px] font-medium text-slate-800 tracking-tight">Manajemen Siswa</h2>
           <p className="text-[14px] text-slate-500 mt-1 font-medium">Kelola data siswa dan penugasan magang</p>
         </div>
       </div>
@@ -143,13 +143,13 @@ export default function ManajemenSiswa() {
             <div className="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center">
               <Users className="w-5 h-5 text-slate-400" />
             </div>
-            <h3 className="text-[18px] font-bold text-slate-800">Data Siswa</h3>
+            <h3 className="text-[18px] font-medium text-slate-800">Data Siswa</h3>
           </div>
           
           <div className="flex flex-wrap items-center gap-3">
             <button 
               onClick={handleAdd}
-              className="h-11 px-6 bg-[#2563EB] text-white rounded-xl font-bold text-[14px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all border border-[#2563EB]/10 shadow-lg shadow-blue-600/20 active:scale-95"
+              className="h-11 px-6 bg-[#2563EB] text-white rounded-xl font-medium text-[14px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all border border-[#2563EB]/10 shadow-lg shadow-blue-600/20 active:scale-95"
             >
               <Plus className="w-4 h-4" />
               Tambah Siswa
@@ -173,7 +173,7 @@ export default function ManajemenSiswa() {
           <select 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 min-w-[150px] appearance-none"
+            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 min-w-[150px] appearance-none"
           >
             <option value="semua">Semua Status</option>
             <option value="aktif">Aktif (Siswa)</option>
@@ -184,7 +184,7 @@ export default function ManajemenSiswa() {
           <select 
             value={kelasFilter}
             onChange={(e) => setKelasFilter(e.target.value)}
-            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 min-w-[150px] appearance-none"
+            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 min-w-[150px] appearance-none"
           >
             <option value="semua">Semua Kelas</option>
             <option value="X">Kelas X</option>
@@ -195,7 +195,7 @@ export default function ManajemenSiswa() {
           <select 
             value={jurusanFilter}
             onChange={(e) => setJurusanFilter(e.target.value)}
-            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 min-w-[180px] appearance-none"
+            className="h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 min-w-[180px] appearance-none"
           >
             <option value="semua">Semua Jurusan</option>
             <option value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</option>
@@ -210,13 +210,13 @@ export default function ManajemenSiswa() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-white">
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">NIS</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Nama</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Kelas / Jurusan</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Kontak</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px] text-center">Status</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px]">Pembimbing</th>
-                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px] text-right">Aksi</th>
+                <th className="px-6 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px]">NIS</th>
+                <th className="px-6 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px]">Nama</th>
+                <th className="px-6 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px]">Kelas / Jurusan</th>
+                <th className="px-6 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px]">Kontak</th>
+                <th className="px-6 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px] text-center">Status</th>
+                <th className="px-6 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px]">Pembimbing</th>
+                <th className="px-6 py-4 text-[11px] font-medium text-slate-400 uppercase tracking-[2px] text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 bg-white">
@@ -259,36 +259,36 @@ export default function ManajemenSiswa() {
                       <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
                         <Users className="w-8 h-8 text-slate-300" />
                       </div>
-                      <span className="text-[14px] font-bold text-slate-400">Tidak ada data siswa ditemukan.</span>
+                      <span className="text-[14px] font-medium text-slate-400">Tidak ada data siswa ditemukan.</span>
                     </div>
                   </td>
                 </tr>
               ) : students.map((siswa) => (
                 <tr key={siswa.id} className="hover:bg-slate-50/30 transition-colors group">
                   <td className="px-6 py-5">
-                    <span className="text-[13px] font-bold text-slate-700 font-mono tracking-tight">{siswa.nis}</span>
+                    <span className="text-[13px] font-medium text-slate-700 font-mono tracking-tight">{siswa.nis}</span>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-[#2563EB]/10 flex items-center justify-center border border-[#2563EB]/20 group-hover:scale-110 transition-transform">
                         <UserCheck className="w-4 h-4 text-[#2563EB]" />
                       </div>
-                      <span className="text-[14px] font-bold text-slate-800">{siswa.nama}</span>
+                      <span className="text-[14px] font-medium text-slate-800">{siswa.nama}</span>
                     </div>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex flex-col">
-                      <span className="text-[14px] font-bold text-slate-700">{siswa.kelas}</span>
+                      <span className="text-[14px] font-medium text-slate-700">{siswa.kelas}</span>
                       <span className="text-[12px] text-slate-400 font-medium tracking-tight italic">{siswa.jurusan}</span>
                     </div>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex flex-col gap-1.5 min-w-[200px]">
-                      <div className="flex items-center gap-2 text-[12px] text-slate-500 font-bold">
+                      <div className="flex items-center gap-2 text-[12px] text-slate-500 font-medium">
                         <Mail className="w-3.5 h-3.5 text-blue-400" />
                         {siswa.email}
                       </div>
-                      <div className="flex items-center gap-2 text-[12px] text-slate-500 font-bold">
+                      <div className="flex items-center gap-2 text-[12px] text-slate-500 font-medium">
                         <Phone className="w-3.5 h-3.5 text-emerald-400" />
                         {siswa.nohp}
                       </div>
@@ -312,24 +312,24 @@ export default function ManajemenSiswa() {
                     <div className="flex flex-col gap-2 max-w-[220px]">
                       <div className="flex items-center">
                         {siswa.pembimbing && siswa.pembimbing !== '-' ? (
-                          <span className="text-[12px] font-bold text-slate-700 line-clamp-1 flex items-center gap-1.5">
+                          <span className="text-[12px] font-medium text-slate-700 line-clamp-1 flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></div>
                             {siswa.pembimbing}
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 text-[10px] font-bold border border-rose-100 uppercase tracking-wider w-fit">
+                          <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 text-[10px] font-medium border border-rose-100 uppercase tracking-wider w-fit">
                             Belum Ada Guru
                           </span>
                         )}
                       </div>
                       <div className="flex items-center">
                         {siswa.dudi && siswa.dudi !== '-' ? (
-                          <span className="text-[11px] text-slate-500 font-bold line-clamp-1 flex items-center gap-1.5">
+                          <span className="text-[11px] text-slate-500 font-medium line-clamp-1 flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shrink-0"></div>
                             {siswa.dudi}
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold border border-slate-200 uppercase tracking-wider w-fit">
+                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-medium border border-slate-200 uppercase tracking-wider w-fit">
                             Belum Ada DUDI
                           </span>
                         )}
@@ -363,13 +363,13 @@ export default function ManajemenSiswa() {
         {/* Pagination placeholder */}
         <div className="px-6 lg:px-8 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/20">
           <div className="flex items-center gap-3">
-            <span className="text-[13px] text-slate-500 font-bold">Tampilkan</span>
-            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none">
+            <span className="text-[13px] text-slate-500 font-medium">Tampilkan</span>
+            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none">
               <option>10</option>
               <option>25</option>
               <option>50</option>
             </select>
-            <span className="text-[13px] text-slate-500 font-bold">data</span>
+            <span className="text-[13px] text-slate-500 font-medium">data</span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -378,7 +378,7 @@ export default function ManajemenSiswa() {
             </button>
             <div className="flex items-center gap-2">
               <span className="text-[14px] font-black text-slate-800">Halaman 1</span>
-              <span className="text-[14px] text-slate-400 font-bold">dari 1</span>
+              <span className="text-[14px] text-slate-400 font-medium">dari 1</span>
             </div>
             <button className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm active:scale-95 disabled:opacity-30" disabled>
               <ChevronRight className="w-5 h-5" />

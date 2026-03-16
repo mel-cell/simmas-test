@@ -128,10 +128,10 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
       <DialogContent className="sm:max-w-4xl w-[95%] bg-white rounded-[40px] p-0 overflow-hidden border-none shadow-2xl">
         <DialogHeader className="p-8 pb-5">
           <div className="flex flex-col gap-1">
-            <DialogTitle className="text-2xl font-black text-slate-800 tracking-tight">
+            <DialogTitle className="text-2xl font-medium text-slate-800 tracking-tight">
               {isEdit ? 'Edit Jurnal Harian' : 'Tambah Jurnal Harian'}
             </DialogTitle>
-            <DialogDescription className="text-slate-500 font-bold text-sm">
+            <DialogDescription className="text-slate-500 font-medium text-sm">
               {isEdit ? 'Perbarui dokumentasi kegiatan magang Anda' : 'Dokumentasikan kegiatan magang harian Anda'}
             </DialogDescription>
           </div>
@@ -144,16 +144,16 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
               <Info className="w-5 h-5 text-[#2563EB]" />
             </div>
             <div className="flex flex-col gap-2 flex-1">
-              <h4 className="text-[12px] font-black text-[#0056B3] uppercase tracking-[2px]">
+              <h4 className="text-[12px] font-medium text-[#0056B3] uppercase tracking-[2px]">
                 PANDUAN PENULISAN JURNAL
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
-                <ul className="text-[13px] font-bold text-[#0066CC] space-y-1 list-disc pl-4 opacity-90 leading-relaxed">
+                <ul className="text-[13px] font-medium text-[#0066CC] space-y-1 list-disc pl-4 opacity-90 leading-relaxed">
                   <li>Minimal 50 karakter untuk deskripsi kegiatan</li>
                   <li>Deskripsikan kegiatan dengan detail & spesifik</li>
                   <li>Sertakan kendala yang dihadapi (jika ada)</li>
                 </ul>
-                <ul className="text-[13px] font-bold text-[#0066CC] space-y-1 list-disc pl-4 opacity-90 leading-relaxed">
+                <ul className="text-[13px] font-medium text-[#0066CC] space-y-1 list-disc pl-4 opacity-90 leading-relaxed">
                   <li>Upload dokumentasi pendukung (Foto/Dokumen)</li>
                   <li>Pastikan tanggal sesuai dengan hari kerja</li>
                 </ul>
@@ -163,10 +163,10 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
 
           {/* Informasi Dasar */}
           <div className="flex flex-col gap-4">
-             <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Informasi Dasar</h3>
+             <h3 className="text-sm font-medium text-slate-800 uppercase tracking-widest">Informasi Dasar</h3>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="flex flex-col gap-2">
-                   <Label className="text-[13px] font-bold text-slate-500 ml-1">
+                   <Label className="text-[13px] font-medium text-slate-500 ml-1">
                       Tanggal <span className="text-red-500">*</span>
                    </Label>
                    <div className="relative">
@@ -176,24 +176,27 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
                         value={date}
                         disabled={isEdit}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDate(e.target.value)}
-                        className="pl-11 h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-700 focus:bg-white transition-all outline-none ring-0 focus-visible:ring-4 focus-visible:ring-[#2563EB]/5 focus-visible:border-[#2563EB]/30 disabled:opacity-50"
+                        className="pl-11 h-12 bg-slate-50 border-slate-100 rounded-xl font-medium text-slate-700 focus:bg-white transition-all outline-none ring-0 focus-visible:ring-4 focus-visible:ring-[#2563EB]/5 focus-visible:border-[#2563EB]/30 disabled:opacity-50"
                       />
                    </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                   <Label className="text-[13px] font-bold text-slate-500 ml-1">Penempatan DUDI</Label>
+                   <Label className="text-[13px] font-medium text-slate-500 ml-1">Penempatan DUDI</Label>
                    <Input 
                      disabled
-                     value={magangInfo?.dudi?.nama_perusahaan || '-'}
-                     className="h-12 bg-slate-50 border-slate-100 rounded-xl font-bold text-slate-600 italic cursor-not-allowed"
+                     value={(() => {
+                        const dudi = Array.isArray(magangInfo?.dudi) ? magangInfo?.dudi[0] : magangInfo?.dudi;
+                        return dudi?.nama_perusahaan || '-';
+                     })()}
+                     className="h-12 bg-slate-50 border-slate-100 rounded-xl font-medium text-slate-600 italic cursor-not-allowed"
                    />
                 </div>
                 <div className="flex flex-col gap-2">
-                   <Label className="text-[13px] font-bold text-slate-500 ml-1">Status Aktivitas</Label>
+                   <Label className="text-[13px] font-medium text-slate-500 ml-1">Status Aktivitas</Label>
                    <div className="h-12 bg-blue-50/50 border border-blue-100 rounded-xl px-4 flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                      <span className="text-[13px] font-black text-blue-700 uppercase tracking-wider">
-                         {magangInfo?.status === 'aktif' ? 'Sedang Magang' : magangInfo?.status || 'Aktif Magang'}
+                      <span className="text-[13px] font-medium text-blue-700 uppercase tracking-wider">
+                         {magangInfo?.status === 'aktif' ? 'Sedang Magang' : (magangInfo?.status || 'Aktif Magang')}
                       </span>
                    </div>
                 </div>
@@ -203,30 +206,30 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
           {/* Kegiatan Harian */}
           <div className="flex flex-col gap-4">
              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Kegiatan Harian</h3>
-                <span className={`text-[10px] font-black px-2 py-1 rounded-lg ${isDescriptionValid ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-400'}`}>
+                <h3 className="text-sm font-medium text-slate-800 uppercase tracking-widest">Kegiatan Harian</h3>
+                <span className={`text-[10px] font-medium px-2 py-1 rounded-lg ${isDescriptionValid ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-400'}`}>
                   {description.length}/50 minimum
                 </span>
              </div>
              <div className="flex flex-col gap-2">
-                <Label className="text-[13px] font-bold text-slate-500 ml-1">
+                <Label className="text-[13px] font-medium text-slate-500 ml-1">
                    Deskripsi Kegiatan <span className="text-red-500">*</span>
                 </Label>
                 <Textarea 
                   placeholder="Deskripsikan kegiatan yang Anda lakukan hari ini secara detail. Contoh: Membuat wireframe untuk halaman login menggunakan Figma, kemudian melakukan coding HTML dan CSS untuk implementasi desain tersebut..."
-                  className={`min-h-[160px] p-4 bg-slate-50 rounded-2xl font-semibold text-slate-700 leading-relaxed transition-all ring-0 outline-none focus:bg-white focus-visible:ring-4 focus-visible:ring-[#2563EB]/5 ${isDescriptionValid ? 'border-slate-100 focus-visible:border-[#2563EB]/30' : 'border-red-100 focus-visible:border-red-200'}`}
+                  className={`min-h-[160px] p-4 bg-slate-50 rounded-2xl font-semimedium text-slate-700 leading-relaxed transition-all ring-0 outline-none focus:bg-white focus-visible:ring-4 focus-visible:ring-[#2563EB]/5 ${isDescriptionValid ? 'border-slate-100 focus-visible:border-[#2563EB]/30' : 'border-red-100 focus-visible:border-red-200'}`}
                   value={description}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                 />
              </div>
              
              <div className="flex flex-col gap-2">
-                <Label className="text-[13px] font-bold text-slate-500 ml-1">
+                <Label className="text-[13px] font-medium text-slate-500 ml-1">
                    Kendala & Hambatan <span className="text-slate-300 font-medium">(Opsional)</span>
                 </Label>
                 <Input 
                    placeholder="Sebutkan jika ada kendala yang dihadapi..."
-                   className="h-12 bg-slate-50 border-slate-100 rounded-xl font-semibold text-slate-700 focus:bg-white transition-all"
+                   className="h-12 bg-slate-50 border-slate-100 rounded-xl font-semimedium text-slate-700 focus:bg-white transition-all"
                    value={problems}
                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProblems(e.target.value)}
                 />
@@ -235,7 +238,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
 
           {/* Dokumentasi Pendukung */}
           <div className="flex flex-col gap-4 mb-4">
-             <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Dokumentasi Pendukung</h3>
+             <h3 className="text-sm font-medium text-slate-800 uppercase tracking-widest">Dokumentasi Pendukung</h3>
              <div className="flex flex-col gap-2 text-center">
                 <div 
                    className={`relative border-2 border-dashed rounded-3xl p-8 flex flex-col items-center gap-4 transition-all ${file ? 'bg-green-50/30 border-green-200' : 'bg-slate-50 border-slate-100 hover:border-[#2563EB]/30 hover:bg-[#2563EB]/5'}`}
@@ -250,7 +253,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
                       {file ? <CheckCircle2 className="w-8 h-8" /> : <Upload className="w-8 h-8" />}
                    </div>
                    <div className="flex flex-col gap-1">
-                      <p className="text-sm font-bold text-slate-700">
+                      <p className="text-sm font-medium text-slate-700">
                         {file ? file.name : 'Pilih file dokumentasi'}
                       </p>
                       <p className="text-xs font-medium text-slate-400">
@@ -258,7 +261,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
                       </p>
                    </div>
                    {!file && (
-                     <Button type="button" className="rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold h-10 px-8 transition-all text-sm shadow-md shadow-blue-500/10">
+                     <Button type="button" className="rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-medium h-10 px-8 transition-all text-sm shadow-md shadow-blue-500/10">
                         Browse File
                      </Button>
                    )}
@@ -276,8 +279,8 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
                   <AlertCircle className="w-5 h-5 text-red-500" />
                </div>
                <div className="flex flex-col gap-1">
-                  <h4 className="text-[13px] font-black text-[#B91C1C] uppercase tracking-wider">Lengkapi form terlebih dahulu:</h4>
-                  <ul className="text-[12px] font-bold text-[#DC2626]/80 list-disc pl-4 space-y-0.5">
+                  <h4 className="text-[13px] font-medium text-[#B91C1C] uppercase tracking-wider">Lengkapi form terlebih dahulu:</h4>
+                  <ul className="text-[12px] font-medium text-[#DC2626]/80 list-disc pl-4 space-y-0.5">
                      {!date && <li>Pilih tanggal yang valid</li>}
                      {description.length < 50 && <li>Deskripsi kegiatan minimal 50 karakter</li>}
                      {error && <li>{error}</li>}
@@ -291,7 +294,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
           <Button 
             variant="outline" 
             onClick={onClose}
-            className="rounded-2xl h-12 px-8 font-black text-slate-500 hover:bg-white hover:text-slate-800 transition-all text-sm border-slate-200"
+            className="rounded-2xl h-12 px-8 font-medium text-slate-500 hover:bg-white hover:text-slate-800 transition-all text-sm border-slate-200"
             disabled={loading}
           >
             Batal
@@ -299,7 +302,7 @@ export function JournalModal({ isOpen, onClose, onSuccess, journal, magangInfo }
           <Button 
             onClick={handleSubmit}
             disabled={!isFormValid || loading}
-            className={`rounded-2xl h-12 px-10 font-black text-white transition-all text-sm shadow-xl ${isFormValid ? 'bg-[#2563EB] hover:bg-[#00ACC1] shadow-[#2563EB]/20' : 'bg-slate-300 cursor-not-allowed'}`}
+            className={`rounded-2xl h-12 px-10 font-medium text-white transition-all text-sm shadow-xl ${isFormValid ? 'bg-[#2563EB] hover:bg-[#00ACC1] shadow-[#2563EB]/20' : 'bg-slate-300 cursor-not-allowed'}`}
           >
             {loading ? (
               <>

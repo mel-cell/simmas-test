@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS magang (
   pilihan_ke INTEGER,
   nilai_akhir FLOAT,
   sertifikat_url TEXT,
+  catatan TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );

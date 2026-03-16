@@ -18,7 +18,7 @@ export const magangGuruService = {
         status,
         nilai_akhir,
         catatan,
-        siswa:profiles!magang_siswa_id_fkey (full_name, nomor_induk, kelas, jurusan),
+        siswa:siswa_id (full_name, nomor_induk, kelas, jurusan),
         dudi:dudi_id (id, nama_perusahaan, alamat)
       `)
       .eq('guru_id', guruId)
@@ -62,15 +62,36 @@ export const magangGuruService = {
     return results
   },
 
-  updateMagangStatus: async (id: string, data: { status: string, tgl_mulai?: string, tgl_selesai?: string, catatan?: string }) => {
+  updateMagangStatus: async (id: string, guruId: string, data: { status: string, tgl_mulai?: string, tgl_selesai?: string, catatan?: string }) => {
     const supabase = await createServerClient()
     
-    // 1. Get student ID first
+    // 1. Get student ID and DUDI current context
     const { data: currentMagang } = await supabase
       .from('magang')
-      .select('siswa_id')
+      .select('siswa_id, dudi_id, status')
       .eq('id', id)
       .single()
+
+    // 2. Check DUDI Quota if transitioning to 'aktif'
+    if (data.status === 'aktif' && currentMagang?.status !== 'aktif' && currentMagang?.dudi_id) {
+      const { data: dudi } = await supabase
+        .from('dudi')
+        .select('kuota_maksimal')
+        .eq('id', currentMagang.dudi_id)
+        .maybeSingle()
+
+      if (dudi && dudi.kuota_maksimal) {
+        const { count: acceptedSiswa } = await supabase
+          .from('magang')
+          .select('*', { count: 'exact', head: true })
+          .eq('dudi_id', currentMagang.dudi_id)
+          .eq('status', 'aktif')
+
+        if (acceptedSiswa !== null && acceptedSiswa >= dudi.kuota_maksimal) {
+          throw new Error('Persetujuan dibatalkan. Kuota penempatan di perusahaan (DUDI) ini sudah penuh.')
+        }
+      }
+    }
 
     const { error } = await supabase
       .from('magang')
@@ -96,15 +117,30 @@ export const magangGuruService = {
         .update({ status: profileStatus })
         .eq('id', currentMagang.siswa_id)
 
-      await logActivity('Update Status', 'MAGANG', id, data)
+      await logActivity('Update Status', 'MAGANG', id, data, guruId)
     }
 
     return !error
   },
 
-  inputNilai: async (id: string, nilai: number) => {
+  inputNilai: async (id: string, guruId: string, nilai: number) => {
+    if (nilai < 0 || nilai > 100) {
+      throw new Error('Nilai harus antara 0 - 100');
+    }
+
     const supabase = await createServerClient()
     
+    // 0. Verify owner
+    const { data: current } = await supabase
+      .from('magang')
+      .select('guru_id')
+      .eq('id', id)
+      .single()
+
+    if (!current || current.guru_id !== guruId) {
+      throw new Error('Unauthorized: Anda bukan pembimbing untuk siswa ini.')
+    }
+
     const { error } = await supabase
       .from('magang')
       .update({
@@ -113,7 +149,7 @@ export const magangGuruService = {
       .eq('id', id)
 
     if (!error) {
-      await logActivity('Input Nilai', 'MAGANG', id, { nilai })
+      await logActivity('Input Nilai', 'MAGANG', id, { nilai }, guruId)
     }
 
     return !error

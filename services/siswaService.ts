@@ -11,8 +11,17 @@ export const siswaService = {
       .eq('id', siswaId)
       .single()
 
-    // 2. Get Internship Info
-    const { data: magang } = await supabase
+    // 2. Get Internship Info - Ambil yang aktif dulu, kalau tidak ada baru ambil yang lain
+    interface RawMagang {
+      id: string;
+      status: string;
+      tgl_mulai: string;
+      tgl_selesai: string;
+      dudi: { nama_perusahaan: string, alamat: string } | { nama_perusahaan: string, alamat: string }[];
+      guru: { full_name: string, no_telp: string } | { full_name: string, no_telp: string }[];
+    }
+
+    const { data: allMagang } = await (supabase
       .from('magang')
       .select(`
         id,
@@ -22,10 +31,21 @@ export const siswaService = {
         dudi:dudi_id (nama_perusahaan, alamat),
         guru:guru_id (full_name, no_telp)
       `)
-      .eq('siswa_id', siswaId)
-      .order('status', { ascending: true })
-      .limit(1)
-      .maybeSingle()
+      .eq('siswa_id', siswaId) as unknown as Promise<{ data: RawMagang[] | null }>)
+
+    let magangRaw: RawMagang | null = null
+    if (allMagang && allMagang.length > 0) {
+      // Prioritas: 'aktif' > 'menunggu' > yang lain
+      magangRaw = allMagang.find(m => m.status === 'aktif') || 
+                  allMagang.find(m => m.status === 'menunggu') || 
+                  allMagang[0]
+    }
+
+    const magang = magangRaw ? {
+      ...magangRaw,
+      dudi: Array.isArray(magangRaw.dudi) ? magangRaw.dudi[0] : magangRaw.dudi,
+      guru: Array.isArray(magangRaw.guru) ? magangRaw.guru[0] : magangRaw.guru
+    } : null
 
     // 3. Get Journal Stats by magang_id
     const stats = {
@@ -102,12 +122,21 @@ export const siswaService = {
     })) as Logbook[]
   },
 
-  getJournalDetail: async (id: string) => {
+  getJournalDetail: async (id: string, siswaId: string) => {
     const supabase = await createServerClient()
+    const { data: magang } = await supabase
+      .from('magang')
+      .select('id')
+      .eq('siswa_id', siswaId)
+      .maybeSingle()
+
+    if (!magang) return null
+
     const { data, error } = await supabase
       .from('logbooks')
       .select('*')
       .eq('id', id)
+      .eq('magang_id', magang.id)
       .single()
     
     if (error) return null
@@ -130,12 +159,32 @@ export const siswaService = {
     // 1. Find Magang ID
     const { data: magang } = await supabase
       .from('magang')
-      .select('id, status')
+      .select('id, status, tgl_mulai, tgl_selesai')
       .eq('siswa_id', data.siswa_id)
       .eq('status', 'aktif')
-      .maybeSingle()
+      .maybeSingle() as unknown as { data: { id: string, status: string, tgl_mulai: string, tgl_selesai: string } | null }
     
     if (!magang) throw new Error('Anda tidak dapat membuat jurnal karena belum memiliki program magang yang aktif.')
+
+    // 1.2. Check date range
+    const journalDate = new Date(data.tgl)
+    if (magang.tgl_mulai && journalDate < new Date(magang.tgl_mulai)) {
+       throw new Error(`Tanggal jurnal tidak boleh sebelum tanggal mulai magang (${magang.tgl_mulai}).`)
+    }
+    if (magang.tgl_selesai && journalDate > new Date(magang.tgl_selesai)) {
+       throw new Error(`Tanggal jurnal tidak boleh setelah tanggal selesai magang (${magang.tgl_selesai}).`)
+    }
+
+    if (data.kegiatan.trim().length < 50) {
+      throw new Error('Deskripsi kegiatan minimal 50 karakter.')
+    }
+
+    // 1.5. Prevent Future Dates
+    const today = new Date()
+    today.setHours(23, 59, 59, 999)
+    if (new Date(data.tgl) > today) {
+      throw new Error('Tidak dapat mengisi jurnal untuk tanggal di masa depan.')
+    }
 
     // 2. Check for existing entry on same date
     const { data: existing } = await supabase
@@ -163,22 +212,32 @@ export const siswaService = {
     return !error
   },
 
-  updateJournal: async (id: string, data: {
+  updateJournal: async (id: string, siswaId: string, data: {
     kegiatan?: string,
     kendala?: string,
     foto_url?: string,
     status?: 'draft' | 'menunggu'
   }) => {
     const supabase = await createServerClient()
-    // 1. Check current status
+
+    // 0. Verify owner
     const { data: current } = await supabase
       .from('logbooks')
-      .select('status')
+      .select('*, magang!inner(siswa_id)')
       .eq('id', id)
-      .single()
+      .single() as unknown as { data: { status: string, magang: { siswa_id: string } } | null }
 
-    if (current?.status === 'disetujui' || current?.status === 'approved') {
+    if (!current || current.magang.siswa_id !== siswaId) {
+      throw new Error('Unauthorized or Journal not found')
+    }
+
+    // 1. Check current status
+    if (current.status === 'disetujui' || current.status === 'approved') {
       throw new Error('Jurnal yang sudah disetujui tidak dapat diubah.')
+    }
+
+    if (data.kegiatan && data.kegiatan.trim().length < 50) {
+      throw new Error('Deskripsi kegiatan minimal 50 karakter.')
     }
 
     // 2. Map status to DB
@@ -195,22 +254,29 @@ export const siswaService = {
         kegiatan: data.kegiatan,
         kendala: data.kendala,
         gambar_url: data.foto_url,
-        status: targetStatus || current?.status
+        status: targetStatus || current?.status,
+        ...(targetStatus === 'pending' || targetStatus === 'draft' ? { catatan_guru: null, approved_by: null, approved_at: null } : {})
       })
       .eq('id', id)
 
     return !error
   },
 
-  deleteJournal: async (id: string) => {
+  deleteJournal: async (id: string, siswaId: string) => {
     const supabase = await createServerClient()
+    
+    // 0. Verify owner
     const { data: current } = await supabase
       .from('logbooks')
-      .select('status')
+      .select('status, magang!inner(siswa_id)')
       .eq('id', id)
-      .single()
+      .single() as unknown as { data: { status: string, magang: { siswa_id: string } } | null }
 
-    if (current?.status === 'disetujui' || current?.status === 'approved') {
+    if (!current || current.magang.siswa_id !== siswaId) {
+      throw new Error('Unauthorized or Journal not found')
+    }
+
+    if (current.status === 'disetujui' || current.status === 'approved') {
       throw new Error('Jurnal yang sudah disetujui tidak dapat dihapus.')
     }
 
@@ -274,7 +340,26 @@ export const siswaService = {
       throw new Error('Anda sudah terdaftar dalam program magang aktif.')
     }
 
-    // 3. Apply
+    // 3. Check DUDI quota
+    const { data: dudi } = await supabase
+      .from('dudi')
+      .select('kuota_maksimal')
+      .eq('id', dudiId)
+      .maybeSingle()
+
+    if (dudi && dudi.kuota_maksimal) {
+      const { count: acceptedSiswa } = await supabase
+        .from('magang')
+        .select('*', { count: 'exact', head: true })
+        .eq('dudi_id', dudiId)
+        .eq('status', 'aktif')
+
+      if (acceptedSiswa !== null && acceptedSiswa >= dudi.kuota_maksimal) {
+        throw new Error('Kuota di tempat magang ini sudah penuh.')
+      }
+    }
+
+    // 4. Apply
     const { error } = await supabase
       .from('magang')
       .insert({

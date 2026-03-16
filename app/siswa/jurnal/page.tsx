@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { api } from '@/lib/api'
-import { SiswaJournal } from '@/types/siswa'
+import { SiswaJournal, SiswaMagang } from '@/types/siswa'
 import { Skeleton } from '@/components/ui/skeleton'
 import { format, isToday } from 'date-fns'
 import { id as localeId } from 'date-fns/locale'
@@ -32,7 +32,7 @@ export default function JurnalSiswa() {
   const [statusFilter] = useState('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingJournal, setEditingJournal] = useState<SiswaJournal | null>(null)
-  const [magangStatus, setMagangStatus] = useState<string | null>(null)
+  const [magang, setMagang] = useState<SiswaMagang | null>(null)
   const [isCheckingStatus, setIsCheckingStatus] = useState(true)
 
   const fetchJournals = async () => {
@@ -56,7 +56,7 @@ export default function JurnalSiswa() {
           api.siswa.getDashboard()
         ])
         setJournals(journalsRes.journals)
-        setMagangStatus(dashboardRes.magang?.status || null)
+        setMagang(dashboardRes.magang || null)
       } catch (error) {
         console.error('Failed to initialize journal page:', error)
       } finally {
@@ -116,17 +116,17 @@ export default function JurnalSiswa() {
     <div className="flex flex-col gap-6 max-w-[1600px] mx-auto w-full pb-10 px-4 md:px-8">
       {/* Header Section */}
       <div className="flex items-center justify-between mt-4">
-        <h1 className="text-3xl font-black text-[#1E293B] tracking-tight">Jurnal Harian Magang</h1>
+        <h1 className="text-3xl font-medium text-[#1E293B] tracking-tight">Jurnal Harian Magang</h1>
         <Button 
           onClick={() => {
-            if (magangStatus !== 'aktif') {
+            if (magang?.status !== 'aktif') {
               alert('Anda belum bisa membuat jurnal karena status magang belum aktif.')
               return
             }
             setIsModalOpen(true)
           }}
-          disabled={magangStatus !== 'aktif' || isCheckingStatus}
-          className={`${magangStatus === 'aktif' ? 'bg-[#2563EB] hover:bg-[#00ACC1]' : 'bg-slate-300 cursor-not-allowed'} text-white font-bold py-2 px-6 rounded-xl transition-all flex items-center gap-2 shadow-sm active:scale-95 text-sm h-11`}
+          disabled={magang?.status !== 'aktif' || isCheckingStatus}
+          className={`${magang?.status === 'aktif' ? 'bg-[#2563EB] hover:bg-[#00ACC1]' : 'bg-slate-300 cursor-not-allowed'} text-white font-medium py-2 px-6 rounded-xl transition-all flex items-center gap-2 shadow-sm active:scale-95 text-sm h-11`}
         >
           <Plus className="w-5 h-5" />
           Tambah Jurnal
@@ -134,27 +134,27 @@ export default function JurnalSiswa() {
       </div>
 
       {/* Alert Banner Section */}
-      {(magangStatus !== 'aktif' || !hasJournalToday) && !loading && (
-        <div className={`rounded-xl p-4 flex items-center justify-between gap-4 shadow-sm ${magangStatus === 'aktif' ? 'bg-[#FFF9E7] border border-[#FFECB3]' : 'bg-red-50 border border-red-100'}`}>
+      {(magang?.status !== 'aktif' || !hasJournalToday) && !loading && (
+        <div className={`rounded-xl p-4 flex items-center justify-between gap-4 shadow-sm ${magang?.status === 'aktif' ? 'bg-[#FFF9E7] border border-[#FFECB3]' : 'bg-red-50 border border-red-100'}`}>
           <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${magangStatus === 'aktif' ? 'bg-[#FEEBC8]' : 'bg-red-100'}`}>
-              <FileText className={`w-6 h-6 ${magangStatus === 'aktif' ? 'text-[#DD6B20]' : 'text-red-500'}`} />
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${magang?.status === 'aktif' ? 'bg-[#FEEBC8]' : 'bg-red-100'}`}>
+              <FileText className={`w-6 h-6 ${magang?.status === 'aktif' ? 'text-[#DD6B20]' : 'text-red-500'}`} />
             </div>
             <div>
-              <h3 className={`text-[15px] font-bold ${magangStatus === 'aktif' ? 'text-[#744210]' : 'text-red-800'}`}>
-                {magangStatus === 'aktif' ? 'Jangan Lupa Jurnal Hari Ini!' : 'Akses Jurnal Terbatas'}
+              <h3 className={`text-[15px] font-medium ${magang?.status === 'aktif' ? 'text-[#744210]' : 'text-red-800'}`}>
+                {magang?.status === 'aktif' ? 'Jangan Lupa Jurnal Hari Ini!' : 'Akses Jurnal Terbatas'}
               </h3>
-              <p className={`${magangStatus === 'aktif' ? 'text-[#975A16]' : 'text-red-600'} font-medium text-sm mt-0.5`}>
-                {magangStatus === 'aktif' 
+              <p className={`${magang?.status === 'aktif' ? 'text-[#975A16]' : 'text-red-600'} font-medium text-sm mt-0.5`}>
+                {magang?.status === 'aktif' 
                   ? 'Anda belum membuat jurnal untuk hari ini. Dokumentasikan kegiatan magang Anda sekarang.'
                   : 'Anda belum bisa membuat laporan harian karena penempatan magang Anda belum aktif atau masih dalam proses persetujuan.'}
               </p>
             </div>
           </div>
-          {magangStatus === 'aktif' && (
+          {magang?.status === 'aktif' && (
             <Button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#E67E22] hover:bg-[#D35400] text-white font-bold py-2 px-6 rounded-lg transition-all text-sm h-10 active:scale-95"
+              className="bg-[#E67E22] hover:bg-[#D35400] text-white font-medium py-2 px-6 rounded-lg transition-all text-sm h-10 active:scale-95"
             >
               Buat Sekarang
             </Button>
@@ -172,13 +172,13 @@ export default function JurnalSiswa() {
         ].map((item, i) => (
           <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-slate-500">{item.label}</span>
+              <span className="text-sm font-medium text-slate-500">{item.label}</span>
               <div className={`text-${item.color === 'cyan' ? '[#2563EB]' : item.color === 'blue-dark' ? '[#2B6CB0]' : item.color === 'red' ? '[#E53E3E]' : '[#3182CE]'}`}>
                 <item.icon className="w-5 h-5" />
               </div>
             </div>
             <div className="mt-2">
-              <h3 className="text-3xl font-black text-slate-800 tracking-tight">{item.value}</h3>
+              <h3 className="text-3xl font-medium text-slate-800 tracking-tight">{item.value}</h3>
               <p className="text-slate-400 font-medium text-xs mt-1">{item.sub}</p>
             </div>
           </div>
@@ -191,7 +191,7 @@ export default function JurnalSiswa() {
         <div className="p-6 border-b border-slate-50">
           <div className="flex items-center gap-2 mb-6">
              <FileText className="w-5 h-5 text-[#3182CE]" />
-             <h3 className="text-lg font-extrabold text-[#1E293B]">Riwayat Jurnal</h3>
+             <h3 className="text-lg font-medium text-[#1E293B]">Riwayat Jurnal</h3>
           </div>
 
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
@@ -206,7 +206,7 @@ export default function JurnalSiswa() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <Button variant="ghost" className="flex items-center gap-2 text-slate-500 font-bold border border-slate-100 rounded-xl px-4 py-2.5 h-auto">
+              <Button variant="ghost" className="flex items-center gap-2 text-slate-500 font-medium border border-slate-100 rounded-xl px-4 py-2.5 h-auto">
                 <Filter className="w-4 h-4" />
                 Tampilkan Filter
                 <ChevronDown className="w-4 h-4 text-slate-400" />
@@ -215,7 +215,7 @@ export default function JurnalSiswa() {
 
             <div className="flex items-center gap-3 text-slate-400 text-[13px] font-medium w-full lg:w-auto justify-end">
               <span>Tampilkan:</span>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-bold cursor-pointer">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium cursor-pointer">
                 10 <ChevronDown className="w-4 h-4" />
               </div>
               <span>per halaman</span>
@@ -228,11 +228,11 @@ export default function JurnalSiswa() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-50">
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-800 tracking-tight w-[150px]">Tanggal</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-800 tracking-tight min-w-[300px]">Kegiatan & Kendala</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-800 tracking-tight text-center w-[120px]">Status</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-800 tracking-tight w-[200px]">Feedback Guru</th>
-                <th className="px-6 py-4 text-[13px] font-bold text-slate-800 tracking-tight text-right w-[100px]">Aksi</th>
+                <th className="px-6 py-4 text-[13px] font-medium text-slate-800 tracking-tight w-[150px]">Tanggal</th>
+                <th className="px-6 py-4 text-[13px] font-medium text-slate-800 tracking-tight min-w-[300px]">Kegiatan & Kendala</th>
+                <th className="px-6 py-4 text-[13px] font-medium text-slate-800 tracking-tight text-center w-[120px]">Status</th>
+                <th className="px-6 py-4 text-[13px] font-medium text-slate-800 tracking-tight w-[200px]">Feedback Guru</th>
+                <th className="px-6 py-4 text-[13px] font-medium text-slate-800 tracking-tight text-right w-[100px]">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -251,14 +251,14 @@ export default function JurnalSiswa() {
                   <tr key={journal.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-5">
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-700">
+                        <span className="text-sm font-medium text-slate-700">
                           {(() => {
                             try {
                               const date = journal.tgl ? new Date(journal.tgl) : null;
                               return (date && !isNaN(date.getTime())) 
                                 ? format(date, 'EEEE', { locale: localeId }) 
                                 : '?';
-                            } catch (e) {
+                            } catch {
                               return '?';
                             }
                           })()}
@@ -270,7 +270,7 @@ export default function JurnalSiswa() {
                               return (date && !isNaN(date.getTime())) 
                                 ? format(date, 'd MMM yyyy', { locale: localeId }) 
                                 : '?';
-                            } catch (e) {
+                            } catch {
                               return '?';
                             }
                           })()}
@@ -294,7 +294,7 @@ export default function JurnalSiswa() {
                          journal.status === 'disetujui' ? 'bg-green-100 text-green-700' :
                          journal.status === 'ditolak' ? 'bg-red-100 text-red-700' :
                          'bg-orange-100 text-orange-700'
-                       } border-none px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest inline-flex`}>
+                       } border-none px-3 py-1 rounded-lg text-[10px] font-medium uppercase tracking-widest inline-flex`}>
                          {journal.status}
                        </Badge>
                     </td>
@@ -341,7 +341,7 @@ export default function JurnalSiswa() {
                   <td colSpan={5} className="py-24">
                     <div className="flex flex-col items-center justify-center text-center">
                        <FileText className="w-16 h-16 text-slate-200 mb-4" />
-                       <h3 className="text-lg font-bold text-slate-800">Belum ada jurnal</h3>
+                       <h3 className="text-lg font-medium text-slate-800">Belum ada jurnal</h3>
                        <p className="text-slate-400 font-medium text-sm mt-1">
                          Mulai dokumentasikan kegiatan magang Anda
                        </p>
@@ -355,14 +355,14 @@ export default function JurnalSiswa() {
 
         {/* Pagination placeholder */}
         <div className="p-6 border-t border-slate-50 flex items-center justify-between">
-           <span className="text-xs font-bold text-slate-400">
+           <span className="text-xs font-medium text-slate-400">
              Showing {filteredJournals.length} journals
            </span>
            <div className="flex items-center gap-2">
               <Button disabled variant="ghost" size="icon" className="rounded-lg border border-slate-100 h-9 w-9">
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <Button className="h-9 w-9 rounded-lg bg-[#2563EB] text-white font-bold text-xs p-0 border-none">1</Button>
+              <Button className="h-9 w-9 rounded-lg bg-[#2563EB] text-white font-medium text-xs p-0 border-none">1</Button>
               <Button disabled variant="ghost" size="icon" className="rounded-lg border border-slate-100 h-9 w-9">
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -375,6 +375,7 @@ export default function JurnalSiswa() {
         onClose={handleModalClose} 
         onSuccess={fetchJournals}
         journal={editingJournal}
+        magangInfo={magang}
       />
     </div>
   )

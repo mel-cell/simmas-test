@@ -92,7 +92,7 @@ export default function ManajemenMagang() {
     <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-[24px] sm:text-[28px] font-bold text-slate-800 tracking-tight">Manajemen Magang</h2>
+          <h2 className="text-[24px] sm:text-[28px] font-medium text-slate-800 tracking-tight">Manajemen Magang</h2>
           <p className="text-[13px] sm:text-[14px] text-slate-500 mt-1 font-medium italic sm:not-italic">Kelola penempatan dan monitoring magang siswa</p>
         </div>
       </div>
@@ -140,13 +140,13 @@ export default function ManajemenMagang() {
             <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
               <GraduationCap className="w-5 h-5 text-slate-400" />
             </div>
-            <h3 className="text-[16px] sm:text-[18px] font-bold text-slate-800">Daftar Penempatan</h3>
+            <h3 className="text-[16px] sm:text-[18px] font-medium text-slate-800">Daftar Penempatan</h3>
           </div>
           
           <div className="flex flex-wrap items-center gap-3">
             <button 
               onClick={handleAdd}
-              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#2563EB] text-white rounded-xl font-bold text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all border border-[#2563EB]/10 shadow-lg shadow-blue-600/20 active:scale-95 group"
+              className="h-10 sm:h-11 px-5 sm:px-6 bg-[#2563EB] text-white rounded-xl font-medium text-[13px] sm:text-[14px] flex items-center gap-2 hover:bg-[#1d4ed8] transition-all border border-[#2563EB]/10 shadow-lg shadow-blue-600/20 active:scale-95 group"
             >
               <Plus className="w-4 h-4 transition-transform group-hover:rotate-90" />
               Tambah Magang
@@ -171,7 +171,7 @@ export default function ManajemenMagang() {
             <select 
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-bold text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer"
+              className="w-full h-10 sm:h-11 px-4 bg-white border border-slate-200 rounded-xl text-[14px] font-medium text-slate-600 focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer"
             >
               <option value="semua">Semua Status</option>
               <option value="aktif">Aktif</option>
@@ -186,12 +186,12 @@ export default function ManajemenMagang() {
           <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
               <tr className="bg-white">
-                <th className="px-6 py-4 text-[12px] font-bold text-slate-400 uppercase tracking-wider">Siswa</th>
-                <th className="px-6 py-4 text-[12px] font-bold text-slate-400 uppercase tracking-wider">Lokasi DUDI</th>
-                <th className="px-6 py-4 text-[12px] font-bold text-slate-400 uppercase tracking-wider">Pembimbing</th>
-                <th className="px-6 py-4 text-[12px] font-bold text-slate-400 uppercase tracking-wider text-center flex items-center gap-1 justify-center"><Calendar className="w-3 h-3" /> Periode</th>
-                <th className="px-6 py-4 text-[12px] font-bold text-slate-400 uppercase tracking-wider text-center">Status</th>
-                <th className="px-6 py-4 text-[12px] font-bold text-slate-400 uppercase tracking-wider text-right">Aksi</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-slate-400 uppercase tracking-wider">Siswa</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-slate-400 uppercase tracking-wider">Lokasi DUDI</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-slate-400 uppercase tracking-wider">Pembimbing</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-slate-400 uppercase tracking-wider text-center flex items-center gap-1 justify-center"><Calendar className="w-3 h-3" /> Periode</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-slate-400 uppercase tracking-wider text-center">Status</th>
+                <th className="px-6 py-4 text-[12px] font-medium text-slate-400 uppercase tracking-wider text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 bg-white">
@@ -223,21 +223,21 @@ export default function ManajemenMagang() {
                        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
                         <Briefcase className="w-8 h-8 text-slate-300" />
                       </div>
-                      <span className="text-[14px] font-bold text-slate-400">Tidak ada data penempatan ditemukan.</span>
+                      <span className="text-[14px] font-medium text-slate-400">Tidak ada data penempatan ditemukan.</span>
                     </div>
                   </td>
                 </tr>
               ) : internships.map((m) => (
                 <tr key={m.id} className="hover:bg-slate-50/30 transition-colors group">
                   <td className="px-6 py-5">
-                    <span className="text-[13px] sm:text-[14px] font-bold text-slate-800">{m.namaSiswa}</span>
+                    <span className="text-[13px] sm:text-[14px] font-medium text-slate-800">{m.namaSiswa}</span>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-200 group-hover:bg-[#2563EB]/10 group-hover:border-[#2563EB]/20 transition-colors">
                         <Building2 className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2563EB]" />
                       </div>
-                      <span className="text-[12px] sm:text-[13px] font-semibold text-slate-700">{m.dudi}</span>
+                      <span className="text-[12px] sm:text-[13px] font-semimedium text-slate-700">{m.dudi}</span>
                     </div>
                   </td>
                   <td className="px-6 py-5">
@@ -251,7 +251,7 @@ export default function ManajemenMagang() {
                   <td className="px-6 py-5 text-center">
                     <div className="inline-flex items-center px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200">
                       <Calendar className="w-3.5 h-3.5 text-slate-400 mr-2" />
-                      <span className="text-[11px] font-bold text-slate-600">{m.startDate} — {m.endDate}</span>
+                      <span className="text-[11px] font-medium text-slate-600">{m.startDate} — {m.endDate}</span>
                     </div>
                   </td>
                   <td className="px-6 py-5">
@@ -293,13 +293,13 @@ export default function ManajemenMagang() {
         {/* Pagination placeholder */}
         <div className="px-6 lg:px-8 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/20">
           <div className="flex items-center gap-3">
-            <span className="text-[13px] text-slate-500 font-bold">Tampilkan</span>
-            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-bold focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer">
+            <span className="text-[13px] text-slate-500 font-medium">Tampilkan</span>
+            <select className="h-9 px-3 bg-white border border-slate-200 rounded-xl text-[13px] font-medium focus:outline-none focus:ring-4 focus:ring-[#2563EB]/10 appearance-none cursor-pointer">
               <option>10</option>
               <option>25</option>
               <option>50</option>
             </select>
-            <span className="text-[13px] text-slate-500 font-bold">data</span>
+            <span className="text-[13px] text-slate-500 font-medium">data</span>
           </div>
 
            <div className="flex items-center gap-4">
@@ -308,7 +308,7 @@ export default function ManajemenMagang() {
             </button>
             <div className="flex items-center gap-2">
               <span className="text-[14px] font-black text-slate-800">Halaman 1</span>
-              <span className="text-[14px] text-slate-400 font-bold">dari 1</span>
+              <span className="text-[14px] text-slate-400 font-medium">dari 1</span>
             </div>
             <button className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 hover:border-slate-300 transition-all shadow-sm active:scale-95 disabled:opacity-30" disabled>
               <ChevronRight className="w-5 h-5" />

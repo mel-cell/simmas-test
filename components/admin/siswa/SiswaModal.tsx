@@ -172,7 +172,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
               <User className="w-6 h-6 text-[#2563EB]" />
             </div>
             <div>
-              <h3 className="text-[20px] font-bold text-slate-800 leading-tight">
+              <h3 className="text-[20px] font-medium text-slate-800 leading-tight">
                 {siswa ? 'Edit Siswa' : 'Tambah Siswa'}
               </h3>
               <p className="text-[13px] text-slate-400 mt-1 font-medium">
@@ -193,7 +193,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             {/* NIS */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Hash className="w-4 h-4 text-[#2563EB]" /> NIS
               </label>
               <input 
@@ -208,7 +208,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* Nama Lengkap */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <User className="w-4 h-4 text-[#2563EB]" /> Nama Lengkap
               </label>
               <input 
@@ -223,7 +223,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* Kelas */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-[#2563EB]" /> Kelas
               </label>
               <select 
@@ -241,7 +241,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* Jurusan */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <GraduationCap className="w-4 h-4 text-[#2563EB]" /> Jurusan
               </label>
               <select 
@@ -259,7 +259,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* Email */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#2563EB]" /> Email
               </label>
               <input 
@@ -274,7 +274,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* Telepon */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#2563EB]" /> Telepon
               </label>
               <input 
@@ -289,7 +289,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* Status */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-[#2563EB]" /> Status
               </label>
               <select 
@@ -307,7 +307,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* Guru Pembimbing */}
             <div className="space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <UserCheck className="w-4 h-4 text-[#2563EB]" /> Guru Pembimbing (opsional)
               </label>
               <select 
@@ -325,7 +325,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* DUDI */}
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <Building2 className="w-4 h-4 text-[#2563EB]" /> DUDI (opsional)
               </label>
               <select 
@@ -343,7 +343,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* Alamat */}
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
+              <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-[#2563EB]" /> Alamat
               </label>
               <textarea 
@@ -357,8 +357,8 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
 
             {/* Password Fields */}
             <div className="space-y-2 relative">
-                <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                   <div className="w-4 h-4 text-[#2563EB] flex items-center justify-center font-bold">***</div> Password {siswa ? '(Opsional)' : <span className="text-red-500">*</span>}
+                <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
+                   <div className="w-4 h-4 text-[#2563EB] flex items-center justify-center font-medium">***</div> Password {siswa ? '(Opsional)' : <span className="text-red-500">*</span>}
                 </label>
                 <div className="relative">
                     <input 
@@ -379,8 +379,8 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
             </div>
 
             <div className="space-y-2 relative">
-                <label className="text-[13px] font-bold text-slate-700 flex items-center gap-2">
-                   <div className="w-4 h-4 text-[#2563EB] flex items-center justify-center font-bold">***</div> Konfirmasi Password
+                <label className="text-[13px] font-medium text-slate-700 flex items-center gap-2">
+                   <div className="w-4 h-4 text-[#2563EB] flex items-center justify-center font-medium">***</div> Konfirmasi Password
                 </label>
                 <div className="relative">
                     <input 
@@ -399,7 +399,7 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
                     </button>
                 </div>
                 {passwordError && (
-                    <p className="text-[11px] text-red-500 mt-1 font-bold pl-1">{passwordError}</p>
+                    <p className="text-[11px] text-red-500 mt-1 font-medium pl-1">{passwordError}</p>
                 )}
             </div>
           </div>
@@ -410,14 +410,14 @@ export function SiswaModal({ isOpen, onClose, onSuccess, siswa }: SiswaModalProp
           <button 
             type="button"
             onClick={onClose}
-            className="px-6 py-3 bg-white text-slate-600 rounded-2xl font-bold text-[14px] hover:bg-slate-100 transition-all border border-slate-200"
+            className="px-6 py-3 bg-white text-slate-600 rounded-2xl font-medium text-[14px] hover:bg-slate-100 transition-all border border-slate-200"
           >
             Batal
           </button>
           <button 
             onClick={handleSubmit}
             disabled={loading}
-            className="px-8 py-3 bg-[#2563EB] text-white rounded-2xl font-bold text-[14px] hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
+            className="px-8 py-3 bg-[#2563EB] text-white rounded-2xl font-medium text-[14px] hover:bg-[#1d4ed8] transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
           >
             {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
             {siswa ? 'Simpan Perubahan' : 'Tambah Siswa'}

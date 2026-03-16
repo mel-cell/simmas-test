@@ -70,7 +70,7 @@ export default function BuatJurnalBaru() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-4" />
-        <p className="text-slate-500 font-bold">Memverifikasi Status Magang...</p>
+        <p className="text-slate-500 font-medium">Memverifikasi Status Magang...</p>
       </div>
     )
   }
@@ -93,7 +93,7 @@ export default function BuatJurnalBaru() {
       <div className="mb-8">
         <Link 
           href="/siswa/jurnal" 
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 font-bold text-sm transition-colors w-fit"
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 font-medium text-sm transition-colors w-fit"
         >
           <ArrowLeft className="w-4 h-4" />
           KEMBALI KE DAFTAR
@@ -102,7 +102,7 @@ export default function BuatJurnalBaru() {
 
       <div className="flex flex-col gap-2 mb-10">
         <h2 className="text-4xl font-black text-slate-800 tracking-tighter uppercase">Buat Laporan Harian</h2>
-        <p className="text-slate-500 font-bold text-sm tracking-widest uppercase opacity-60">Input Kegiatan Magang</p>
+        <p className="text-slate-500 font-medium text-sm tracking-widest uppercase opacity-60">Input Kegiatan Magang</p>
       </div>
 
       <div className="flex flex-col gap-8">
@@ -117,7 +117,7 @@ export default function BuatJurnalBaru() {
             <input 
               type="date"
               required
-              className="w-full md:w-fit px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl font-bold text-slate-700 focus:border-blue-500/20 focus:bg-white transition-all outline-none"
+              className="w-full md:w-fit px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl font-medium text-slate-700 focus:border-blue-500/20 focus:bg-white transition-all outline-none"
               value={formData.tgl}
               onChange={(e) => setFormData({...formData, tgl: e.target.value})}
             />
@@ -132,7 +132,7 @@ export default function BuatJurnalBaru() {
             <textarea 
               required
               placeholder="Jelaskan apa saja yang Anda lakukan hari ini di tempat magang..."
-              className="w-full h-48 px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-3xl font-semibold text-slate-700 focus:border-blue-500/20 focus:bg-white transition-all outline-none resize-none leading-relaxed placeholder:text-slate-300"
+              className="w-full h-48 px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-3xl font-semimedium text-slate-700 focus:border-blue-500/20 focus:bg-white transition-all outline-none resize-none leading-relaxed placeholder:text-slate-300"
               value={formData.kegiatan}
               onChange={(e) => setFormData({...formData, kegiatan: e.target.value})}
             />
@@ -147,7 +147,7 @@ export default function BuatJurnalBaru() {
             </label>
             <textarea 
               placeholder="Adakah kesulitan atau tantangan yang dihadapi? Jika tidak ada, kosongkan saja."
-              className="w-full h-32 px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-3xl font-semibold text-slate-700 focus:border-orange-500/20 focus:bg-white transition-all outline-none resize-none leading-relaxed placeholder:text-slate-300"
+              className="w-full h-32 px-6 py-5 bg-slate-50 border-2 border-slate-50 rounded-3xl font-semimedium text-slate-700 focus:border-orange-500/20 focus:bg-white transition-all outline-none resize-none leading-relaxed placeholder:text-slate-300"
               value={formData.kendala}
               onChange={(e) => setFormData({...formData, kendala: e.target.value})}
             />
@@ -159,7 +159,7 @@ export default function BuatJurnalBaru() {
              type="button"
              disabled={loading || !formData.kegiatan}
              onClick={(e) => handleSubmit(e, 'draft')}
-             className="w-full md:w-fit group bg-white hover:bg-slate-50 text-slate-700 px-8 py-5 rounded-[32px] font-bold tracking-tight flex items-center justify-center gap-3 transition-all border border-slate-200 active:scale-[0.98] disabled:opacity-50"
+             className="w-full md:w-fit group bg-white hover:bg-slate-50 text-slate-700 px-8 py-5 rounded-[32px] font-medium tracking-tight flex items-center justify-center gap-3 transition-all border border-slate-200 active:scale-[0.98] disabled:opacity-50"
            >
              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5 text-slate-400" />}
              SIMPAN DRAFT

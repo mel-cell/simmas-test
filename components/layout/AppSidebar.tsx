@@ -72,7 +72,7 @@ export function AppSidebar() {
             <GraduationCap className="text-white w-6 h-6" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[18px] font-bold tracking-tight text-[#0F172A] leading-none mb-1">SIMMAS</span>
+            <span className="text-[18px] font-medium tracking-tight text-[#0F172A] leading-none mb-1">SIMMAS</span>
             <span className="text-[12px] font-medium text-[#64748B] leading-none">{panelName}</span>
           </div>
         </div>
@@ -106,7 +106,7 @@ export function AppSidebar() {
                           <item.icon className={`w-4 h-4 ${isActive ? 'text-[#2563EB]' : 'text-[#64748B]'}`} />
                         </div>
                         <div className="flex flex-col truncate">
-                           <span className={`text-[14px] font-semibold leading-none mb-1 truncate ${isActive ? 'text-[#1E40AF]' : 'text-[#334155] group-hover:text-[#0F172A]'}`}>
+                           <span className={`text-[14px] font-semimedium leading-none mb-1 truncate ${isActive ? 'text-[#1E40AF]' : 'text-[#334155] group-hover:text-[#0F172A]'}`}>
                              {item.title}
                            </span>
                            <span className={`text-[11px] truncate ${isActive ? 'text-[#3B82F6]' : 'text-[#94A3B8]'}`}>
@@ -125,7 +125,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="p-4 pb-6 mt-auto border-t border-[#F1F5F9]">
         <div className="bg-[#F8FAFC] rounded-xl p-4 flex flex-col border border-[#E2E8F0]">
-           <span className="text-[12px] font-bold text-[#334155] leading-none mb-1">UKK SMK Project</span>
+           <span className="text-[12px] font-medium text-[#334155] leading-none mb-1">UKK SMK Project</span>
            <span className="text-[10px] font-medium text-[#94A3B8]">Powered by UBIG</span>
         </div>
       </SidebarFooter>

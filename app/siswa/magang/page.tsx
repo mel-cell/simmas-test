@@ -106,7 +106,7 @@ export default function MagangSiswa() {
     <div className="flex flex-col gap-8 w-full pb-20 px-8 max-w-[1400px] mx-auto">
       {/* Blue Header Section */}
       <div className="bg-[#2563EB] w-full rounded-none p-12 text-white text-center">
-         <h1 className="text-4xl font-bold tracking-tight mb-2">Magang Siswa</h1>
+         <h1 className="text-4xl font-medium tracking-tight mb-2">Magang Siswa</h1>
          <p className="text-white/80 font-medium text-sm">Cari tempat magang dan pantau status pendaftaran Anda</p>
       </div>
 
@@ -115,7 +115,7 @@ export default function MagangSiswa() {
          <div className="flex items-center justify-center gap-12 border-none pb-0">
             <button 
               onClick={() => setActiveTab('status')}
-              className={`flex items-center gap-2 pb-2 text-[13px] font-bold transition-all relative ${activeTab === 'status' ? 'text-[#2563EB]' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`flex items-center gap-2 pb-2 text-[13px] font-medium transition-all relative ${activeTab === 'status' ? 'text-[#2563EB]' : 'text-slate-400 hover:text-slate-600'}`}
             >
                <Clock className="w-4 h-4" />
                Status Magang Saya
@@ -123,7 +123,7 @@ export default function MagangSiswa() {
             </button>
             <button 
               onClick={() => setActiveTab('cari')}
-              className={`flex items-center gap-2 pb-2 text-[13px] font-bold transition-all relative ${activeTab === 'cari' ? 'text-[#2563EB]' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`flex items-center gap-2 pb-2 text-[13px] font-medium transition-all relative ${activeTab === 'cari' ? 'text-[#2563EB]' : 'text-slate-400 hover:text-slate-600'}`}
             >
                <Search className="w-4 h-4" />
                Cari Tempat Magang
@@ -141,26 +141,26 @@ export default function MagangSiswa() {
                        <User className="w-8 h-8 text-slate-300" />
                     </div>
                     <div className="flex flex-col gap-0.5">
-                       <h3 className="text-xl font-bold text-slate-800">
+                       <h3 className="text-xl font-medium text-slate-800">
                          {data?.profile?.full_name} • {data?.profile?.nomor_induk}
                        </h3>
-                       <p className="text-slate-400 font-bold text-xs uppercase tracking-wider">
+                       <p className="text-slate-400 font-medium text-xs uppercase tracking-wider">
                          {data?.profile?.kelas} • {data?.profile?.jurusan}
                        </p>
                     </div>
                  </div>
 
                  <div className="text-right flex flex-col items-end">
-                    <div className="text-4xl font-bold text-[#2563EB] tracking-tight">
+                    <div className="text-4xl font-medium text-[#2563EB] tracking-tight">
                       {pendingCount}<span className="text-slate-200">/3</span>
                     </div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pendaftaran Pending</p>
+                    <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Pendaftaran Pending</p>
                  </div>
               </div>
 
               {/* History Section */}
               <div className="flex flex-col gap-4">
-                 <h3 className="text-[13px] font-bold text-slate-800 tracking-tight">Riwayat Pendaftaran</h3>
+                 <h3 className="text-[13px] font-medium text-slate-800 tracking-tight">Riwayat Pendaftaran</h3>
                  
                  {applications.length > 0 ? (
                    <div className="grid grid-cols-1 gap-4">
@@ -176,7 +176,7 @@ export default function MagangSiswa() {
                                   app.status === 'menunggu' ? <Clock className="w-6 h-6" /> : <XCircle className="w-6 h-6" />}
                               </div>
                               <div className="flex flex-col">
-                                 <h4 className="font-bold text-slate-800">{app.dudi?.nama_perusahaan}</h4>
+                                 <h4 className="font-medium text-slate-800">{app.dudi?.nama_perusahaan}</h4>
                                  <p className="text-xs font-medium text-slate-500 flex items-center gap-1">
                                     <MapPin className="w-3 h-3" /> {app.dudi?.alamat}
                                  </p>
@@ -185,7 +185,7 @@ export default function MagangSiswa() {
                            
                            <div className="flex items-center gap-6">
                               <div className="flex flex-col items-end">
-                                 <span className={`text-[10px] font-bold px-3 py-1 rounded-lg ${
+                                 <span className={`text-[10px] font-medium px-3 py-1 rounded-lg ${
                                    app.status === 'aktif' ? 'bg-green-100 text-green-700' :
                                    app.status === 'menunggu' ? 'bg-orange-100 text-orange-700' :
                                    'bg-red-100 text-red-700'
@@ -203,11 +203,11 @@ export default function MagangSiswa() {
                       <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-6">
                          <AlertCircle className="w-8 h-8 text-slate-200" />
                       </div>
-                      <h4 className="text-xl font-bold text-slate-800">Belum Ada Riwayat</h4>
+                      <h4 className="text-xl font-medium text-slate-800">Belum Ada Riwayat</h4>
                       <p className="text-slate-400 font-medium text-sm mt-1">Anda belum mendaftar ke tempat magang manapun.</p>
                       <Button 
                         onClick={() => setActiveTab('cari')}
-                        className="mt-8 bg-[#2563EB] hover:bg-blue-600 text-white font-bold h-11 px-8 rounded-xl shadow-lg shadow-blue-500/10 flex items-center gap-2"
+                        className="mt-8 bg-[#2563EB] hover:bg-blue-600 text-white font-medium h-11 px-8 rounded-xl shadow-lg shadow-blue-500/10 flex items-center gap-2"
                       >
                          <Search className="w-4 h-4" />
                          Cari Tempat Magang
@@ -220,12 +220,12 @@ export default function MagangSiswa() {
            <div className="flex flex-col gap-8 animate-in fade-in duration-500">
               {/* Info Box */}
               <div className="bg-[#F0F7FF] border border-[#E0F0FF] rounded-2xl p-8">
-                 <h4 className="text-sm font-bold text-[#2563EB] mb-3">Informasi Pendaftaran</h4>
+                 <h4 className="text-sm font-medium text-[#2563EB] mb-3">Informasi Pendaftaran</h4>
                  <ul className="text-[13px] font-medium text-[#4A7AFF] space-y-2">
                      <li className="flex gap-2 underline decoration-blue-200">• Maksimal 3 pendaftaran dengan status pending.</li>
                      <li className="flex gap-2 underline decoration-blue-200">• Pendaftaran langsung masuk ke sistem magang (menunggu konfirmasi).</li>
-                     <li className="flex gap-2 underline decoration-blue-200">• Jika pendaftaran sudah <span className="font-bold">AKTIF MAGANG</span>, Anda tidak bisa mendaftar lagi ke DUDI lain.</li>
-                     <li className="flex gap-2 underline decoration-blue-200">• Saat ini: <span className="font-bold underline decoration-blue-500">{pendingCount}/3 pending.</span></li>
+                     <li className="flex gap-2 underline decoration-blue-200">• Jika pendaftaran sudah <span className="font-medium">AKTIF MAGANG</span>, Anda tidak bisa mendaftar lagi ke DUDI lain.</li>
+                     <li className="flex gap-2 underline decoration-blue-200">• Saat ini: <span className="font-medium underline decoration-blue-500">{pendingCount}/3 pending.</span></li>
                  </ul>
               </div>
 
@@ -246,7 +246,7 @@ export default function MagangSiswa() {
                  {filteredDudi.map((dudi) => (
                    <div key={dudi.id} className="bg-white rounded-2xl border border-slate-100 p-8 flex flex-col gap-6 shadow-sm hover:border-blue-100 transition-all">
                       <div className="flex flex-col gap-1">
-                         <h3 className="text-lg font-bold text-slate-800">{dudi.nama_perusahaan}</h3>
+                         <h3 className="text-lg font-medium text-slate-800">{dudi.nama_perusahaan}</h3>
                          <div className="flex flex-col gap-1 mt-2">
                             <div className="flex items-start gap-2 text-slate-400 font-medium text-[13px]">
                                <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
@@ -272,7 +272,7 @@ export default function MagangSiswa() {
                           <Button 
                             onClick={() => handleApply(dudi.id, dudi.nama_perusahaan)}
                             disabled={isDisabled}
-                            className={`w-full h-11 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+                            className={`w-full h-11 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
                               isDisabled ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-[#2563EB] hover:bg-blue-600 text-white'
                             }`}
                           >
@@ -287,7 +287,7 @@ export default function MagangSiswa() {
                  {filteredDudi.length === 0 && (
                    <div className="py-20 flex flex-col items-center justify-center text-center opacity-40">
                       <Briefcase className="w-12 h-12 text-slate-200 mb-4" />
-                      <p className="text-slate-600 font-bold">Tidak ditemukan perusahaan yang cocok</p>
+                      <p className="text-slate-600 font-medium">Tidak ditemukan perusahaan yang cocok</p>
                    </div>
                  )}
               </div>

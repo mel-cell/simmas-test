@@ -27,8 +27,8 @@ export function StatCard({ title, value, description, icon: Icon, loading }: Sta
       <div className="w-10 h-10 rounded-full bg-[#EFF6FF] border border-[#DBEAFE] flex items-center justify-center mb-5 group-hover:bg-[#DBEAFE] transition-colors">
         <Icon className="w-5 h-5 text-[#2563EB]" />
       </div>
-      <h4 className="text-[32px] font-extrabold text-[#1E3A8A] mb-1.5 leading-none tracking-tight">{value}</h4>
-      <p className="text-[14px] font-bold text-[#0F172A] mb-1">{title}</p>
+      <h4 className="text-[32px] font-extramedium text-[#1E3A8A] mb-1.5 leading-none tracking-tight">{value}</h4>
+      <p className="text-[14px] font-medium text-[#0F172A] mb-1">{title}</p>
       <p className="text-[12px] text-[#64748B] font-medium leading-relaxed">{description}</p>
     </div>
   )
