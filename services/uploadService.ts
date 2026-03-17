@@ -13,7 +13,7 @@ export const uploadService = {
       const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`
       const filePath = `${fileName}` // Langsung di root bucket agar simpel
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from(bucket)
         .upload(filePath, file)
 
